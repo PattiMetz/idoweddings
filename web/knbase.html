@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Knowledge Base</title>
+		<link rel="stylesheet" href="css/bootstrap.css">
+		<link rel="stylesheet" href="css/knbase.css">
+		<meta http-equiv="Content-Type" content="text/html" />
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script type="text/javascript" src="js/jquery-1.12.3.min.js"></script>
+		<script src="js/jquery.nicescroll.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/sett_knbase.js"></script>
+	</head>
+	<body>
+		<div class="modal_1 modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Add Knowledge Base</h4>
+					</div>
+					<div class="modal-body">
+						<form name="add_base" class="form-inline" method="" action="">
+							<label for="knbase_name">Knowledge Base Name</label>
+							<input type="text" id="knbase_name" class="form-control" />
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success">Save</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+		    </div>
+		</div>
+		<div class="modal_2 modal fade" id="myModal_1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">User permissions for Knowledge Base</h4>
+					</div>
+					<div class="modal-body">
+						<form class="permiss_form form-inline clearfix" method="" action="">
+							<div>
+								<p class="clearfix">Roles</p>
+								<div class="permiss_outer_box form-control">
+									<ul>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />All
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />Administrator
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />Manager
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />Travel Dept (Inside)
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />Office Staff
+											</label>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div>
+								<p class="clearfix">User</p>
+								<div class="permiss_outer_box form-control">
+									<ul>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />All
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />User 1
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />User 2
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />User 3
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />User 4
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />User 5
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />User 6
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />User 7
+											</label>
+										</li>
+										<li>
+											<label class="checkbox-inline">
+												<input type="checkbox" />User 8
+											</label>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success">Save</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+		    </div>
+		</div>
+		<div class="modal_3 modal fade" id="myModal_2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Edit Knowledge Base</h4>
+					</div>
+					<div class="modal-body">
+						<form name="edit_base" class="form-inline" method="" action="">
+							<label for="ed_knbase_name">Knowledge Base Name</label>
+							<input type="text" id="ed_knbase_name" class="form-control" />
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success">Save</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+		    </div>
+		</div>
+		<div class="modal_4 modal fade" id="myModal_3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Delete category</h4>
+					</div>
+					<div class="modal-body">
+						<p>You are in one step from deleting the category - {Catgory name} and all enclosed articles.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success">Delete</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+		    </div>
+		</div>
+		<div class="modal_5 modal fade" id="myModal_4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Delete article</h4>
+					</div>
+					<div class="modal-body">
+						<p>You are in one step from deleting the article - {Article name}.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success">Delete</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+		    </div>
+		</div>
+		<div class="modal_6 modal fade" id="myModal_5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Change order</h4>
+					</div>
+					<div class="modal-body">
+						<div class="input-group">
+							<span class="input-group-addon">
+								<input type="radio" name="pos" checked />
+						    </span>
+						    <input type="text" class="form-control" value="Move to the top" disabled />
+						</div>
+						<div class="input-group">
+							<span class="input-group-addon">
+								<input type="radio" name="pos" />
+						    </span>
+						    <input type="text" class="form-control" value="Move to position" disabled />
+						</div>
+						<input type="number" class="form-control" value="3" />
+						<div class="input-group">
+							<span class="input-group-addon">
+								<input type="radio" name="pos" />
+						    </span>
+						    <input type="text" class="form-control" value="Move to the end" disabled />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success">Move</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+		    </div>
+		</div>
+		<div class="modal_7 modal fade" id="myModal_6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">Delete Knowledge Base</h4>
+					</div>
+					<div class="modal-body">
+						<p>You are in one step from deleting the Knowledge Base - {Knowledge Base name}.</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-success">Delete</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</div>
+		    </div>
+		</div>
+		<div class="main_wrapper">
+			<div class="left_panel">
+				<a href="#" class="logo"></a>
+				<span>Admin Area</span>
+				<ul class="item_list">
+					<li class="item_1"><a href="#">Dashboard</a></li>
+					<li class="item_2"><a href="#">Availability Calendar</a></li>
+					<li class="item_3"><a href="#">Schedule</a></li>
+					<li class="item_4"><a href="#">Customers</a></li>
+					<li class="item_5"><a href="#">Inquiries</a></li>
+					<li class="item_6"><a href="#">To do</a></li>
+					<li class="item_7"><a href="#">Pending Answers</a></li>
+					<li class="item_8"><a href="#">Messages</a></li>
+					<li class="item_9"><a href="#">Quotes</a></li>
+					<li class="item_10"><a href="#">Invoices</a></li>
+					<li class="item_11"><a href="#">Venues</a></li>
+					<li class="item_12"><a href="#">Vendors</a></li>
+					<li class="item_13"><a href="#">Locations</a></li>
+					<li class="item_14"><a href="#">Pricing</a></li>
+					<li class="item_15 active"><a href="#" id="it_15">Knowledge Base</a></li>
+					<li class="item_16"><a href="#">Reports</a></li>
+					<li class="item_17"><a href="#">Webs</a></li>
+					<li class="item_18"><a href="#">Settings</a></li>
+					<li class="item_19"><a href="#">User Manager</a></li>
+					<li class="item_20"><a href="#">Companies</a></li>
+					<li class="item_21"><a href="#">Mastertable</a></li>
+				</ul>
+			</div>
+			<header>
+				<div class="header">
+					<div class="container">
+						<div class="row">
+							<div class="col-md-12 clearfix">
+								<div class="col-md-6 col-sm-6 col-xs-12 clearfix">
+									<div class="admin_info">
+										<span>WOMI</span>
+										<span>Admin</span>
+										<span id="pos_name">Patti Metzger</span>
+									</div>
+									<nav class="navbar clearfix">
+										<ul class="nav">
+											<li><a href="#">Support</a></li>
+											<li><a href="#">My account</a></li>
+											<li><a href="#">Log Out</a></li>
+										</ul>
+										<a class="mob_btn clicked"></a>
+									</nav>
+								</div>
+								<div class="name_of_base col-md-3 col-sm-3 col-xs-6">
+									<p>Knowledge Base</p>
+									<p class="basename">Overview</p>
+								</div>
+								<div class="col-md-1"></div>
+								<div class="col-md-2 col-sm-3 col-xs-6">
+									<span>Admin Area</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</header>
+			<section id="base">
+				<div class="main_base">
+					<div class="container">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="top_panel clearfix">
+									<div class="col-md-9 col-sm-8 col-xs-7">
+										<a href="#" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Add Knowledge Base</a>
+									</div>
+									<div class="col-md-3 col-sm-4 col-xs-5">
+										<form name="search" class="input-group" method="get" action="">
+											<input type="text" name="search" class="form-control" placeholder="Search" autocomplete="off" />
+											<span class="input-group-btn">
+												<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+											</span>
+										</form>
+									</div>
+								</div>
+								<div class="clearfix">
+									<div class="knbase_box">
+										<div class="knbase_top">
+											<button type="button" class="close" title="Delete" data-toggle="modal" data-target="#myModal_6">&times;</button>
+											<a href="#" id="l1" name="Admin Knowledgebase">Admin Knowledgebase</a>
+										</div>
+										<div class="knbase_cont clearfix">
+											<div class="col-sm-8 col-xs-8">
+												<div class="col-sm-12">
+													<div class="col-sm-6 author">Author:</div>
+													<div class="col-sm-6 block_2">Patti Metzger</div>
+												</div>
+												<div class="col-sm-12">
+													<div class="col-sm-6 publish">Published:</div>
+													<div class="col-sm-6 block_2">0</div>
+												</div>
+												<div class="col-sm-12">
+													<div class="col-sm-6 drafts">Drafts:</div>
+													<div class="col-sm-6 block_2">0</div>
+												</div>
+											</div>
+											<div class="col-sm-4 col-xs-4 block_3 clearfix">
+												<div class="icon_base"></div>
+												<a class="permissions" title="Permissions" data-toggle="modal" data-target="#myModal_1"></a>
+											</div>
+										</div>
+									</div>
+									<div class="knbase_box">
+										<div class="knbase_top">
+											<button type="button" class="close" title="Delete" data-toggle="modal" data-target="#myModal_6">&times;</button>
+											<a href="#" id="l2" name="General">General</a>
+										</div>
+										<div class="knbase_cont clearfix">
+											<div class="col-sm-8 col-xs-8">
+												<div class="col-sm-12">
+													<div class="col-sm-6 author">Author:</div>
+													<div class="col-sm-6 block_2">Patti Metzger</div>
+												</div>
+												<div class="col-sm-12">
+													<div class="col-sm-6 publish">Published:</div>
+													<div class="col-sm-6 block_2">0</div>
+												</div>
+												<div class="col-sm-12">
+													<div class="col-sm-6 drafts">Drafts:</div>
+													<div class="col-sm-6 block_2">0</div>
+												</div>
+											</div>
+											<div class="col-sm-4 col-xs-4 block_3 clearfix">
+												<div class="icon_base"></div>
+												<a class="permissions" title="Permissions" data-toggle="modal" data-target="#myModal_1"></a>
+											</div>
+										</div>
+									</div>
+									<div class="knbase_box">
+										<div class="knbase_top">
+											<button type="button" class="close" title="Delete" data-toggle="modal" data-target="#myModal_6">&times;</button>
+											<a href="#" id="l3" name="Mexico Weddings">Mexico Weddings</a>
+										</div>
+										<div class="knbase_cont clearfix">
+											<div class="col-sm-8 col-xs-8">
+												<div class="col-sm-12">
+													<div class="col-sm-6 author">Author:</div>
+													<div class="col-sm-6 block_2">Patti Metzger</div>
+												</div>
+												<div class="col-sm-12">
+													<div class="col-sm-6 publish">Published:</div>
+													<div class="col-sm-6 block_2">0</div>
+												</div>
+												<div class="col-sm-12">
+													<div class="col-sm-6 drafts">Drafts:</div>
+													<div class="col-sm-6 block_2">0</div>
+												</div>
+											</div>
+											<div class="col-sm-4 col-xs-4 block_3 clearfix">
+												<div class="icon_base"></div>
+												<a class="permissions" title="Permissions" data-toggle="modal" data-target="#myModal_1"></a>
+											</div>
+										</div>
+									</div>
+									<div class="knbase_box">
+										<div class="knbase_top">
+											<button type="button" class="close" title="Delete" data-toggle="modal" data-target="#myModal_6">&times;</button>
+											<a href="#" id="l4" name="Sayingido">Sayingido</a>
+										</div>
+										<div class="knbase_cont clearfix">
+											<div class="col-sm-8 col-xs-8">
+												<div class="col-sm-12">
+													<div class="col-sm-6 author">Author:</div>
+													<div class="col-sm-6 block_2">Patti Metzger</div>
+												</div>
+												<div class="col-sm-12">
+													<div class="col-sm-6 publish">Published:</div>
+													<div class="col-sm-6 block_2">0</div>
+												</div>
+												<div class="col-sm-12">
+													<div class="col-sm-6 drafts">Drafts:</div>
+													<div class="col-sm-6 block_2">0</div>
+												</div>
+											</div>
+											<div class="col-sm-4 col-xs-4 block_3 clearfix">
+												<div class="icon_base"></div>
+												<a class="permissions" title="Permissions" data-toggle="modal" data-target="#myModal_1"></a>
+											</div>
+										</div>
+									</div>
+									<div class="knbase_box">
+										<div class="knbase_top">
+											<button type="button" class="close" title="Delete" data-toggle="modal" data-target="#myModal_6">&times;</button>
+											<a href="#" id="l5" name="Test">Test</a>
+										</div>
+										<div class="knbase_cont clearfix">
+											<div class="col-sm-8 col-xs-8">
+												<div class="col-sm-12">
+													<div class="col-sm-6 author">Author:</div>
+													<div class="col-sm-6 block_2">UserName2</div>
+												</div>
+												<div class="col-sm-12">
+													<div class="col-sm-6 publish">Published:</div>
+													<div class="col-sm-6 block_2">0</div>
+												</div>
+												<div class="col-sm-12">
+													<div class="col-sm-6 drafts">Drafts:</div>
+													<div class="col-sm-6 block_2">0</div>
+												</div>
+											</div>
+											<div class="col-sm-4 col-xs-4 block_3 clearfix">
+												<div class="icon_base"></div>
+												<a class="permissions" title="Permissions" data-toggle="modal" data-target="#myModal_1"></a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="general_block">
+					<div id="block_l1" class="knbase_block">
+						<div class="container">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="sett_panel form-inline clearfix">
+										<div class="choose_base input-group">
+											<span class="input-group-addon"></span>	
+											<div class="input-group-btn">
+												<button type="button" class="btn btn-default sel_btn">Knowledge base name</button>
+												<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+													<span class="sr-only">Toggle Dropdown</span>
+												</button>											
+												<ul class="dropdown-menu">
+													<li><a href="#block_l1" name="Admin Knowledgebase">Admin Knowledgebase</a></li>
+													<li><a href="#block_l2" name="General">General</a></li>
+													<li><a href="#block_l3" name="Mexico Weddings">Mexico Weddings</a></li>
+													<li><a href="#block_l4" name="Sayingido">Sayingido</a></li>
+													<li><a href="#block_l5" name="Test">Test</a></li>
+												</ul>
+											</div>
+										</div>
+										<div class="choose_base_btn_box">
+											<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal_2"><i class="glyphicon glyphicon-pencil"></i></a>
+											<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
+										</div>
+									</div>
+									<div class="top_panel clearfix">
+										<div class="col-md-9 col-sm-8 col-xs-7">
+											<a href="#" class="btn btn-danger">Add Category</a>
+											<a href="#" class="btn btn-danger">Add Article</a>
+										</div>
+										<div class="col-md-3 col-sm-4 col-xs-5">
+											<form name="search" class="input-group" method="get" action="">
+												<input type="text" name="search" class="form-control" placeholder="Search" autocomplete="off" />
+												<span class="input-group-btn">
+													<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+												</span>
+											</form>
+										</div>
+									</div>
+									<div class="table-responsive">
+										<table class="table table-bordered doc_table">
+											<thead>
+												<tr>
+													<th>Order</th>
+													<th>Title</th>
+													<th>Contains</th>
+													<th>Actions</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td><a href="#" class="text-success" data-toggle="modal" data-target="#myModal_5">1</a></td>
+													<td><a href="#" class="item_doc category">Category name 1</a></td>
+													<td>
+														<div class="contain">
+															<div class="item_doc category" title="Subcategories">6</div>
+														</div>
+														<div class="contain">
+															<div class="item_doc article" title="Articles">2</div>
+														</div>
+														<div class="contain">
+															<div class="item_doc draft" title="Drafts">1</div>
+														</div>
+													</td>
+													<td>
+														<a href="#" class="btn btn-success"><i class="glyphicon glyphicon-pencil"></i> Rename</a>
+														<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
+														<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal_3"><i class="glyphicon glyphicon-close"></i> Delete</a>
+													</td>
+												</tr>
+												<tr>
+													<td><a href="#" class="text-success" data-toggle="modal" data-target="#myModal_5">2</a></td>
+													<td><a href="#" class="item_doc category">Category name 2</a></td>
+													<td></td>
+													<td>
+														<a href="#" class="btn btn-success"><i class="glyphicon glyphicon-pencil"></i> Rename</a>
+														<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
+														<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal_3"><i class="glyphicon glyphicon-close"></i> Delete</a>
+													</td>
+												</tr>
+												<tr>
+													<td><a href="#" class="text-success" data-toggle="modal" data-target="#myModal_5">3</a></td>
+													<td><a href="#" class="item_doc article">Article name 1</a></td>
+													<td></td>
+													<td>
+														<a href="#" class="btn btn-success"><i class="glyphicon glyphicon-pencil"></i> Rename</a>
+														<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
+														<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal_4"><i class="glyphicon glyphicon-close"></i> Delete</a>
+													</td>
+												</tr>
+												<tr>
+													<td><a href="#" class="text-success" data-toggle="modal" data-target="#myModal_5">4</a></td>
+													<td><a href="#" class="item_doc draft">Article name 2 (draft)</a></td>
+													<td></td>
+													<td>
+														<a href="#" class="btn btn-success"><i class="glyphicon glyphicon-pencil"></i> Rename</a>
+														<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
+														<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal_4"><i class="glyphicon glyphicon-close"></i> Delete</a>
+													</td>
+												</tr>
+												<tr>
+													<td><a href="#" class="text-success" data-toggle="modal" data-target="#myModal_5">5</a></td>
+													<td><a href="#" class="item_doc article">Article name 3</a></td>
+													<td></td>
+													<td>
+														<a href="#" class="btn btn-success"><i class="glyphicon glyphicon-pencil"></i> Rename</a>
+														<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
+														<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal_4"><i class="glyphicon glyphicon-close"></i> Delete</a>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+									<div class="pagination_panel clearfix">
+										<span>Showing 1-5 Records of 5</span>
+										<ul class="pagination">
+											<li><a href="#">&laquo;</a></li>
+											<li class="active"><a href="#">1</a></li>
+											<li><a href="#">&raquo;</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="block_l2" class="knbase_block">
+						<div class="container">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="sett_panel form-inline clearfix">
+										<div class="choose_base input-group">
+											<span class="input-group-addon"></span>	
+											<div class="input-group-btn">
+												<button type="button" class="btn btn-default sel_btn">Knowledge base name</button>
+												<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+													<span class="sr-only">Toggle Dropdown</span>
+												</button>											
+												<ul class="dropdown-menu">
+													<li><a href="#block_l1" name="Admin Knowledgebase">Admin Knowledgebase</a></li>
+													<li><a href="#block_l2" name="General">General</a></li>
+													<li><a href="#block_l3" name="Mexico Weddings">Mexico Weddings</a></li>
+													<li><a href="#block_l4" name="Sayingido">Sayingido</a></li>
+													<li><a href="#block_l5" name="Test">Test</a></li>
+												</ul>
+											</div>
+										</div>
+										<div class="choose_base_btn_box">
+											<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal_2"><i class="glyphicon glyphicon-pencil"></i></a>
+											<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
+										</div>
+									</div>
+									<div class="top_panel clearfix">
+										<div class="col-md-9 col-sm-8 col-xs-7">
+											<a href="#" class="btn btn-danger">Add Category</a>
+											<a href="#" class="btn btn-danger">Add Article</a>
+										</div>
+										<div class="col-md-3 col-sm-4 col-xs-5">
+											<form name="search" class="input-group" method="get" action="">
+												<input type="text" name="search" class="form-control" placeholder="Search" autocomplete="off" />
+												<span class="input-group-btn">
+													<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+												</span>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="block_l3" class="knbase_block">
+						<div class="container">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="sett_panel form-inline clearfix">
+										<div class="choose_base input-group">
+											<span class="input-group-addon"></span>	
+											<div class="input-group-btn">
+												<button type="button" class="btn btn-default sel_btn">Knowledge base name</button>
+												<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+													<span class="sr-only">Toggle Dropdown</span>
+												</button>											
+												<ul class="dropdown-menu">
+													<li><a href="#block_l1" name="Admin Knowledgebase">Admin Knowledgebase</a></li>
+													<li><a href="#block_l2" name="General">General</a></li>
+													<li><a href="#block_l3" name="Mexico Weddings">Mexico Weddings</a></li>
+													<li><a href="#block_l4" name="Sayingido">Sayingido</a></li>
+													<li><a href="#block_l5" name="Test">Test</a></li>
+												</ul>
+											</div>
+										</div>
+										<div class="choose_base_btn_box">
+											<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal_2"><i class="glyphicon glyphicon-pencil"></i></a>
+											<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
+										</div>
+									</div>
+									<div class="top_panel clearfix">
+										<div class="col-md-9 col-sm-8 col-xs-7">
+											<a href="#" class="btn btn-danger">Add Category</a>
+											<a href="#" class="btn btn-danger">Add Article</a>
+										</div>
+										<div class="col-md-3 col-sm-4 col-xs-5">
+											<form name="search" class="input-group" method="get" action="">
+												<input type="text" name="search" class="form-control" placeholder="Search" autocomplete="off" />
+												<span class="input-group-btn">
+													<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+												</span>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="block_l4" class="knbase_block">
+						<div class="container">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="sett_panel form-inline clearfix">
+										<div class="choose_base input-group">
+											<span class="input-group-addon"></span>	
+											<div class="input-group-btn">
+												<button type="button" class="btn btn-default sel_btn">Knowledge base name</button>
+												<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+													<span class="sr-only">Toggle Dropdown</span>
+												</button>											
+												<ul class="dropdown-menu">
+													<li><a href="#block_l1" name="Admin Knowledgebase">Admin Knowledgebase</a></li>
+													<li><a href="#block_l2" name="General">General</a></li>
+													<li><a href="#block_l3" name="Mexico Weddings">Mexico Weddings</a></li>
+													<li><a href="#block_l4" name="Sayingido">Sayingido</a></li>
+													<li><a href="#block_l5" name="Test">Test</a></li>
+												</ul>
+											</div>
+										</div>
+										<div class="choose_base_btn_box">
+											<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal_2"><i class="glyphicon glyphicon-pencil"></i></a>
+											<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
+										</div>
+									</div>
+									<div class="top_panel clearfix">
+										<div class="col-md-9 col-sm-8 col-xs-7">
+											<a href="#" class="btn btn-danger">Add Category</a>
+											<a href="#" class="btn btn-danger">Add Article</a>
+										</div>
+										<div class="col-md-3 col-sm-4 col-xs-5">
+											<form name="search" class="input-group" method="get" action="">
+												<input type="text" name="search" class="form-control" placeholder="Search" autocomplete="off" />
+												<span class="input-group-btn">
+													<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+												</span>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div id="block_l5" class="knbase_block">
+						<div class="container">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="sett_panel form-inline clearfix">
+										<div class="choose_base input-group">
+											<span class="input-group-addon"></span>	
+											<div class="input-group-btn">
+												<button type="button" class="btn btn-default sel_btn">Knowledge base name</button>
+												<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+													<span class="caret"></span>
+													<span class="sr-only">Toggle Dropdown</span>
+												</button>											
+												<ul class="dropdown-menu">
+													<li><a href="#block_l1" name="Admin Knowledgebase">Admin Knowledgebase</a></li>
+													<li><a href="#block_l2" name="General">General</a></li>
+													<li><a href="#block_l3" name="Mexico Weddings">Mexico Weddings</a></li>
+													<li><a href="#block_l4" name="Sayingido">Sayingido</a></li>
+													<li><a href="#block_l5" name="Test">Test</a></li>
+												</ul>
+											</div>
+										</div>
+										<div class="choose_base_btn_box">
+											<a href="#" class="btn btn-success" data-toggle="modal" data-target="#myModal_2"><i class="glyphicon glyphicon-pencil"></i></a>
+											<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
+										</div>
+									</div>
+									<div class="top_panel clearfix">
+										<div class="col-md-9 col-sm-8 col-xs-7">
+											<a href="#" class="btn btn-danger">Add Category</a>
+											<a href="#" class="btn btn-danger">Add Article</a>
+										</div>
+										<div class="col-md-3 col-sm-4 col-xs-5">
+											<form name="search" class="input-group" method="get" action="">
+												<input type="text" name="search" class="form-control" placeholder="Search" autocomplete="off" />
+												<span class="input-group-btn">
+													<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+												</span>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+		<footer>
+			<div class="footer">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="col-md-4 col-sm-6">
+								<span>Copyright &copy 2016 Idoweddings.com</span>
+							</div>
+							<div class="col-md-4 col-sm-6">
+								<span>Destination Wedding Specials</span>
+							</div>
+							<div class="col-md-4 col-sm-12">
+								<span>Powered by <a href="#" class="foo_logo"></a></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>
