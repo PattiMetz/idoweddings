@@ -103,4 +103,52 @@ jQuery("document").ready(function(){
 		});
 	}
 	chooseBlock();
+	
+	/*========Subcategory kn base options========*/	
+	function chooseSubCategories () {
+		jQuery('.category').click(function() {
+			jQuery('.category').removeClass('active');
+			jQuery(this).addClass('active');
+			var address = jQuery(this).attr("href");
+			jQuery(this).closest('.parent_box').hide();
+			jQuery(".sub_box").removeClass("active").hide();
+			jQuery(address).addClass("active").show();
+			return false;
+		});
+	}
+	chooseSubCategories();
+	
+	jQuery('.return_link').click(function() {
+		jQuery(this).closest('.sub_box').hide();
+		jQuery(this).closest('.knbase_block').find('.parent_box').show();
+	});
+	
+	/*========Add category Modal========*/	
+	function valInBtn() {
+		jQuery('#gr_1 a').click(function() {
+			var dropName = jQuery(this).attr('name');
+			jQuery(this).closest('.btn-group').find('.sel_btn').text(dropName);
+		});
+		jQuery('#gr_2 a').click(function() {
+			var dropName = jQuery(this).attr('name');
+			jQuery(this).closest('.btn-group').find('.sel_btn').text(dropName);
+		});
+		jQuery('#gr_3 a').click(function() {
+			var dropName = jQuery(this).attr('name');
+			jQuery(this).closest('.btn-group').find('.sel_btn').text(dropName);
+		});
+		jQuery('#gr_4 a').click(function() {
+			var dropName = jQuery(this).attr('name');
+			jQuery(this).closest('.btn-group').find('.sel_btn').text(dropName);
+		});
+	}
+	valInBtn();
+	
+	/*========Table arrows========*/
+	jQuery('.doc_table td:first-child, .doc_table td:nth-child(2)').hover(function() {
+		jQuery('.arrows').hide();
+		jQuery(this).parent('tr').find('.arrows').show();
+	},function(){
+		jQuery(this).parent('tr').find('.arrows').hide();
+	});
 });
