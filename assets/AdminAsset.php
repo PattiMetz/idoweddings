@@ -18,6 +18,7 @@ class AdminAsset extends AssetBundle
     ];
     public $js = [
 	'js/admin.js',
+	'js/jquery.nicescroll.min.js',
 //	'js/sett_knbase.js',
     ];
     public $depends = [

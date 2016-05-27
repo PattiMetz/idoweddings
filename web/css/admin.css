@@ -1,33 +1,33 @@
 @font-face {
     font-family: 'open_sansregular';
-    src: url('../font/opensansregular-webfont.eot');
-    src: url('../font/opensansregular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../font/opensansregular-webfont.woff2') format('woff2'),
-         url('../font/opensansregular-webfont.woff') format('woff'),
-         url('../font/opensansregular-webfont.ttf') format('truetype'),
-         url('../font/opensansregular-webfont.svg#open_sansregular') format('svg');
+    src: url('../fonts/opensansregular-webfont.eot');
+    src: url('../fonts/opensansregular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/opensansregular-webfont.woff2') format('woff2'),
+         url('../fonts/opensansregular-webfont.woff') format('woff'),
+         url('../fonts/opensansregular-webfont.ttf') format('truetype'),
+         url('../fonts/opensansregular-webfont.svg#open_sansregular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 @font-face {
     font-family: 'open_sans_lightregular';
-    src: url('../font/opensanslight-webfont.eot');
-    src: url('../font/opensanslight-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../font/opensanslight-webfont.woff2') format('woff2'),
-         url('../font/opensanslight-webfont.woff') format('woff'),
-         url('../font/opensanslight-webfont.ttf') format('truetype'),
-         url('../font/opensanslight-webfont.svg#open_sans_lightregular') format('svg');
+    src: url('../fonts/opensanslight-webfont.eot');
+    src: url('../fonts/opensanslight-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/opensanslight-webfont.woff2') format('woff2'),
+         url('../fonts/opensanslight-webfont.woff') format('woff'),
+         url('../fonts/opensanslight-webfont.ttf') format('truetype'),
+         url('../fonts/opensanslight-webfont.svg#open_sans_lightregular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 @font-face {
     font-family: 'open_sans_semiboldregular';
-    src: url('../font/opensanssemibold-webfont.eot');
-    src: url('../font/opensanssemibold-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../font/opensanssemibold-webfont.woff2') format('woff2'),
-         url('../font/opensanssemibold-webfont.woff') format('woff'),
-         url('../font/opensanssemibold-webfont.ttf') format('truetype'),
-         url('../font/opensanssemibold-webfont.svg#open_sans_semiboldregular') format('svg');
+    src: url('../fonts/opensanssemibold-webfont.eot');
+    src: url('../fonts/opensanssemibold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/opensanssemibold-webfont.woff2') format('woff2'),
+         url('../fonts/opensanssemibold-webfont.woff') format('woff'),
+         url('../fonts/opensanssemibold-webfont.ttf') format('truetype'),
+         url('../fonts/opensanssemibold-webfont.svg#open_sans_semiboldregular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -91,7 +91,7 @@ table, th {
 .main_wrapper {
 	position: relative;
 	min-height: 100%;
-	background: url(../img/section_bg.png) repeat-y top right 24px;
+	background: url(../images/section_bg.png) repeat-y top right 24px;
 }
 .container {
 	max-width: 1170px;
@@ -664,6 +664,9 @@ form[name=search] {
 .choose_base_btn_box {
 	display: inline-block;
 }
+.doc_table th a {
+	color: inherit;
+}
 .doc_table td:first-child {
 	width: 80px;
 	clear: both;
@@ -1001,6 +1004,68 @@ form[name=search] {
 	display: none;
 }
 
+/********Add sorting icons to gridview sort links ********/
+a.asc:after, a.desc:after {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    padding-left: 5px;
+}
+
+a.asc:after {
+    /*content: /*"\e113"* "\e151";*/
+	content: "";
+	width: 22px;
+	height: 14px;
+	background: url(../images/arr_down.png) no-repeat;
+}
+
+a.desc:after {
+    /*content: /*"\e114" "\e152";*/
+	content: "";
+	width: 22px;
+	height: 14px;
+	background: url(../images/arr_up.png) no-repeat;
+}
+
+.sort-numerical a.asc:after {
+    content: "\e153";
+}
+
+.sort-numerical a.desc:after {
+    content: "\e154";
+}
+
+.sort-ordinal a.asc:after {
+    content: "\e155";
+}
+
+.sort-ordinal a.desc:after {
+    content: "\e156";
+}
+
+.grid-view th {
+    white-space: nowrap;
+}
+
+.hint-block {
+    display: block;
+    margin-top: 5px;
+    color: #999;
+}
+
+.error-summary {
+    color: #a94442;
+    background: #fdf7f7;
+    border-left: 3px solid #eed3d7;
+    padding: 10px 20px;
+    margin: 0 0 15px 0;
+}
+
 @media (max-width: 1355px) {
 	.container {
 		max-width: 1000px;
@@ -1091,12 +1156,14 @@ form[name=search] {
 	.footer .col-md-12 > div:nth-child(2) {
 		text-align: left;
 	}
-	.doc_table td:last-child  a {
+	.doc_table td:last-child  a,
+	.doc_table td:last-child  button {
 		display: block;
-		max-width: 96px;
+		width: 96px;
 		margin: 0 auto 8px;
 	}
-	.doc_table td:last-child  a:last-child {
+	.doc_table td:last-child  a:last-child,
+	.doc_table td:last-child  button:last-child {
 		margin-bottom: 0;
 	}
 	.contain {
@@ -1222,7 +1289,8 @@ form[name=search] {
 	.doc_table td:nth-child(2) {
 		max-width: auto;
 	}
-	.doc_table td:last-child  a {
+	.doc_table td:last-child  a,
+	.doc_table td:last-child  button {
 		display: inline-block;
 		max-width: auto;
 		margin: 0;

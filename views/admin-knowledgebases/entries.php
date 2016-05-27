@@ -52,18 +52,24 @@ $this->title = 'Entries';
 <?php
 	echo GridView::widget([
 		'dataProvider' => $dataProvider,
+		'tableOptions' => [
+            'class' => 'table table-bordered doc_table'
+        ],
 		'columns' => [
 			'order',
 			'title',
 			[  
 				'class' => 'yii\grid\ActionColumn',
 				'header' => 'Actions',
-				'template' => '{update} {delete}',
+				'template' => '{update} {view} {delete}',
 				'urlCreator' => function ($action, $model, $key, $index) {
 					$type = ($model->is_category) ? 'categories' : 'articles';
 					switch ($action) {
 						case 'update':
 							$url = Url::to(["admin-knowledgebases/{$type}-update", 'id' => $model->id]);
+							break;
+						case 'view':
+							$url = Url::to(["admin-knowledgebases/{$type}-view", 'id' => $model->id]);
 							break;
 						case 'delete':
 							$url = Url::to(["admin-knowledgebases/{$type}-delete", 'id' => $model->id]);
@@ -73,15 +79,22 @@ $this->title = 'Entries';
 				},
 				'buttons' => [
 					'update' => function($url, $model) {
-						return Html::button('Rename', [
+						return Html::button('<i class="glyphicon glyphicon-pencil"></i> Rename', [
 							'value' => $url,
-							'class' => 'btn modal-ajax',
+							'class' => 'btn btn-primary modal-ajax',
+						]);
+					},
+					'view' => function($url, $model) {
+						return Html::button('<i class="glyphicon glyphicon-mykey"></i>', [
+							'value' => $url,
+							'class' => 'btn btn-danger modal-ajax',
+							'title' => 'Permissoins',
 						]);
 					},
 					'delete' => function($url, $model) {
-						return Html::button('Delete', [
+						return Html::button('<i class="glyphicon glyphicon-close"></i> Delete', [
 							'value' => $url,
-							'class' => 'btn modal-ajax',
+							'class' => 'btn btn-primary modal-ajax',
 						]);
 					}
 				]
