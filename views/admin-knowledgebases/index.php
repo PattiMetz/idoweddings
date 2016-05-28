@@ -7,7 +7,7 @@ use yii\helpers\Url;
 use yii\widgets\Pjax;
 use yii\widgets\ActiveForm;
 
-$this->title = 'Knowledge Bases';
+//$this->title = 'Knowledge Bases';
 ?>
 
 <div class="top_panel clearfix">

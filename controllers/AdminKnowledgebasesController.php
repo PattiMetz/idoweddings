@@ -15,6 +15,14 @@ class AdminKnowledgebasesController extends Controller {
 
 	public $layout = 'admin';
 
+	public function beforeAction($action) {
+
+		$this->view->params['section_title'] = 'Knowledge Bases';
+
+		return parent::beforeAction($action);
+
+	}
+
 	public function behaviors() {
 
 		return [
@@ -36,7 +44,9 @@ class AdminKnowledgebasesController extends Controller {
 	}
 
 	public function actionIndex() {
-//sleep(3);
+
+		$this->view->title = 'Overview';
+
 		$dataProvider = new ActiveDataProvider([
 			'query' => Knowledgebase::find(),
 			'sort' => [
@@ -89,7 +99,6 @@ class AdminKnowledgebasesController extends Controller {
 
 			}
 
-//			$pjax_reload = '#knowledgebases';
 			$pjax_reload = '#main';
 
 			Yii::$app->response->format = Response::FORMAT_JSON;
@@ -151,6 +160,8 @@ class AdminKnowledgebasesController extends Controller {
 	}
 
 	function actionEntries() {
+
+		$this->view->title = 'Entries';
 
 		$dataProvider = new ActiveDataProvider([
 			'query' => KnowledgebaseEntry::find(),

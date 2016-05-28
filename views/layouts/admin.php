@@ -136,8 +136,8 @@ Modal::end();
 							</nav>
 						</div>
 						<div class="name_of_base col-md-3 col-sm-3 col-xs-6">
-							<p>Knowledge Base</p>
-							<p class="basename">Overview</p>
+							<p id="section_title"><?php echo Html::encode(@$this->params['section_title']); ?></p>
+							<p id="title" class="basename"><?php echo Html::encode($this->title); ?></p>
 						</div>
 						<div class="col-md-1"></div>
 						<div class="col-md-2 col-sm-3 col-xs-6">
@@ -156,6 +156,18 @@ Modal::end();
 					<?php Pjax::begin(['id' => 'main']) ?>
 
 						<?php echo $content; ?>
+
+<?php
+
+if (Yii::$app->request->isAjax) {
+
+	$js = 'jQuery("#title").html("' . Html::encode($this->title) . '");';
+
+	$this->registerJS($js);
+
+}
+
+?>
 
 					<?php Pjax::end() ?>
 					<!--/div-->
