@@ -4,7 +4,27 @@ $(function() {
 
 	var ajaxTimeoutMessage = 'The request is aborted due to timeout';
 
-	$('body').on('click', '.modal-ajax', function() {
+	$('body').on('click', '.modal-ajax', function(e) {
+
+		e.preventDefault();
+
+		var target = $(e.target);
+
+		var url;
+
+		if (target.is('a')) {
+
+			url = $(this).attr('href');
+
+		} else if (target.is('button')) {
+
+			url = $(this).attr('value');
+
+		} else {
+
+			return;
+
+		}
 
 		$('#modal .ajax-content').hide();
 
@@ -17,7 +37,7 @@ $(function() {
 		$('#modal').modal('show');
 
 		$.ajax({
-			url: $(this).attr('value'),
+			url: url,
 			timeout: ajaxTimeout,
 			complete: function () {
 
