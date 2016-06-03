@@ -167,6 +167,12 @@ if (Yii::$app->request->isAjax) {
 
 }
 
+if (isset($this->params['js'])) {
+
+	$this->registerJS($this->params['js']);
+
+}
+
 ?>
 
 					<?php Pjax::end() ?>
