@@ -69,6 +69,7 @@ echo Alert::widget([
 <?php
 	echo GridView::widget([
 		'dataProvider' => $dataProvider,
+		'layout' => "{items}\n{summary}\n{pager}",
 		'tableOptions' => [
 			'class' => 'table table-bordered doc_table'
 		],

@@ -135,9 +135,9 @@ Modal::end();
 								<a class="mob_btn clicked"></a>
 							</nav>
 						</div>
-						<div class="name_of_base col-md-3 col-sm-3 col-xs-6">
+						<div class="main_title col-md-3 col-sm-3 col-xs-6">
 							<p id="section_title"><?php echo Html::encode(@$this->params['section_title']); ?></p>
-							<p id="title" class="basename"><?php echo Html::encode($this->title); ?></p>
+							<p id="title"><?php echo Html::encode($this->title); ?></p>
 						</div>
 						<div class="col-md-1"></div>
 						<div class="col-md-2 col-sm-3 col-xs-6">
