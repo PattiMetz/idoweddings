@@ -4,14 +4,27 @@ use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use yii\web\View;
-
-$this->title = 'Entries';
+use yii\bootstrap\Alert;
 ?>
 
+<?php
+
+echo Alert::widget([
+	'options' => [
+		'class' => 'alert-danger',
+		'style' => ($alert == '') ? 'display: none' : ''
+	],
+	'body' => $alert,
+	'closeButton' => false
+]);
+
+?>
+
+<?php if ($kb_id): ?>
 <div class="sett_panel form-inline clearfix">
 	<div class="choose_base input-group">
 		<span class="input-group-addon"></span>	
-		<div class="input-group-btn">
+		<!--div class="input-group-btn">
 			<button type="button" class="btn btn-default sel_btn">Admin Knowledgebase</button>
 			<button aria-expanded="false" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 				<span class="caret"></span>
@@ -24,10 +37,12 @@ $this->title = 'Entries';
 				<li><a href="#block_l4" name="Sayingido">Sayingido</a></li>
 				<li><a href="#block_l5" name="Test">Test</a></li>
 			</ul>
-		</div>
+		</div-->
+		<?php echo Html::dropDownList('kb_id', $kb_id, $knowledgebases, ['id' => 'kb_id']); ?>
 	</div>
 	<div class="choose_base_btn_box">
-		<a href="#" class="btn btn-primary" data-toggle="modal" data-target="#myModal_2"><i class="glyphicon glyphicon-pencil"></i></a>
+		<!--a href="#" class="btn btn-primary" data-toggle="modal" data-target="#myModal_2"><i class="glyphicon glyphicon-pencil"></i></a-->
+		<?php echo Html::button('<i class="glyphicon glyphicon-pencil"></i>', ['value' => Url::to(['admin-knowledgebases/update', 'id' => $kb_id]), 'class' => 'btn btn-primary modal-ajax']); ?>
 		<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
 	</div>
 </div>
@@ -47,17 +62,59 @@ $this->title = 'Entries';
 		</form>
 	</div>
 </div>
+<?php endif; ?>
 
+<?php if ($dataProvider !== false): ?>
 <div class="table-responsive">
 <?php
 	echo GridView::widget([
 		'dataProvider' => $dataProvider,
 		'tableOptions' => [
-            'class' => 'table table-bordered doc_table'
-        ],
+			'class' => 'table table-bordered doc_table'
+		],
 		'columns' => [
 			'order',
-			'title',
+			[
+				'attribute' => 'title',
+				'format' => 'raw',
+				'value' => function ($model) {
+					if ($model->is_category) {
+						return Html::a(
+							$model->title,
+							Url::to([
+								'admin-knowledgebases/entries',
+								'kb_id' => $model->kb_id,
+								'category_id' => $model->id
+							]),
+							[
+								'class' => 'item_doc category'
+							]
+						);
+					} elseif ($model->status == 'draft') {
+						return Html::a(
+							$model->title . ' (draft)',
+							Url::to([
+								'admin-knowledgebases/articles-update',
+								'id' => $model->id
+							]),
+							[
+								'class' => 'item_doc draft modal-ajax'
+							]
+						);
+					} else {
+						return Html::a(
+							$model->title,
+							Url::to([
+								'admin-knowledgebases/articles-update',
+								'id' => $model->id
+							]),
+							[
+								'class' => 'item_doc article modal-ajax'
+							]
+						);
+					}
+				}
+			],
 			[  
 				'class' => 'yii\grid\ActionColumn',
 				'header' => 'Actions',
@@ -88,7 +145,7 @@ $this->title = 'Entries';
 						return Html::button('<i class="glyphicon glyphicon-mykey"></i>', [
 							'value' => $url,
 							'class' => 'btn btn-danger modal-ajax',
-							'title' => 'Permissoins',
+							'title' => 'Permissins',
 						]);
 					},
 					'delete' => function($url, $model) {
@@ -103,8 +160,9 @@ $this->title = 'Entries';
 	]);
 ?>
 </div>
+<?php endif; ?>
 
-<div class="table-responsive">
+<!--div class="table-responsive">
 	<table class="table table-bordered doc_table">
 		<thead>
 			<tr>
@@ -215,5 +273,4 @@ $this->title = 'Entries';
 		<li class="active"><a href="#">1</a></li>
 		<li><a href="#">»</a></li>
 	</ul>
-</div>
-									
+</div-->

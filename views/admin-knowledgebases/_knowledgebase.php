@@ -7,12 +7,11 @@ use yii\helpers\BaseHtml;
 	<div class="knbase_top">
 		<?php
 			echo Html::button('&times;', [
-						'value' => Url::to(['admin-knowledgebases/delete', 'id' => $model->id]),
-						'class' => 'close modal-ajax'
+				'value' => Url::to(['admin-knowledgebases/delete', 'id' => $model->id]),
+				'class' => 'close modal-ajax'
 			]);
 		?>
-		<!--a href="#" id="l1" name="<?php echo Html::encode($model->name); ?>"><?php echo Html::encode($model->name); ?></a-->
-		<?php echo Html::a($model->name, Url::to(['admin-knowledgebases/entries', 'id' => $model->id])); ?>
+		<?php echo Html::a($model->name, Url::to(['admin-knowledgebases/entries', 'kb_id' => $model->id])); ?>
 	</div>
 	<div class="knbase_cont clearfix">
 		<div class="col-sm-8 col-xs-8">

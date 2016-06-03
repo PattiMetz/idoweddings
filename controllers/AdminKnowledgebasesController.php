@@ -8,6 +8,8 @@ use yii\filters\AccessControl;
 use yii\data\ActiveDataProvider;
 use yii\bootstrap\ActiveForm;
 use yii\web\Response;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use app\models\Knowledgebase;
 use app\models\KnowledgebaseEntry;
 
@@ -33,7 +35,7 @@ class AdminKnowledgebasesController extends Controller {
 //				],
 				'rules' => [
 					[
-						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'articles-update', 'articles-delete'],
+						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'articles-update', 'articles-delete', 'test'],
 						'allow' => true,
 						'roles' => ['@'],
 					],
@@ -118,6 +120,63 @@ class AdminKnowledgebasesController extends Controller {
 
 	}
 
+	public function actionTest($id = 0) {
+
+		$alert = '';
+
+		$message = '';
+
+		if ($id) {
+
+			$model = Knowledgebase::find()->where(['id' => $id])->one();
+
+			if (!$model) {
+
+				$alert = 'Knowledge base not found.';
+
+			}
+
+		} else {
+
+			$model = new Knowledgebase;
+
+		}
+
+		if ($model->load(Yii::$app->request->post())) {
+
+			$errors = ActiveForm::validate($model);
+
+			if (!count($errors)) {
+
+				if (!$model->save()) {
+
+					$alert = 'Knowledge base not saved.';
+
+				} else {
+
+					$message = 'Knowledge base saved.';
+
+				}
+
+			}
+
+			Yii::$app->response->format = Response::FORMAT_JSON;
+
+			return compact(
+				'errors',
+				'alert',
+				'message'
+			);
+
+		}
+
+		return $this->render('test', [
+			'model' => $model,
+			'alert' => $alert
+		]);
+
+	}
+
 	function actionDelete($id) {
 
 		$alert = '';
@@ -140,7 +199,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			}
 
-			$pjax_reload = '#knowledgebases';
+			$pjax_reload = '#main';
 
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
@@ -159,45 +218,103 @@ class AdminKnowledgebasesController extends Controller {
 
 	}
 
-	function actionEntries() {
+	function actionEntries($kb_id, $category_id = 0) {
 
 		$this->view->title = 'Entries';
 
-		$dataProvider = new ActiveDataProvider([
-			'query' => KnowledgebaseEntry::find(),
-			'sort' => [
-				'defaultOrder' => ['order' => SORT_ASC],
-				'attributes' => [
-					'order' => [
-						'asc' => [
-							'is_category' => SORT_DESC,
-							'order' => SORT_ASC
+		$alert = '';
+
+		$dataProvider = false;
+
+		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
+
+		do {
+
+			if (!isset($knowledgebases[$kb_id])) {
+
+				$kb_id = 0;
+
+				$alert = 'Knowledge base not found.';
+
+				break;
+
+			}
+
+			if ($category_id) {
+
+				$model_category = KnowledgebaseEntry::find()->where([
+					'kb_id' => $kb_id,
+					'id' => $category_id,
+					'is_category' => 1
+				])->one();
+
+				if (!$model_category) {
+
+					$alert = 'Category not found.';
+
+					break;
+
+				}
+
+			}
+
+			$filter = ['kb_id' => $kb_id];
+
+			if ($category_id) {
+
+				$filter['parent_id'] = $category_id;
+
+			}
+
+			$dataProvider = new ActiveDataProvider([
+				'query' => KnowledgebaseEntry::find()->where($filter),
+				'sort' => [
+					'defaultOrder' => ['order' => SORT_ASC],
+					'attributes' => [
+						'order' => [
+							'asc' => [
+								'is_category' => SORT_DESC,
+								'order' => SORT_ASC
+							],
+							'desc' => [
+								'is_category' => SORT_DESC,
+								'order' => SORT_DESC
+							]
 						],
-						'desc' => [
-							'is_category' => SORT_DESC,
-							'order' => SORT_DESC
-						]
-					],
-					'title' => [
-						'asc' => [
-							'is_category' => SORT_DESC,
-							'title' => SORT_ASC
-						],
-						'desc' => [
-							'is_category' => SORT_DESC,
-							'title' => SORT_DESC
+						'title' => [
+							'asc' => [
+								'is_category' => SORT_DESC,
+								'title' => SORT_ASC
+							],
+							'desc' => [
+								'is_category' => SORT_DESC,
+								'title' => SORT_DESC
+							]
 						]
 					]
+				],
+				'pagination' => [
+					'defaultPageSize' => 3,
+					'pageSize' => 3
 				]
-			],
-			'pagination' => [
-				'defaultPageSize' => 3,
-				'pageSize' => 3
-			]
-		]);
+			]);
+
+			break;
+
+		} while(0);
+
+		$this->view->params['js'] = '
+			$("#kb_id").change(function() {
+				$.pjax({url: "' . Url::to(['admin-knowledgebases/entries']) . '?kb_id=" + $(this).val(), container: "#main"});
+			});
+		';
 
 		return $this->render('entries', [
-			'dataProvider' => $dataProvider
+			'alert' => $alert,
+			'dataProvider' => $dataProvider,
+			'kb_id' => $kb_id,
+			'category_id' => $category_id,
+			'knowledgebases' => $knowledgebases
 		]);
 
 	}
@@ -290,6 +407,68 @@ class AdminKnowledgebasesController extends Controller {
 		}
 
 		return $this->renderAjax('categories-delete', [
+			'model' => $model,
+			'alert' => $alert
+		]);
+
+	}
+
+	public function actionArticlesUpdate($id = 0) {
+
+		$this->view->title = ($id) ? 'Edit Article' : 'Add Article';
+
+		$alert = '';
+
+		if ($id) {
+
+			$model = KnowledgebaseEntry::find()->where(['id' => $id])->one();
+
+			if (!$model) {
+
+				$alert = 'Article not found.';
+
+			}
+
+		} else {
+
+			$model = new KnowledgebaseEntry;
+
+			$model->status = 'draft';
+
+		}
+
+		$model->statuses = [
+			'published' => 'Published',
+			'draft' => 'Draft'
+		];
+
+		if ($model->load(Yii::$app->request->post())) {
+
+			$errors = ActiveForm::validate($model);
+
+			if (!count($errors)) {
+
+				if (!$model->save()) {
+
+					$alert = 'Article not saved.';
+
+				}
+
+			}
+
+			$pjax_reload = '#main';
+
+			Yii::$app->response->format = Response::FORMAT_JSON;
+
+			return compact(
+				'errors',
+				'alert',
+				'pjax_reload'
+			);
+
+		}
+
+		return $this->renderAjax('articles-update', [
 			'model' => $model,
 			'alert' => $alert
 		]);

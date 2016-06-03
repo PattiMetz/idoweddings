@@ -8,6 +8,8 @@ use yii\base\Model;
 
 class KnowledgebaseEntry extends ActiveRecord {
 
+	public $statuses;
+
 	public static function tableName() {
 		return Yii::$app->db->tablePrefix . 'knowledgebases_entries';
 	}
@@ -19,7 +21,9 @@ class KnowledgebaseEntry extends ActiveRecord {
 	public function rules() {
 		return [
 			['title', 'required'],
-			['title', 'unique']
+			['title', 'unique'],
+			['status', 'required'],
+			['status', 'inStatuses']
 		];
 	}
 
@@ -28,6 +32,12 @@ class KnowledgebaseEntry extends ActiveRecord {
 			'order' => 'Order',
 			'title' => 'Title'
 		];
+	}
+
+	public function inStatuses() {
+		if (!isset($this->statuses[$this->status])) {
+			$this->addError('status', 'Wrong status');
+		}
 	}
 
 }
