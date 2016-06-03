@@ -11,7 +11,7 @@ class KnowledgebaseEntry extends ActiveRecord {
 	public $statuses;
 
 	public static function tableName() {
-		return Yii::$app->db->tablePrefix . 'knowledgebases_entries';
+		return Yii::$app->db->tablePrefix . 'knowledgebase_entry';
 	}
 
 	public function formName() {

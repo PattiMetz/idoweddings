@@ -20,7 +20,7 @@ echo Alert::widget([
 
 ?>
 
-<?php if ($kb_id): ?>
+<?php if ($knowledgebase_id): ?>
 <div class="sett_panel form-inline clearfix">
 	<div class="choose_base input-group">
 		<span class="input-group-addon"></span>	
@@ -38,11 +38,11 @@ echo Alert::widget([
 				<li><a href="#block_l5" name="Test">Test</a></li>
 			</ul>
 		</div-->
-		<?php echo Html::dropDownList('kb_id', $kb_id, $knowledgebases, ['id' => 'kb_id']); ?>
+		<?php echo Html::dropDownList('knowledgebase_id', $knowledgebase_id, $knowledgebases, ['id' => 'knowledgebase_id']); ?>
 	</div>
 	<div class="choose_base_btn_box">
 		<!--a href="#" class="btn btn-primary" data-toggle="modal" data-target="#myModal_2"><i class="glyphicon glyphicon-pencil"></i></a-->
-		<?php echo Html::button('<i class="glyphicon glyphicon-pencil"></i>', ['value' => Url::to(['admin-knowledgebases/update', 'id' => $kb_id]), 'class' => 'btn btn-primary modal-ajax']); ?>
+		<?php echo Html::button('<i class="glyphicon glyphicon-pencil"></i>', ['value' => Url::to(['admin-knowledgebases/update', 'id' => $knowledgebase_id]), 'class' => 'btn btn-primary modal-ajax']); ?>
 		<a href="#" class="btn btn-danger" title="Permissions"><i class="glyphicon glyphicon-mykey"></i></a>
 	</div>
 </div>
@@ -84,7 +84,7 @@ echo Alert::widget([
 							$model->title,
 							Url::to([
 								'admin-knowledgebases/entries',
-								'kb_id' => $model->kb_id,
+								'knowledgebase_id' => $model->knowledgebase_id,
 								'category_id' => $model->id
 							]),
 							[

@@ -9,7 +9,7 @@ use yii\base\Model;
 class Knowledgebase extends ActiveRecord {
 
 	public static function tableName() {
-		return Yii::$app->db->tablePrefix . 'knowledgebases';
+		return Yii::$app->db->tablePrefix . 'knowledgebase';
 	}
 
 	public function formName() {

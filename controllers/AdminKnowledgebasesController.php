@@ -218,7 +218,7 @@ class AdminKnowledgebasesController extends Controller {
 
 	}
 
-	function actionEntries($kb_id, $category_id = 0) {
+	function actionEntries($knowledgebase_id, $category_id = 0) {
 
 		$this->view->title = 'Entries';
 
@@ -230,9 +230,9 @@ class AdminKnowledgebasesController extends Controller {
 
 		do {
 
-			if (!isset($knowledgebases[$kb_id])) {
+			if (!isset($knowledgebases[$knowledgebase_id])) {
 
-				$kb_id = 0;
+				$knowledgebase_id = 0;
 
 				$alert = 'Knowledge base not found.';
 
@@ -243,7 +243,7 @@ class AdminKnowledgebasesController extends Controller {
 			if ($category_id) {
 
 				$model_category = KnowledgebaseEntry::find()->where([
-					'kb_id' => $kb_id,
+					'knowledgebase_id' => $knowledgebase_id,
 					'id' => $category_id,
 					'is_category' => 1
 				])->one();
@@ -258,7 +258,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			}
 
-			$filter = ['kb_id' => $kb_id];
+			$filter = ['knowledgebase_id' => $knowledgebase_id];
 
 			if ($category_id) {
 
@@ -304,15 +304,15 @@ class AdminKnowledgebasesController extends Controller {
 		} while(0);
 
 		$this->view->params['js'] = '
-			$("#kb_id").change(function() {
-				$.pjax({url: "' . Url::to(['admin-knowledgebases/entries']) . '?kb_id=" + $(this).val(), container: "#main"});
+			$("#knowledgebase_id").change(function() {
+				$.pjax({url: "' . Url::to(['admin-knowledgebases/entries']) . '?knowledgebase_id=" + $(this).val(), container: "#main"});
 			});
 		';
 
 		return $this->render('entries', [
 			'alert' => $alert,
 			'dataProvider' => $dataProvider,
-			'kb_id' => $kb_id,
+			'knowledgebase_id' => $knowledgebase_id,
 			'category_id' => $category_id,
 			'knowledgebases' => $knowledgebases
 		]);
