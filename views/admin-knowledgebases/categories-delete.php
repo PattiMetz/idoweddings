@@ -30,7 +30,7 @@ echo Alert::widget([
 
 ?>
 
-Are you sure you want to delete this category?
+<p>Are you sure you want to delete this category?</p>
 
 <div class="pseudo_foo">
 	<?php echo Html::submitButton('Delete', ['class' => 'btn btn-primary']) ?>

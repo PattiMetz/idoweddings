@@ -15,6 +15,10 @@ use yii\helpers\Url;
 
 		echo GridView::widget([
 			'dataProvider' => $dataProvider,
+			'layout' => "{items}\n{summary}\n{pager}",
+			'tableOptions' => [
+				'class' => 'table table-bordered table-condensed'
+			],
 			'columns' => [
 		        [
 		            'attribute'=>'name',

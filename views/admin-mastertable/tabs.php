@@ -5,7 +5,7 @@
 <?php
 	$exampleName = isset($exampleName)?$exampleName:'';
 ?>
-<ul class="tabs">
+<ul class="nav nav-tabs">
 	<li><?= Html::a("Regions", ['region-list'], ['class' => (($exampleName == 'region')?'active':'')]) ?></li>
 	<li><?= Html::a("Destinations", ['destination-list'], ['class' => (($exampleName == 'destination')?'active':'')]) ?></li>
 	<li><?= Html::a("Locations", ['location-list'], ['class' => (($exampleName == 'location')?'active':'')]) ?></li>
@@ -26,7 +26,7 @@
 		<form name="search" class="input-group" method="get" action="">
 			<input type="text" name="search" value="<?php echo (isset($filterModel->mixedSearch)?$filterModel->mixedSearch:(isset($filterModel->name)?$filterModel->name:''));?>" class="form-control" placeholder="Search" autocomplete="off" />
 			<span class="input-group-btn">
-				<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+				<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
 			</span>
 		</form>
 	</div>

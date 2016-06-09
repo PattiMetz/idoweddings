@@ -34,7 +34,7 @@ use yii\widgets\ActiveForm;
 		<form name="search" class="input-group" method="get" action="">
 			<input type="text" name="search" class="form-control" placeholder="Search" autocomplete="off" />
 			<span class="input-group-btn">
-				<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+				<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
 			</span>
 		</form>
 	</div>

@@ -19,6 +19,10 @@ use yii\widgets\ActiveForm;
 		$delete_url = Yii::$app->controller->id."/".$exampleName."-delete";
 		echo GridView::widget([
 			'dataProvider' => $dataProvider,
+			'layout' => "{items}\n{summary}\n{pager}",
+			'tableOptions' => [
+				'class' => 'table table-bordered table-condensed'
+			],
 			'columns' => [
 		        
 		        [

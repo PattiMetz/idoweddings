@@ -112,7 +112,7 @@ Modal::end();
 			<li class="item_18"><a href="#">Settings</a></li>
 			<li class="item_19"><a href="#">User Manager</a></li>
 			<li class="item_20"><a href="#">Companies</a></li>
-			<li class="item_21" <?php echo (Yii::$app->controller->id == 'admin-kmastertable') ? 'active' : ''; ?>><a href="<?php echo Url::to(['admin-mastertable	/index']); ?>">Mastertable</a></li>
+			<li class="item_21 <?php echo (Yii::$app->controller->id == 'admin-mastertable') ? 'active' : ''; ?>"><a href="<?php echo Url::to(['admin-mastertable/index']); ?>">Mastertable</a></li>
 		</ul>
 	</div>
 	<header>
