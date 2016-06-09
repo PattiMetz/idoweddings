@@ -220,15 +220,31 @@ class AdminKnowledgebasesController extends Controller {
 
 	function actionEntries($knowledgebase_id, $category_id = 0) {
 
+		// Default page title
 		$this->view->title = 'Entries';
 
+		// Alert message
 		$alert = '';
 
+		// Data provider
 		$dataProvider = false;
 
+		// Current path
+		$current_path = [];
+
+		// Categories cache
+		$categories = array();
+
+		// Get all knowledgebases for SELECT options
 		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
 
 		do {
+
+			// Sanitize knowledgebase ID
+			$knowledgebase_id = intval($knowledgebase_id);
+
+
+			// Knowledgebase not found
 
 			if (!isset($knowledgebases[$knowledgebase_id])) {
 
@@ -240,15 +256,29 @@ class AdminKnowledgebasesController extends Controller {
 
 			}
 
+
+			// Set page title
+			$this->view->title = $knowledgebases[$knowledgebase_id] . Yii::$app->request->get('page');
+
+			// Sanitize category ID
+			$category_id = intval($category_id);
+
+
 			if ($category_id) {
 
-				$model_category = KnowledgebaseEntry::find()->where([
+
+				// Get current category
+
+				$current_category = KnowledgebaseEntry::find()->where([
 					'knowledgebase_id' => $knowledgebase_id,
 					'id' => $category_id,
 					'is_category' => 1
-				])->one();
+				])->asArray()->one();
 
-				if (!$model_category) {
+
+				// Category not found
+
+				if (!$current_category) {
 
 					$alert = 'Category not found.';
 
@@ -256,18 +286,44 @@ class AdminKnowledgebasesController extends Controller {
 
 				}
 
+
+				// Cache category data
+				$categories[$category_id] = $current_category;
+
+
+				// Get current path
+				$current_path = array_filter(explode('|', $current_category['tree_path']));
+
+
+				// Get parent categories
+
+				$parent_categories = KnowledgebaseEntry::find()->where([
+					'id' => $current_path,
+					'is_category' => 1
+				])->asArray()->all();
+
+
+				// Cache categories data
+
+				foreach ($parent_categories as $parent_category) {
+
+					$categories[$parent_category['id']] = $parent_category;
+
+				}
+
+
+				// Append category_id itself to the current path
+				$current_path[] = $category_id;
+
 			}
 
-			$filter = ['knowledgebase_id' => $knowledgebase_id];
-
-			if ($category_id) {
-
-				$filter['parent_id'] = $category_id;
-
-			}
+			$filter = [
+				'knowledgebase_id' => $knowledgebase_id,
+				'category_id' => $category_id
+			];
 
 			$dataProvider = new ActiveDataProvider([
-				'query' => KnowledgebaseEntry::find()->where($filter),
+				'query' => KnowledgebaseEntry::find()->where($filter), // entries
 				'sort' => [
 					'defaultOrder' => ['order' => SORT_ASC],
 					'attributes' => [
@@ -303,8 +359,14 @@ class AdminKnowledgebasesController extends Controller {
 
 		} while(0);
 
+//		$this->view->params['js'] = '
+//			$("#knowledgebase_id").change(function() {
+//				$.pjax({url: "' . Url::to(['admin-knowledgebases/entries']) . '?knowledgebase_id=" + $(this).val(), container: "#main"});
+//			});
+//		';
+
 		$this->view->params['js'] = '
-			$("#knowledgebase_id").change(function() {
+			$(document).on("change", "#_knowledgebase_id", function() {
 				$.pjax({url: "' . Url::to(['admin-knowledgebases/entries']) . '?knowledgebase_id=" + $(this).val(), container: "#main"});
 			});
 		';
@@ -312,9 +374,11 @@ class AdminKnowledgebasesController extends Controller {
 		return $this->render('entries', [
 			'alert' => $alert,
 			'dataProvider' => $dataProvider,
-			'knowledgebase_id' => $knowledgebase_id,
-			'category_id' => $category_id,
-			'knowledgebases' => $knowledgebases
+			'current_knowledgebase_id' => $knowledgebase_id,
+			'current_category_id' => $category_id,
+			'knowledgebases' => $knowledgebases, // SELECT options
+			'current_path' => $current_path,
+			'categories' => $categories // cache
 		]);
 
 	}
@@ -433,6 +497,26 @@ class AdminKnowledgebasesController extends Controller {
 
 			$model = new KnowledgebaseEntry;
 
+			$knowledgebase_id = Yii::$app->request->get('knowledgebase_id');
+
+			if (isset($knowledgebase_id)) {
+
+				$model->knowledgebase_id = $knowledgebase_id;
+
+			}
+
+			$category_id = Yii::$app->request->get('category_id');
+
+			if (isset($category_id)) {
+
+				$model->category_id = intval($category_id);
+
+			} else {
+
+				$model->category_id = 0;
+
+			}
+
 			$model->status = 'draft';
 
 		}
@@ -444,17 +528,9 @@ class AdminKnowledgebasesController extends Controller {
 
 		if ($model->load(Yii::$app->request->post())) {
 
-			$errors = ActiveForm::validate($model);
+			$model->save();
 
-			if (!count($errors)) {
-
-				if (!$model->save()) {
-
-					$alert = 'Article not saved.';
-
-				}
-
-			}
+			$errors = $model->getErrors();
 
 			$pjax_reload = '#main';
 

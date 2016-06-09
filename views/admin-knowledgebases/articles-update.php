@@ -39,6 +39,10 @@ echo Alert::widget([
 
 ?>
 
+<?php echo $form->field($model, 'knowledgebase_id')->textInput(); ?>
+
+<?php echo $form->field($model, 'category_id')->textInput(); ?>
+
 <?php echo $form->field($model, 'title')->textInput(); ?>
 
 <?php echo $form->field($model, 'status')->radioList($model->statuses, ['unselect' => NULL])->label(false); ?>
