@@ -137,7 +137,7 @@ Modal::end();
 						</div>
 						<div class="main_title col-md-3 col-sm-3 col-xs-6">
 							<p id="section_title"><?php echo Html::encode(@$this->params['section_title']); ?></p>
-							<p id="title"><?php echo Html::encode($this->title); ?></p>
+							<p id="subtitle"><?php echo Html::encode($this->title); ?></p>
 						</div>
 						<div class="col-md-1"></div>
 						<div class="col-md-2 col-sm-3 col-xs-6">
@@ -161,7 +161,7 @@ Modal::end();
 
 if (Yii::$app->request->isAjax) {
 
-	$js = 'jQuery("#title").html("' . Html::encode($this->title) . '");';
+	$js = 'jQuery("#subtitle").html("' . Html::encode($this->title) . '");';
 
 	$this->registerJS($js);
 
