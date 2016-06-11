@@ -61,7 +61,7 @@ use yii\bootstrap\Alert;
 
 	<div class="top_panel clearfix">
 		<div class="col-md-9 col-sm-8 col-xs-7">
-			<?php echo Html::button('Add Category', ['value' => Url::to(['admin-knowledgebases/categories-update']), 'class' => 'btn btn-danger modal-ajax']); ?>
+			<?php echo Html::button('Add Category', ['value' => Url::to(['admin-knowledgebases/categories-update', 'knowledgebase_id' => $current_knowledgebase_id, 'category_id' => $current_category_id]), 'class' => 'btn btn-danger modal-ajax']); ?>
 			<?php echo Html::button('Add Article', ['value' => Url::to(['admin-knowledgebases/articles-update', 'knowledgebase_id' => $current_knowledgebase_id, 'category_id' => $current_category_id]), 'class' => 'btn btn-danger modal-ajax']); ?>
 		</div>
 		<div class="col-md-3 col-sm-4 col-xs-5">
@@ -122,6 +122,29 @@ use yii\bootstrap\Alert;
 									'class' => 'item_doc article modal-ajax'
 								]
 							);
+						}
+					}
+				],
+				[
+#					attribute => 'position',
+					'label' => 'Contains',
+					'format' => 'raw',
+					'value' => function ($model) {
+						if ($model->is_category) {
+							$output = <<<OUTPUT
+								<div class="contain">
+									<div class="item_doc subcategory" title="Subcategories">{$model->count_categories}</div>
+								</div>
+								<div class="contain">
+									<div class="item_doc article" title="Articles">{$model->count_articles_published}</div>
+								</div>
+								<div class="contain">
+									<div class="item_doc draft" title="Drafts">{$model->count_articles_draft}</div>
+								</div>
+OUTPUT;
+							return $output;
+						} else {
+							return '&nbsp';
 						}
 					}
 				],
