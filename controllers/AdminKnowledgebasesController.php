@@ -35,7 +35,7 @@ class AdminKnowledgebasesController extends Controller {
 //				],
 				'rules' => [
 					[
-						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'articles-update', 'articles-delete', 'test'],
+						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'articles-update', 'articles-delete'],
 						'allow' => true,
 						'roles' => ['@'],
 					],
@@ -401,6 +401,30 @@ class AdminKnowledgebasesController extends Controller {
 
 			$model = new KnowledgebaseEntry;
 
+			$knowledgebase_id = Yii::$app->request->get('knowledgebase_id');
+
+			if (isset($knowledgebase_id)) {
+
+				$model->knowledgebase_id = $knowledgebase_id;
+
+			}
+
+			$category_id = Yii::$app->request->get('category_id');
+
+			if (isset($category_id)) {
+
+				$model->category_id = intval($category_id);
+
+			} else {
+
+				$model->category_id = 0;
+
+			}
+
+			$model->is_category = 1;
+
+			$model->status = 'published';
+
 		}
 
 		if ($model->load(Yii::$app->request->post())) {
@@ -545,6 +569,47 @@ class AdminKnowledgebasesController extends Controller {
 		}
 
 		return $this->renderAjax('articles-update', [
+			'model' => $model,
+			'alert' => $alert
+		]);
+
+	}
+
+	function actionArticlesDelete($id) {
+
+		$alert = '';
+
+		$model = KnowledgebaseEntry::findOne($id);
+
+		if (!$model) {
+
+			$alert = 'Article not found.';
+
+		}
+
+		if (Yii::$app->request->isPost) {
+
+			$errors = [];
+
+			if (!$model->delete()) {
+
+				$alert = 'Article not deleted.';
+
+			}
+
+			$pjax_reload = '#main';
+
+			Yii::$app->response->format = Response::FORMAT_JSON;
+
+			return compact(
+				'errors',
+				'alert',
+				'pjax_reload'
+			);
+
+		}
+
+		return $this->renderAjax('articles-delete', [
 			'model' => $model,
 			'alert' => $alert
 		]);

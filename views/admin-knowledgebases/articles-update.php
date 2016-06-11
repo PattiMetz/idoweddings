@@ -45,6 +45,8 @@ echo Alert::widget([
 
 <?php echo $form->field($model, 'title')->textInput(); ?>
 
+<?php echo $form->field($model, 'content')->textArea(['rows' => '6']); ?>
+
 <?php echo $form->field($model, 'status')->radioList($model->statuses, ['unselect' => NULL])->label(false); ?>
 
 <div class="pseudo_foo">

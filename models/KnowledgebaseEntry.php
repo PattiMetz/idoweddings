@@ -30,6 +30,7 @@ class KnowledgebaseEntry extends ActiveRecord {
 			['category_id', 'categoryExists'],
 			['title', 'required'],
 //			['title', 'unique'],
+			['content', 'safe'],
 			['status', 'required'],
 			['status', 'inStatuses']
 		];
@@ -43,6 +44,7 @@ class KnowledgebaseEntry extends ActiveRecord {
 	}
 
 	public function inStatuses() {
+		if ($this->is_category) return;
 		if (!isset($this->statuses[$this->status])) {
 			$this->addError('status', 'Wrong status');
 		}
