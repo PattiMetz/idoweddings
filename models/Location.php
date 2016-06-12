@@ -35,7 +35,7 @@ class Location extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'destination_id',  'airport'], 'required'],
-            [['destination_id'], 'integer'],
+            [['destination_id','active'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['airport'], 'string', 'max' => 20],
             [['destination_id'], 'exist', 'skipOnError' => true, 'targetClass' => Destination::className(), 'targetAttribute' => ['destination_id' => 'id']],

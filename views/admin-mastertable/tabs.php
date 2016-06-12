@@ -13,8 +13,10 @@
 	<li><?= Html::a("Currencies", ['currency-list'], ['class' => (($exampleName == 'currency')?'active':'')]) ?></li>
 	<li><?= Html::a("Languages", ['language-list'], ['class' => (($exampleName == 'language')?'active':'')]) ?></li>
 	<li><?= Html::a("Venue types", ['venuetype-list'], ['class' => (($exampleName == 'venuetype')?'active':'')]) ?></li>
+	<li><?= Html::a("Vendor Types", ['vendortype-list'], ['class' => (($exampleName == 'vendortype')?'active':'')]) ?></li>
 	<li><?= Html::a("Wedding Vibe", ['vibe-list'], ['class' => (($exampleName == 'vibe')?'active':'')]) ?></li>
 	<li><?= Html::a("Venue Provides", ['venueservice-list'], ['class' => (($exampleName == 'venueservice')?'active':'')]) ?></li>
+
 </ul>
 <div class="top_panel clearfix">
 	<div class="col-md-9 col-sm-8 col-xs-7">

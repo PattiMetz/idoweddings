@@ -99,7 +99,7 @@ class Destination extends \yii\db\ActiveRecord
             'name' => 'Name',
             'region_id' => 'Region',
             'currency_id' => 'Main currency in this destination',
-            'active' => 'Show destination at web-site',
+            'active' => 'Active',
         ];
     }
 

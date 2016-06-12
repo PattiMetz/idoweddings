@@ -48,7 +48,11 @@ echo Alert::widget([
 <?php echo $form->field($model, 'region_id')->dropDownList($region->getList(),['prompt'=>'Select a region']);?>
 <?php echo $form->field($model, 'name')->textInput(); ?>
 <?php echo $form->field($model, 'currency_id')->dropDownList($currency->getList(),['prompt'=>'Select a currency']);?>
-<?php echo $form->field($model, 'active')->checkbox(); ?>
+<?php echo $form->field($model, 'active',  [
+        'horizontalCssClasses' => [
+            'offset' => 'col-sm-offset-4',
+        ]
+    ])->checkbox(); ?>
 <div class="pseudo_foo">
 	<?php echo Html::submitButton('Save', ['class' => 'btn btn-primary']) ?>
 	<?php echo Html::Button('Cancel', ['class' => 'btn btn-default btn-cancel']) ?>
