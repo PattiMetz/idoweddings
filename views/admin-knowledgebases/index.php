@@ -46,6 +46,7 @@ use yii\widgets\ActiveForm;
 	<?php
 		echo ListView::widget([
 			'dataProvider' => $dataProvider,
+			'layout' => "{items}\n{summary}\n{pager}",
 			'itemView' => '_knowledgebase',
 		]);
 	?>
