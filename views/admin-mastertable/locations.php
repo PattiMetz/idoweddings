@@ -8,7 +8,8 @@ use yii\widgets\Pjax;
 use yii\widgets\ActiveForm;
 
 ?>
-
+<?php include('lang.php');?>
+<?php $this->title = $languages[$exampleName]['multiple'];?>
 <?php echo $this->render('tabs', ['exampleName' => $exampleName, 'filterModel' => $filterModel]);?>
 
 <div class="clearfix">

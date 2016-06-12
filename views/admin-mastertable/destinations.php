@@ -6,8 +6,9 @@ use yii\bootstrap\Modal;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
-$this->title = 'Destinations';
 ?>
+<?php include('lang.php');?>
+<?php $this->title = $languages[$exampleName]['multiple'];?>
 <?php echo $this->render('tabs', ['exampleName' => $exampleName, 'filterModel' => $filterModel]);?>
 
 

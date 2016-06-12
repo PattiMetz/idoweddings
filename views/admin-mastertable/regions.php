@@ -3,7 +3,8 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
 ?>
-
+<?php include('lang.php');?>
+<?php $this->title = $languages[$exampleName]['multiple'];?>
 <?php echo $this->render('tabs', ['exampleName' => $exampleName, 'filterModel' => $filterModel]);?>
 
 <div class="clearfix">

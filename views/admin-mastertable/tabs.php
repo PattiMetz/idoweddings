@@ -1,7 +1,9 @@
 <?php
 	use yii\helpers\Html;
 	use yii\helpers\Url;
+	use app\languages\mastertable;
 ?>
+<?php include('lang.php');?>
 <?php
 	$exampleName = isset($exampleName)?$exampleName:'';
 ?>
@@ -20,7 +22,7 @@
 </ul>
 <div class="top_panel clearfix">
 	<div class="col-md-9 col-sm-8 col-xs-7">
-		<?php echo Html::button('Add '.ucfirst($exampleName), ['value' => Url::to([Yii::$app->controller->id.'/'.$exampleName.'-update']), 'class' => 'btn btn-danger modal-ajax']); ?>
+		<?php echo Html::button('Add '.$languages[$exampleName]['single'], ['value' => Url::to([Yii::$app->controller->id.'/'.$exampleName.'-update']), 'class' => 'btn btn-danger modal-ajax']); ?>
 
 		
 	</div>
