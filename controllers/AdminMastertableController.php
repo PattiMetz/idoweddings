@@ -16,6 +16,7 @@ use app\models\search\RegionSearch;
 use app\models\search\CurrencySearch;
 use app\models\search\VibeSearch;
 use app\models\search\VenueTypeSearch;
+use app\models\search\VendorTypeSearch;
 use app\models\search\VenueServiceSearch;
 use app\models\search\LanguageSearch;
 use app\actions\ListAction;
@@ -203,7 +204,23 @@ class AdminMastertableController extends Controller {
             	'class'       => DeleteAction::className(),
             	'modelClass'  => 'app\models\VenueService',
             	'exampleName' => 'venueservice'
-            ]
+            ],
+            'vendortype-list' => [
+                'class' => ListAction::className(),
+                'filterModel' => new VendortypeSearch(),
+                'exampleName' => 'vendortype',
+                'view'=>'@app/views/admin-mastertable/baselist'
+            ],
+            'vendortype-update' => [
+                'class'       => UpdateAction::className(),
+                'modelClass'  => 'app\models\Vendortype',
+                'exampleName' => 'vendortype',
+            ],
+            'vendortype-delete' => [
+                'class'       => DeleteAction::className(),
+                'modelClass'  => 'app\models\VendorType',
+                'exampleName' => 'vendortype'
+            ],
             
             
         ];
