@@ -502,6 +502,7 @@ class AdminKnowledgebasesController extends Controller {
 	}
 
 	public function actionArticlesUpdate($id = 0) {
+sleep(2);
 		$this->view->title = ($id) ? 'Edit Article' : 'Add Article';
 
 		$alert = '';
