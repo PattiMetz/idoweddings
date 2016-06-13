@@ -30,6 +30,8 @@ AdminAsset::register($this);
 <body>
 <?php $this->beginBody(); ?>
 
+<div id="preloader" style="display: none;">[IMG]</div>
+
 <?php
 
 Modal::begin([

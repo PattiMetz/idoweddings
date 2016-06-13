@@ -8,6 +8,8 @@ $(function() {
 
 		e.preventDefault();
 
+		$('#preloader').show();
+
 		var target = $(e.target);
 
 		var url;
@@ -32,16 +34,20 @@ $(function() {
 
 		$('#modal .confirm').hide();
 
-		$('#modal .loading').show();
+//		$('#modal .loading').show();
 
-		$('#modal').modal('show');
+//		$('#modal').modal('show');
 
 		$.ajax({
 			url: url,
 			timeout: ajaxTimeout,
 			complete: function () {
 
-				$('#modal .loading').hide();
+				$('#preloader').hide();
+
+				$('#modal').modal('show');
+
+//				$('#modal .loading').hide();
 
 			},
 			error: function(jqXHR) {
