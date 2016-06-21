@@ -56,8 +56,8 @@ class AdminKnowledgebasesController extends Controller {
 				'attributes' => ['name']
 			],
 			'pagination' => [
-				'defaultPageSize' => 2,
-				'pageSize' => 2
+				'defaultPageSize' => 6,
+				'pageSize' => 6
 			]
 		]);
 
@@ -502,7 +502,7 @@ class AdminKnowledgebasesController extends Controller {
 	}
 
 	public function actionArticlesUpdate($id = 0) {
-
+sleep(2);
 		$this->view->title = ($id) ? 'Edit Article' : 'Add Article';
 
 		$alert = '';
