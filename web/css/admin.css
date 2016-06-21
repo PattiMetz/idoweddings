@@ -251,7 +251,12 @@ table, th {
 	background: url(../images/key.png) no-repeat center center;
 	background-size: 100%;
 }
-
+.checkBox_block {
+	border:solid 1px;
+	height:140px;
+	overflow-y: scroll;
+	padding:0px 10px;
+}
 /********Left panel styles********/
 
 .left_panel {
@@ -1204,6 +1209,40 @@ a.desc:after {
 }
 .tabs li a.active {
 	font-weight:bold;
+}
+.invisible {
+	display:none;
+}
+.small-input {
+	width:60px;
+}
+.field-venuetax-commission_type {
+	width:100%;
+	float:left;
+}
+#venuetax-accommodation_commission_type .radio {
+	float:left;
+	padding-right:10px;
+	margin-top:0px;
+}
+#venuetax-accommodation_commission_type {
+	width:100%;
+	float:left;
+}
+.filter select, .filter input[type="text"] {
+    float: left;
+    width: 120px;
+    height: 26px;
+    border-radius: 5px;
+    border-color: #ccc;
+    line-height: 26px;
+    margin-right: 2px;
+    color: #000;
+}
+.filter input[type="text"].form-control {
+	height:34px;
+	margin-right:0px;
+	border-radius: 5px;
 }
 @media (max-width: 1355px) {
 	.container {
