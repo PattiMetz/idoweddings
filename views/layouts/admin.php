@@ -102,7 +102,7 @@ Modal::end();
 			<li class="item_8"><a href="#">Messages</a></li>
 			<li class="item_9"><a href="#">Quotes</a></li>
 			<li class="item_10"><a href="#">Invoices</a></li>
-			<li class="item_11"><a href="#">Venues</a></li>
+			<li class="item_11<?php echo (Yii::$app->controller->id == 'admin-venue') ? ' active' : ''; ?>"><a href="<?php echo Url::to(['admin-venue/index']); ?>">Venues</a></li>
 			<li class="item_12"><a href="#">Vendors</a></li>
 			<li class="item_13"><a href="#">Locations</a></li>
 			<li class="item_14"><a href="#">Pricing</a></li>

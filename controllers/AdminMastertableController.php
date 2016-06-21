@@ -242,6 +242,21 @@ class AdminMastertableController extends Controller {
 		return $html;
 	}
 
+    public function actionDynamiclocations() {
+
+        $destination_id = (int)Yii::$app->request->post('destination_id');
+        $location = new Location();
+        $data = $location->getList($destination_id);
+        $html = '';
+        if($data) {
+            foreach($data as $k=>$v) {
+                $html .= "<option value='".$k."'>".$v."</option>";
+            }
+        }
+        Yii::$app->response->format = Response::FORMAT_HTML;
+        return $html;
+    }
+
 	public function actionIndex() {
 
 		$this->view->title = 'Overview'; 

@@ -3,7 +3,7 @@
 namespace app\models;
 
 use Yii;
-
+use yii\helpers\ArrayHelper;
 /**
  * This is the model class for table "vibe".
  *
@@ -40,5 +40,14 @@ class Vibe extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
         ];
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getList() { 
+        $models = $this->find()->asArray()->all();
+        return ArrayHelper::map($models, 'id', 'name');
     }
 }

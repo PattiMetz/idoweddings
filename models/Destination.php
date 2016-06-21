@@ -85,7 +85,7 @@ class Destination extends \yii\db\ActiveRecord
      * @return array
      */
     public function getList($region_id) { 
-        $models = $this->find()->where(['region_id' => $region_id])->asArray()->all();
+        $models = $this->find()->orderby('name')->where(['region_id' => $region_id])->asArray()->all();
         return ArrayHelper::map($models, 'id', 'name');
     }
 
@@ -96,7 +96,7 @@ class Destination extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Destination Name',
             'region_id' => 'Region',
             'currency_id' => 'Main currency in this destination',
             'active' => 'Active',

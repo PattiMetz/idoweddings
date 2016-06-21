@@ -51,7 +51,7 @@ class Region extends ActiveRecord {
      * @return array
      */
     public function getList() { // could be a static func as well
-        $models = $this->find()->asArray()->all();
+        $models = $this->find()->orderby('name')->asArray()->all();
         return ArrayHelper::map($models, 'id', 'name');
     }
 

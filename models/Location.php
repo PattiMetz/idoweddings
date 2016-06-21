@@ -3,7 +3,7 @@
 namespace app\models;
 
 use Yii;
-
+use yii\helpers\ArrayHelper;
 /**
  * This is the model class for table "locations".
  *
@@ -49,14 +49,20 @@ class Location extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Location Name',
             'destination_id' => 'Destination',
             
             'airport' => 'Airport',
         ];
     }
 
-
+    /**
+     * @return array
+     */
+    public function getList($destination_id) { 
+        $models = $this->find()->orderby('name')->where(['destination_id' => $destination_id])->asArray()->all();
+        return ArrayHelper::map($models, 'id', 'name');
+    }
     /**
      * @return \yii\db\ActiveQuery
      */
