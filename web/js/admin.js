@@ -215,11 +215,6 @@ $(function() {
 
 	});
 
-	$('.select_all').change(function(){
-
-	    $(this).parent().next().find('input[type="checkbox"]').prop('checked', $(this).prop('checked'));
-
-	})
 	
 	/***/
 	function openPanel() {
