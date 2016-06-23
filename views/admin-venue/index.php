@@ -9,12 +9,14 @@ use app\models\Location;
 use app\models\VenueType;
 use app\models\VenueService;
 use app\models\Vibe;
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\search\Venue */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Venues list';
 $this->params['breadcrumbs'][] = $this->title;
+
 $this->registerJsFile("/js/multiple-select.js",['depends'=>'yii\web\JqueryAsset']);
 $this->registerCssFile("/css/multiple-select.css");
 $this->registerJs("

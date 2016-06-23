@@ -284,7 +284,6 @@ $(function() {
 			}
 		}
 	});
-	
 	$(window).resize(function(){
 		openPanel();
 		leftPanelHeight();		
