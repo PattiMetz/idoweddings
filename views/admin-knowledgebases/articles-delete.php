@@ -14,7 +14,7 @@ $form = ActiveForm::begin([
 ?>
 
 <div class="pseudo_head">
-	<h4 class="modal-title">Delete Article</h4>
+	<h4 class="modal-title"><?php echo Html::encode($this->title); ?></h4>
 </div>
 
 <?php

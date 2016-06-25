@@ -5,12 +5,17 @@ namespace app\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\base\Model;
+use yii\helpers\ArrayHelper;
 
 class KnowledgebaseEntry extends ActiveRecord {
 
 	public $statuses;
 
 	public $category;
+
+	public $files;
+
+	public $file_ids;
 
 	public static function tableName() {
 		return Yii::$app->db->tablePrefix . 'knowledgebase_entry';
@@ -83,6 +88,15 @@ class KnowledgebaseEntry extends ActiveRecord {
 			return true;
 		}
 		return false;
+	}
+
+	public function cacheFilesInfo() {
+		$files = ArrayHelper::map(KnowledgebaseEntryFile::find()->where([
+			'knowledgebase_entry_id' => $this->id
+		])->all(), 'id', 'name');
+		$this->count_files = count($files);
+		$this->list_files = serialize($files);
+		return $this->updateAttributes(['count_files', 'list_files']);
 	}
 
 }

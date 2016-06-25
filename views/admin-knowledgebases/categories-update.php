@@ -7,6 +7,7 @@ use yii\bootstrap\Alert;
 
 $form = ActiveForm::begin([
 	'layout' => 'horizontal',
+	'id' => 'categories-update',
 	'options' => [
 		'class' => 'ajax-form'
 	],

@@ -100,33 +100,44 @@ use yii\bootstrap\Alert;
 									'class' => 'item_doc category'
 								]
 							);
-						} elseif ($model->status == 'draft') {
-							return Html::a(
-								$model->title . ' (draft)',
-								Url::to([
-									'admin-knowledgebases/articles-update',
-									'id' => $model->id
-								]),
-								[
-									'class' => 'item_doc draft modal-ajax'
-								]
-							);
+//<small>Attachment: <i>Excelsheet.xlsx</i> <i>Image.jpg</i> <i>Wordfile.docx</i> <i>Textfile.txt</i> <i>Pdffile.pdf</i></small>
 						} else {
-							return Html::a(
-								$model->title,
-								Url::to([
-									'admin-knowledgebases/articles-update',
-									'id' => $model->id
-								]),
-								[
-									'class' => 'item_doc article modal-ajax'
-								]
-							);
+							if ($model->status == 'draft') {
+								$output = Html::a(
+									$model->title . ' (draft)',
+									Url::to([
+										'admin-knowledgebases/articles-update',
+										'id' => $model->id
+									]),
+									[
+										'class' => 'item_doc draft line_norm modal-ajax'
+									]
+								);
+							} else {
+								$output = Html::a(
+									$model->title,
+									Url::to([
+										'admin-knowledgebases/articles-update',
+										'id' => $model->id
+									]),
+									[
+										'class' => 'item_doc article line_norm modal-ajax'
+									]
+								);
+							}
+							if ($model->count_files) {
+								$list_files = unserialize($model->list_files);
+								$output.= '<small>Attachments:';
+								foreach ($list_files as $name) {
+									$output.= '<i>' . Html::encode($name) . '</i>' . "\n";
+								}
+								$output.= '</small>';
+							}
+							return $output;
 						}
 					}
 				],
 				[
-#					attribute => 'position',
 					'label' => 'Contains',
 					'format' => 'raw',
 					'value' => function ($model) {
@@ -144,7 +155,14 @@ use yii\bootstrap\Alert;
 OUTPUT;
 							return $output;
 						} else {
-							return '&nbsp';
+							if ($model->count_files) {
+								$output = <<<OUTPUT
+									<div title="Attachments" class="item_doc attach">{$model->count_files}</div>
+OUTPUT;
+							} else {
+								$output = '&nbsp';
+							}
+							return $output;
 						}
 					}
 				],

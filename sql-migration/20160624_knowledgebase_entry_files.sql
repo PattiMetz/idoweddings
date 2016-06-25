@@ -1,0 +1,1 @@
+ALTER TABLE `knowledgebase_entry` ADD `count_files` INT UNSIGNED NOT NULL , ADD `list_files` TEXT NOT NULL ;
