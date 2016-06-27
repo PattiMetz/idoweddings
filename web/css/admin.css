@@ -100,6 +100,9 @@ label {
 	font-weight: normal;
     color: #777777;
 }
+textarea {
+	resize: none;
+}
 .form-control {
 	border: 1px solid #ccc;
 	box-shadow: none;
@@ -146,6 +149,9 @@ table, th {
     clear: both;
     display: block;
     overflow: hidden;
+}
+.help-block {
+	text-align: left !important;
 }
 .main_wrapper {
 	position: relative;
@@ -1121,6 +1127,9 @@ table, th {
 .pseudo_foo .btn + .btn {
 	margin-left: 5px;
 }
+.alert {
+	margin: 0 15px 20px;
+}
 
 	/*==modal Permissions==*/
 .permiss_form > div {
@@ -1168,7 +1177,30 @@ table, th {
 }
 
 	/*==modal Add Category==*/
-.add_category {
+	
+.input_wrapper {
+	display: inline-block;
+	width: 720px;
+	margin-left: 15px;
+}
+.input_wrapper > div {
+	display: inline-block;
+	width: 31%;
+    margin: 0 2% 0 0;
+	vertical-align: top;
+}
+.input_wrapper > div:last-child {
+	margin: 0;
+}
+.field-status {
+	display: inline-block;
+	margin-top: 24px;
+    vertical-align: top;
+}
+.field-content {
+	margin: 0 15px;
+}
+/*.add_category {
 	width: 716px;
 	padding: 0 15px;
 	box-sizing: border-box;
@@ -1205,6 +1237,7 @@ table, th {
 	color: #de6830;
 	background: #f8f8f8;	
 }
+*/
 
 	/*==modal Add Article==*/
 .line_table .input-group {
@@ -1233,17 +1266,46 @@ table, th {
 	border-top: 1px solid #e5e5e5;
 	color: #777777;
 }
+#status {
+	margin-left: 30px;
+}
+#status > div.radio {
+	display: inline-block;
+	width: 170px;
+	height: 34px;
+	margin: 0 15px 0 0;
+	padding-left: 32px;
+	border: 1px solid #ccc;
+    border-radius: 4px;
+	line-height: 34px;	
+}
+#status > div.radio:first-child {
+	background: url(../images/icons/contain_3.png) no-repeat left 3px center;
+}
+#status > div.radio:last-child {
+	margin: 0;
+	background: url(../images/icons/contain_4.png) no-repeat left 3px center;
+}
+#status > div.radio input[type=radio] {
+	margin-top: 10px;
+}
+#status > div.radio label {
+	padding-left: 29px;
+	border-left: 1px solid #ccc;
+}
 .attach_block {
 	position: relative;
-	margin-top: 28px;
+	width: 1142px;
+    margin: 20px 0 5px;
+    padding: 0 15px;
 }
 .attach_block > span {
 	vertical-align: top;
     line-height: 34px;
 }
-.attach_block > a {
+/*.attach_block > a {
 	float: right;
-}
+}*/
 .attach_block .attach_list {
 	display: inline-block;
 	width: 80%;
@@ -1275,6 +1337,20 @@ table, th {
 	border: none;
     border-left: 1px solid #ccc;
     background: url(../images/close_grey.png) no-repeat center center;
+}
+.attach_block > a {
+	position: absolute;
+    right: 0;
+    margin-right: 15px;
+}
+.attach_block input[type=file] {
+	display: inline-block;
+	width: 92px;
+	height: 34px;
+	vertical-align: top;
+	overflow: hidden;
+	opacity: 0;
+	float: right;
 }
 #cke_1_bottom,
 #cke_2_bottom {
@@ -1525,6 +1601,7 @@ a.desc:after {
 	.modal .modal-dialog {
 		max-width: 740px;
 	}
+	/*==modal add article==*/
 	.line_table .input-group {
 		float: right;
 		margin: 0 30px 8px 0;
@@ -1532,14 +1609,28 @@ a.desc:after {
 	.line_table .input-group:first-child {
 		margin: 0 30px 8px 0;
 	}
+	.field-status {
+		margin-top: 0;
+	}
+	#status {
+		margin-left: 15px;
+	}
+	.attach_block {
+		width: 100%;
+		margin: 20px 0 0;
+	}
 	.attach_block .attach_list {
 		width: 100%;
 		margin-left: 0;
 	}
 	.attach_block > a {
+		top: -10px;
+	}
+	.attach_block input[type=file] {
 		position: absolute;
-		top: -13px;
+		top: -10px;
 		right: 0;
+		margin-right: 15px;
 		float: none;
 	}
 }
@@ -1751,7 +1842,7 @@ a.desc:after {
 		width: 200px;
 		margin: 0 auto 10px;
 	}
-	.drop_wrapper {
+	/*.drop_wrapper {
 		margin-bottom: 10px;
 	}
 	.drop_wrapper .btn-group {
@@ -1780,7 +1871,7 @@ a.desc:after {
 	.add_category .dropdown-menu {
 		left: initial;
 		right: 36%;
-	}
+	}*/
 	.line_table {
 		width: 247px;
 		margin: 0 auto;
@@ -1798,6 +1889,31 @@ a.desc:after {
 	}
 	.line_table .input-group .form-control {
 		width: 171px;
+	}
+	.input_wrapper {
+		display: block;
+		width: 256px;
+		margin: 0 auto;
+	}
+	.input_wrapper > div,
+	.input_wrapper > div:last-child {
+		display: block;
+		width: 100%;
+		margin: 0;
+	}
+	.field-status {
+		display: block;
+		width: 256px;
+		margin: 0 auto;
+	}
+	#status {
+		margin-left: 0;
+	}
+	#status > div.radio,
+	#status > div.radio:last-child {
+		display: block;
+		width: 100%;
+		margin: 0 0 15px 0;
 	}
 }
 @media (max-width: 560px) {
@@ -1894,10 +2010,10 @@ a.desc:after {
 	.breadcrumb > li {
 		width: 100%;
 	}
-	.add_category .dropdown-menu {
+	/*.add_category .dropdown-menu {
 		left: initial;
 		right: 23%;
-	}
+	}*/
 	.list li {
 		width: 100%;
 		margin-right: 0;

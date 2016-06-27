@@ -40,22 +40,6 @@ echo Alert::widget([
 
 ?>
 
-<div class="attach_block">
-	<span>Attachments:</span>
-	<ul id="files" class="attach_list clearfix">
-		<?php foreach ($model->files as $file): ?>
-			<li id="file_<?php echo $file['id']; ?>">
-				<input type="hidden" name="file_ids[]" value="<?php echo $file['id']; ?>">
-				<i><?php echo Html::encode($file['name']); ?></i>
-				<button class="remove-file" type="button" data-id="<?php echo $file['id']; ?>" title="Delete"></button>
-			</li>
-		<?php endforeach; ?>
-	</ul>
-	<!--a class="btn btn-danger" href="#">Attach file</a-->
-</div>
-
-<input type="file" id="files-select" name="files[]" size="20" multiple />
-
 <?php
 
 echo Alert::widget([
@@ -84,15 +68,33 @@ echo Alert::widget([
 
 ?>
 
-<?php echo $form->field($model, 'knowledgebase_id')->textInput(); ?>
+<div class="input_wrapper">
+	<?php echo $form->field($model, 'knowledgebase_id')->textInput(); ?>
 
-<?php echo $form->field($model, 'category_id')->textInput(); ?>
+	<?php echo $form->field($model, 'category_id')->textInput(); ?>
 
-<?php echo $form->field($model, 'title')->textInput(); ?>
+	<?php echo $form->field($model, 'title')->textInput(); ?>
+</div>
+
+<?php echo $form->field($model, 'status')->radioList($model->statuses, ['unselect' => NULL])->label(false); ?>
 
 <?php echo $form->field($model, 'content')->textArea(['rows' => '6']); ?>
 
-<?php echo $form->field($model, 'status')->radioList($model->statuses, ['unselect' => NULL])->label(false); ?>
+<div class="attach_block">
+	<span>Attachments:</span>
+	<ul id="files" class="attach_list clearfix">
+		<?php foreach ($model->files as $file): ?>
+			<li id="file_<?php echo $file['id']; ?>">
+				<input type="hidden" name="file_ids[]" value="<?php echo $file['id']; ?>">
+				<i><?php echo Html::encode($file['name']); ?></i>
+				<button class="remove-file" type="button" data-id="<?php echo $file['id']; ?>" title="Delete"></button>
+			</li>
+		<?php endforeach; ?>
+	</ul>
+	<a class="btn btn-danger" href="#">Attach file</a>
+	<input type="file" id="files-select" name="files[]" size="20" multiple />
+
+</div>
 
 <div class="pseudo_foo">
 	<?php echo Html::submitButton('Save', ['class' => 'btn btn-primary']) ?>
