@@ -49,7 +49,7 @@ use yii\bootstrap\Alert;
 		<div class="sett_panel form-inline clearfix">
 			<div class="choose_base input-group">
 				<span class="input-group-addon"></span>	
-				<?php echo Html::dropDownList('knowledgebase_id', $current_knowledgebase_id, $knowledgebases, ['id' => '_knowledgebase_id']); ?>
+				<?php echo Html::dropDownList('knowledgebase_id', $current_knowledgebase_id, $knowledgebases, ['id' => '_knowledgebase_id', 'class' => 'chosen-style']); ?>
 			</div>
 			<div class="choose_base_btn_box">
 				<?php echo Html::button('<i class="glyphicon glyphicon-pencil"></i>', ['value' => Url::to(['admin-knowledgebases/update', 'id' => $current_knowledgebase_id]), 'class' => 'btn btn-primary modal-ajax']); ?>

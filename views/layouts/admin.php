@@ -30,7 +30,9 @@ AdminAsset::register($this);
 <body>
 <?php $this->beginBody(); ?>
 
-<div id="preloader" style="display: none;">[IMG]</div>
+<div id="preloader" style="display: none;">
+	<img src="../../web/images/preloader.gif" />
+</div>
 
 <?php
 

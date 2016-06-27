@@ -70,9 +70,6 @@ function add_phone(contact_id, key){
             ],
         ]); ?>
         <?php echo $form->errorSummary($model); ?>
-        <?php echo $form->errorSummary($address); ?>
-        <?php echo $form->errorSummary($contacts); ?>
-        <?php echo $form->errorSummary($tax); ?>
     <div class="col-sm-6">
         
         <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
@@ -238,6 +235,24 @@ function add_phone(contact_id, key){
                 </div>
             </div>    
         </div>
+        <?if($model->id):?> 
+           <h2>Documents</h2>
+
+             <?php if(isset($docs) && count($docs)>0) {?> 
+                <ul class="docs">
+                    <?php foreach ($docs as $doc) {?>
+                    <li>
+                        <?=Html::a($doc->doc,["/uploads/venue/".$model->id."/".$doc->doc],['target'=>'_blank','data-pjax'=>0])?>
+                        <?=Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$doc->id])],['class'=>'modal-ajax'])?>
+                    </li>
+                    <?php }?>
+                </ul>
+            <?php }?>
+            <h3>Upload Files.</h3>
+          
+
+            <?=$form->field($doc, 'files[]')->fileInput(['multiple' => 'multiple']);?>
+        <?endif;?>
         <div class="form-group required">
             <label>Updated by </label> <?=$model->user?> <?=$model->updated_at?>
         </div>
@@ -345,24 +360,14 @@ function add_phone(contact_id, key){
         <?= $form->field($tax, 'accommodation_commission', ['options' => ['class'=>'invisible']])->textInput() ?>
 
         <?= $form->field($tax, 'accomodation_wholesale',['horizontalCssClasses' => ['offset' => 'col-sm-offset-0'], 'template'=>"{input}{hint}\n\t{error}"])->checkbox() ?>
-        <?if($model->id):?> 
-           <h2>Documents</h2>
-
-             <?php if(isset($docs) && count($docs)>0) {?> 
-                <ul class="docs">
-                    <?php foreach ($docs as $doc) {?>
-                    <li>
-                        <?=Html::a($doc->doc,["/uploads/venue/".$model->id."/".$doc->doc],['target'=>'_blank','data-pjax'=>0])?>
-                        <?=Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$doc->id])],['class'=>'modal-ajax'])?>
-                    </li>
-                    <?php }?>
-                </ul>
-            <?php }?>
-            <h3>Upload Files.</h3>
-          
-
-            <?=$form->field($doc, 'files[]')->fileInput(['multiple' => 'multiple']);?>
-        <?endif;?>
+        <h2>Venue Package Type</h2>
+        <?= $form->field($model, 'type',['template'=>"{input}{hint}\n\t{error}"])->radioList([
+            '1' => 'Venue Package is optional; Site fee is given and WOMI can bring on their own professional Vendors. (Venue Type : 1)',
+            '2' => 'Venue Package is required, but WOMI can bring on their own professional Vendors. (Venue Type : 2)',
+            '3' => 'Venue Package is required and all Vendors must be arranged through Venue. (Venue Type : 3)',
+            '5' => 'PACKAGES are optional, WOMI chooses to use Venue Package and WOMI can bring on their own professional Vendors.. (Venue Type : 5)'
+        ]) ?>
+        <?= $form->field($model, 'nonguest')->checkBox()->label('Venue allows NON-GUESTS to marry on the property. (Venue Type : 4)') ?>
     </div>
     </div>    
     <div class="form-group">

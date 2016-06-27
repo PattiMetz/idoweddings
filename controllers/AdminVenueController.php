@@ -8,15 +8,18 @@ use app\models\venue\VenueAddress;
 use app\models\venue\VenueTax;
 use app\models\venue\VenueContact;
 use app\models\venue\VenueDoc;
+use app\models\venue\VenuePage;
 use app\models\search\VenueSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\actions\UpdateAction;
 use app\actions\DeleteAction;
 use yii\base\Model;
 use yii\web\UploadedFile;
-
+use app\models\venue\VenueWebsite;
+use yii\web\Response;
 /**
  * VenueController implements the CRUD actions for Venue model.
  */
@@ -37,7 +40,18 @@ class AdminVenueController extends Controller
                 'class'       => DeleteAction::className(),
                 'modelClass'  => 'app\models\venue\VenueDoc',
                 'exampleName' => 'doc'
-            ]
+            ],
+            'page-update' => [
+                'class'       => UpdateAction::className(),
+                'modelClass'  => 'app\models\venue\VenuePage',
+                'exampleName' => 'venuepage',
+                'view' => '@app/views/admin-venue/website/page'
+            ],
+            'page-delete' => [
+                'class'       => DeleteAction::className(),
+                'modelClass'  => 'app\models\venue\VenuePage',
+                'exampleName' => 'venuepage'
+            ],
         ];
     }
 
@@ -67,6 +81,94 @@ class AdminVenueController extends Controller
 
     }
 
+    public function actionEditurl($id){
+        $model = VenueWebsite::findOne($id);
+        $alert = '';
+        $errors = [];
+        $post = Yii::$app->request->post();
+        
+        if(isset($post['validate']) && $post['validate']==1) {
+            
+            $res = $model->checkurl($post['VenueWebsite']['url']);
+
+            if(!$model->checkurl($post['VenueWebsite']['url'])) {
+                $alert = 'Url already exists';
+            }else
+                $alert = 'Url is available';
+        }elseif(isset($post['validate']) && $post['validate']==0) {
+            if(!$model->checkurl($post['VenueWebsite']['url'])) {
+                $alert = 'Url already exists';
+            }else {
+                $model->url = $post['VenueWebsite']['url'];
+                $model->save();
+            }
+            
+        }
+        if($alert!='') {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            $pjax_reload = '#main';
+            return compact(
+                'alert',
+                'pjax_reload'
+            );
+        }
+        return $this->renderAjax('website/url', [
+                'model' => $model,
+                'alert' =>$alert
+                ]
+                );
+    }
+
+    public function actionSettings($id)
+    {
+        $model = VenueWebsite::find()->where(['venue_id' => $id])->one();
+     
+        $venue = Venue::findOne($id);
+        
+        if(Yii::$app->request->post()) {
+            $post = Yii::$app->request->post();
+            $model->load($post);
+            $model->font_settings = serialize($post['settings']);
+            $model->save();
+
+            foreach($post['VenuePage'] as $page_id=>$page) {
+                $obj = VenuePage::findOne($page_id);
+                $obj->active = $page['active'];
+                $obj->save();
+               
+            }
+            $alert = 'Succesfully saved';
+        }
+        if(!$model) {
+            $model = new VenueWebsite();
+            $model->url = $model->generateUrl($venue->name);
+            $model->venue_id = $id;
+            $model->save();
+        }
+
+        $pages = VenuePage::findAll(['venue_id'=>$id]);
+        if(!$pages) {
+            $this->setDefaultPages($id);
+            $pages = VenuePage::findAll(['venue_id'=>$id]);
+        }
+        $fonts = ['Times New Roman', 'Arial'];
+        $sizes = array();
+        for($i=10;$i<40;$i++) {
+            $sizes[] = $i;
+            $i++;
+        }
+
+        return $this->render('website/settings', [
+                'model' => $model,
+                'fonts' => $fonts,
+                'sizes' => $sizes,
+                'pages' => $pages
+            ]);
+        
+    }
+
+
+
     /**
      * Lists all Venue models.
      * @return mixed
@@ -82,6 +184,15 @@ class AdminVenueController extends Controller
         ]);
     }
 
+    public function setDefaultPages($venue_id){
+        
+        $obj = new VenuePage(['name'=>'Main','type'=>'main','active'=>1,'venue_id'=>$venue_id]);$obj->save();
+        $obj = new VenuePage(['name'=>'Locations','type'=>'locations','active'=>1,'venue_id'=>$venue_id]);$obj->save();
+        $obj = new VenuePage(['name'=>'Availability','type'=>'availability','active'=>1,'venue_id'=>$venue_id]);$obj->save();
+        $obj = new VenuePage(['name'=>'Wedding packages','type'=>'packages','active'=>1,'venue_id'=>$venue_id]);$obj->save();
+        $obj = new VenuePage(['name'=>'Wedding items','type'=>'items','active'=>1,'venue_id'=>$venue_id]);$obj->save();
+        $obj = new VenuePage(['name'=>'Food&Beverages','type'=>'food','active'=>1,'venue_id'=>$venue_id]);$obj->save();
+    }
     /**
      * Displays a single Venue model.
      * @param integer $id
@@ -144,6 +255,8 @@ class AdminVenueController extends Controller
                 'address' => $address,
                 'tax'     => $tax,
                 'contacts'=> $contacts,
+                'docs'    => [],
+                'doc'     => ''
         ]);
        
     }

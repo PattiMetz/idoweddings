@@ -1,5 +1,9 @@
 $(function() {
-
+	
+	$(document).on('pjax:end', function() {
+		$('select.chosen-style').chosen({disable_search_threshold: 10});
+	});
+	
 	var ajaxTimeout = 5000;
 
 	var ajaxTimeoutMessage = 'The request is aborted due to timeout';
@@ -34,9 +38,11 @@ $(function() {
 
 		$('#modal .confirm').hide();
 
-//		$('#modal .loading').show();
+		$('#modal .loading').show();
 
-//		$('#modal').modal('show');
+		$('#modal').modal('show');
+		
+		$('#modal .modal-dialog').hide();
 
 		$.ajax({
 			url: url,
@@ -46,8 +52,10 @@ $(function() {
 				$('#preloader').hide();
 
 				$('#modal').modal('show');
-
-//				$('#modal .loading').hide();
+				
+				$('#modal .modal-dialog').show();
+				
+				$('#modal .loading').hide();
 
 			},
 			error: function(jqXHR) {
@@ -115,7 +123,6 @@ $(function() {
 		$('.btn-primary', this).attr('disabled', true);
 
 		var $form = $(this);
-
 		$.ajax({
 			url: $form.attr('action'),
 			method: 'POST',
@@ -147,11 +154,9 @@ $(function() {
 			success: function(data) {
 
 				var success = true;
-
 				if (data.errors !== undefined && !$.isEmptyObject(data.errors)) {
 
 					success = false;
-
 					$.each(data.errors, function(key, val) {
 						$('.field-' + key).addClass('has-error');
 						$('.field-' + key + ' .help-block').html(val);
@@ -160,7 +165,6 @@ $(function() {
 				}
 
 				if (data.alert !== undefined && data.alert != '') {
-
 					success = false;
 
 					$('.alert-danger').html(data.alert).show();
@@ -284,6 +288,16 @@ $(function() {
 			}
 		}
 	});
+
+	$('.select_all').change(function(){
+		if($(this).is(':checked'))
+			$(this).parent().next().find('input[type=checkbox]').attr('checked', 'checked');
+		else
+			$(this).parent().next().find('input[type=checkbox]').removeAttr('checked');
+	})
+	
+	$('select.chosen-style').chosen({disable_search_threshold: 10});
+	
 	$(window).resize(function(){
 		openPanel();
 		leftPanelHeight();		

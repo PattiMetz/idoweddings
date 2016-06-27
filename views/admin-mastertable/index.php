@@ -45,4 +45,8 @@ use yii\widgets\ActiveForm;
 		<div class="list_top"><?= Html::a("Venue Provides", ['venueservice-list']) ?></div>
 		<div class="list_bottom item_9"></div>
 	</li>
+	<li>
+		<div class="list_top"><?= Html::a("Vendor Types", ['vendortype-list']) ?></div>
+		<div class="list_bottom item_10"></div>
+	</li>
 </ul>

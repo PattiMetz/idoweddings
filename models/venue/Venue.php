@@ -51,7 +51,7 @@ class Venue extends \yii\db\ActiveRecord
     {
         return [
             [['name','location_id', 'featured_name'], 'required'],
-            [['location_id','updated_by'], 'integer'],
+            [['location_id','updated_by', 'type', 'nonguest'], 'integer'],
             [['active', 'featured', 'comment'], 'string'],
             [['name', 'featured_name'], 'string', 'max' => 100],
             [['types_array','vibes_array','services_array', 'type_id', 'vibe_id', 'service_id'],'safe'],

@@ -14,11 +14,13 @@ class AdminAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
+	'css/chosen.css',
 	'css/admin.css'
     ];
     public $js = [
-	'js/admin.js',
 	'js/jquery.nicescroll.min.js',
+	'js/chosen.jquery.min.js',
+	'js/admin.js',
 //	'js/sett_knbase.js',
     ];
     public $depends = [
