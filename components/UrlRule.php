@@ -46,6 +46,9 @@ class UrlRule implements UrlRuleInterface {
 			case 'admin/knowledgebases/articles/delete':
 				$route = 'admin-knowledgebases/articles-delete';
 				break;
+			case 'admin/knowledgebases/entries/files/upload':
+				$route = 'admin-knowledgebases/entries-files-upload';
+				break;
 			default:
 				$route = $pathInfo;
 		}
@@ -89,6 +92,9 @@ class UrlRule implements UrlRuleInterface {
 				break;
 			case 'admin-knowledgebases/articles-delete':
 				$url = 'admin/knowledgebases/articles/delete';
+				break;
+			case 'admin-knowledgebases/entries-files-upload':
+				$url = 'admin/knowledgebases/entries/files/upload';
 				break;
 			default:
 				return false;

@@ -10,8 +10,11 @@ use yii\bootstrap\ActiveForm;
 use yii\web\Response;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+use yii\web\UploadedFile;
+use yii\validators\FileValidator;
 use app\models\Knowledgebase;
 use app\models\KnowledgebaseEntry;
+use app\models\KnowledgebaseEntryFile;
 
 class AdminKnowledgebasesController extends Controller {
 
@@ -35,7 +38,7 @@ class AdminKnowledgebasesController extends Controller {
 //				],
 				'rules' => [
 					[
-						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'articles-update', 'articles-delete'],
+						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'articles-update', 'articles-delete', 'entries-files-upload'],
 						'allow' => true,
 						'roles' => ['@'],
 					],
@@ -323,7 +326,7 @@ class AdminKnowledgebasesController extends Controller {
 			];
 
 			$dataProvider = new ActiveDataProvider([
-				'query' => KnowledgebaseEntry::find()->where($filter), // entries
+				'query' => KnowledgebaseEntry::find()->where($filter)->indexBy('id'), // entries
 				'sort' => [
 					'defaultOrder' => ['order' => SORT_ASC],
 					'attributes' => [
@@ -358,12 +361,6 @@ class AdminKnowledgebasesController extends Controller {
 			break;
 
 		} while(0);
-
-//		$this->view->params['js'] = '
-//			$("#knowledgebase_id").change(function() {
-//				$.pjax({url: "' . Url::to(['admin-knowledgebases/entries']) . '?knowledgebase_id=" + $(this).val(), container: "#main"});
-//			});
-//		';
 
 		$this->view->params['js'] = '
 			$(document).on("change", "#_knowledgebase_id", function() {
@@ -502,59 +499,195 @@ class AdminKnowledgebasesController extends Controller {
 	}
 
 	public function actionArticlesUpdate($id = 0) {
-	sleep(3);
+
 		$this->view->title = ($id) ? 'Edit Article' : 'Add Article';
 
 		$alert = '';
 
-		if ($id) {
+		do {
 
-			$model = KnowledgebaseEntry::find()->where(['id' => $id])->one();
+			if ($id) {
 
-			if (!$model) {
+//				$model = KnowledgebaseEntry::find()->where(['id' => $id])->one();
+				$model = KnowledgebaseEntry::findOne($id);
 
-				$alert = 'Article not found.';
+				if (!$model) {
 
-			}
+					$alert = 'Article not found.';
 
-		} else {
+					break;
 
-			$model = new KnowledgebaseEntry;
+				}
 
-			$knowledgebase_id = Yii::$app->request->get('knowledgebase_id');
+				$files = KnowledgebaseEntryFile::find()->where([
+					'knowledgebase_entry_id' => $model->id
+				])->indexBy('id')->all();
 
-			if (isset($knowledgebase_id)) {
+				$model->files = $files;
 
-				$model->knowledgebase_id = $knowledgebase_id;
-
-			}
-
-			$category_id = Yii::$app->request->get('category_id');
-
-			if (isset($category_id)) {
-
-				$model->category_id = intval($category_id);
+				$model->file_ids = array_keys($model->files);
 
 			} else {
 
-				$model->category_id = 0;
+				$model = new KnowledgebaseEntry;
+
+				$knowledgebase_id = Yii::$app->request->get('knowledgebase_id');
+
+				if (isset($knowledgebase_id)) {
+
+					$model->knowledgebase_id = $knowledgebase_id;
+
+				}
+
+				$category_id = Yii::$app->request->get('category_id');
+
+				if (isset($category_id)) {
+
+					$model->category_id = intval($category_id);
+
+				} else {
+
+					$model->category_id = 0;
+
+				}
+
+				$model->status = 'draft';
+
+				$model->files = [];
+
+				$model->file_ids = [];
 
 			}
 
-			$model->status = 'draft';
+			$model->statuses = [
+				'published' => 'Published',
+				'draft' => 'Draft'
+			];
 
-		}
+			break;
 
-		$model->statuses = [
-			'published' => 'Published',
-			'draft' => 'Draft'
-		];
+		} while(0);
 
-		if ($model->load(Yii::$app->request->post())) {
+		if (Yii::$app->request->isPost) {
 
-			$model->save();
+			do {
 
-			$errors = $model->getErrors();
+				if (!$model) {
+
+					break;
+
+				}
+
+				$post = Yii::$app->request->post();
+
+				$model->load($post);
+
+				$file_ids = [];
+
+				if (isset($post['file_ids']) && is_array($post['file_ids'])) {
+
+					foreach ($post['file_ids'] as $file_id) {
+
+						$file_ids[] = $file_id;
+
+					}
+
+				}
+
+				$deleted_ids = array_diff($model->file_ids, $file_ids);
+
+				$new_ids = array_diff($file_ids, $model->file_ids);
+
+				$files = KnowledgebaseEntryFile::find()->where([
+					'id' => $new_ids,
+					'knowledgebase_entry_id' => 0
+				])->indexBy('id')->all();
+
+				$new_ids = array_intersect($new_ids, array_keys($files));
+
+				$errors = ActiveForm::validate($model);
+
+				if (count($errors)) {
+
+					break;
+
+				}
+
+				$transaction = Yii::$app->db->beginTransaction();
+
+				if (!$model->save(false)) {
+
+					$alert = 'Article not saved.';
+
+					$transaction->rollBack();
+
+					break;
+
+				} else {
+
+					// Unlink the files
+
+					foreach ($deleted_ids as $file_id) {
+
+						$file = $model->files[$file_id];
+
+						$file->knowledgebase_entry_id = 0;
+
+						if (!$file->save(false)) {
+
+							$alert = 'One of the files is not deleted.';
+
+							$transaction->rollBack();
+
+							break(2);
+
+						}
+
+					}
+
+
+					// Link the files
+
+					foreach ($new_ids as $file_id) {
+
+						$file = $files[$file_id];
+
+						$file->knowledgebase_entry_id = $model->id;
+
+						if (!$file->save(false)) {
+
+							$alert = 'One of the files is not saved.';
+
+							$transaction->rollBack();
+
+							break(2);
+
+						}
+
+					}
+
+
+					// Cache files info
+
+					$need_cache = (count($deleted_ids) || count($new_ids));
+
+					if ($need_cache && !$model->cacheFilesInfo()) {
+
+						$alert = 'Failed to cache files information.';
+
+						$transaction->rollBack();
+
+						break;
+
+					}
+
+				}
+
+				$transaction->commit();
+
+				break;
+
+			} while(0);
 
 			$pjax_reload = '#main';
 
@@ -577,6 +710,8 @@ class AdminKnowledgebasesController extends Controller {
 
 	function actionArticlesDelete($id) {
 
+		$this->view->title = 'Delete Article';
+
 		$alert = '';
 
 		$model = KnowledgebaseEntry::findOne($id);
@@ -589,13 +724,55 @@ class AdminKnowledgebasesController extends Controller {
 
 		if (Yii::$app->request->isPost) {
 
-			$errors = [];
+			do {
 
-			if (!$model->delete()) {
+				if (!$model) {
 
-				$alert = 'Article not deleted.';
+					break;
 
-			}
+				}
+
+				$files = KnowledgebaseEntryFile::find()->where([
+					'knowledgebase_entry_id' => $model->id
+				])->all();
+
+				$transaction = Yii::$app->db->beginTransaction();
+
+				if (!$model->delete()) {
+
+					$alert = 'Article not deleted.';
+
+					$transaction->rollBack();
+
+					break;
+
+				} else {
+
+					// Unlink all files
+
+					foreach ($files as $file) {
+
+						$file->knowledgebase_entry_id = 0;
+
+						if (!$file->save(false)) {
+
+							$alert = 'One of the files is not deleted.';
+
+							$transaction->rollBack();
+
+							break(2);
+
+						}
+
+					}
+
+				}
+
+				$transaction->commit();
+
+				break;
+
+			} while(0);
 
 			$pjax_reload = '#main';
 
@@ -613,6 +790,82 @@ class AdminKnowledgebasesController extends Controller {
 			'model' => $model,
 			'alert' => $alert
 		]);
+
+	}
+
+	function actionEntriesFilesUpload() {
+
+		$alert = '';
+
+		$errors = [];
+
+		$list = [];
+
+		$validator = new FileValidator(['extensions' => ['png','jpg']]);
+
+		$files = UploadedFile::getInstancesByName('files');
+
+		if (Yii::$app->request->isPost) {
+
+			if (!count($files)) {
+
+				if ($_SERVER['CONTENT_LENGTH']) {
+
+					$alert = 'Content-Length exceeds the limit';
+
+				}
+
+			} else {
+
+				foreach ($files as $file) {
+        
+					$validator->validate($file, $error);
+        
+					if ($error) {
+        
+						$errors[$file->name] = $error;
+        
+					} else {
+        
+						$model = new KnowledgebaseEntryFile;
+        
+						$model->knowledgebase_entry_id = 0;
+        
+						$model->name = $file->name;
+        
+						$model->file = $file;
+        
+						$transaction = Yii::$app->db->beginTransaction();
+        
+						if ($model->save(false) && $model->fileSaved) {
+        
+							$list[$model->id] = $file->name;
+        
+							$transaction->commit();
+        
+						} else {
+        
+							$errors[$file->name] = 'File not saved.';
+        
+							$transaction->rollBack();
+        
+						}
+        
+					}
+        
+				}
+
+			}
+
+			Yii::$app->response->format = Response::FORMAT_JSON;
+
+			return compact(
+				'alert',
+				'errors',
+				'list'
+			);
+
+		}
 
 	}
 
