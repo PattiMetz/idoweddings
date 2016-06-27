@@ -1,0 +1,1 @@
+ALTER TABLE `venue` ADD `type` INT NOT NULL , ADD `nonguest` ENUM('0','1') NOT NULL ;
