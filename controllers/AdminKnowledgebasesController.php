@@ -12,6 +12,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 use yii\validators\FileValidator;
+use yii\helpers\Html;
 use app\models\Knowledgebase;
 use app\models\KnowledgebaseEntry;
 use app\models\KnowledgebaseEntryFile;
@@ -38,7 +39,7 @@ class AdminKnowledgebasesController extends Controller {
 //				],
 				'rules' => [
 					[
-						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'articles-update', 'articles-delete', 'entries-files-upload'],
+						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'categories-tree', 'articles-update', 'articles-delete', 'entries-files-upload'],
 						'allow' => true,
 						'roles' => ['@'],
 					],
@@ -498,17 +499,100 @@ class AdminKnowledgebasesController extends Controller {
 
 	}
 
+	function actionCategoriesTree($knowledgebase_id) {
+
+
+		// Check if knowledgebase exists
+		$exists = Knowledgebase::find()->where(['id' => $knowledgebase_id])->exists();
+
+		if ($exists) {
+
+
+			// Get all categories of the current knowledgebase
+			$categories = KnowledgebaseEntry::find()->where([
+				'is_category' => 1,
+				'knowledgebase_id' => $knowledgebase_id
+			])->asArray()->indexBy('id')->all();
+
+
+			// Collect child IDs including the first level
+
+			$categories_child_ids = [];
+
+			foreach ($categories as $category) {
+
+				$parent_id = $category['category_id'];
+
+				if (!isset($categories_child_ids[$parent_id])) {
+
+					$categories_child_ids[$parent_id] = [];
+
+				}
+
+				$categories_child_ids[$parent_id][] = $category['id'];
+
+			}
+
+
+			// Prepare categories tree with HTML encoded texts
+
+			function _get_categories_child_items($parent_id, &$categories, &$categories_child_ids) {
+
+				$rv = [];
+
+				if (isset($categories_child_ids[$parent_id])) {
+
+					foreach ($categories_child_ids[$parent_id] as $category_id) {
+
+						$rv[] = [
+							'id' => $category_id,
+							'text' => Html::encode($categories[$category_id]['title']),
+							'children' => _get_categories_child_items($category_id, $categories, $categories_child_ids)
+						];
+
+					}
+
+				}
+
+				return $rv;
+
+			}
+
+			$categories_tree = _get_categories_child_items(0, $categories, $categories_child_ids);
+
+		} else {
+
+			$categories_tree = [];
+
+		}
+
+		$blank_option = [
+			'id' => 0,
+			'text' => '(None)',
+			'children' => []
+		];
+
+		array_unshift($categories_tree, $blank_option);
+
+		Yii::$app->response->format = Response::FORMAT_JSON;
+
+		return $categories_tree;
+
+	}
+
 	public function actionArticlesUpdate($id = 0) {
 
 		$this->view->title = ($id) ? 'Edit Article' : 'Add Article';
 
 		$alert = '';
 
+		// Get all knowledgebases for SELECT options
+		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
+
 		do {
 
 			if ($id) {
 
-//				$model = KnowledgebaseEntry::find()->where(['id' => $id])->one();
 				$model = KnowledgebaseEntry::findOne($id);
 
 				if (!$model) {
@@ -535,7 +619,11 @@ class AdminKnowledgebasesController extends Controller {
 
 				if (isset($knowledgebase_id)) {
 
-					$model->knowledgebase_id = $knowledgebase_id;
+					$model->knowledgebase_id = intval($knowledgebase_id);
+
+				} else {
+
+					$model->knowledgebase_id = 0;
 
 				}
 
@@ -563,6 +651,85 @@ class AdminKnowledgebasesController extends Controller {
 				'published' => 'Published',
 				'draft' => 'Draft'
 			];
+
+			$model->knowledgebases = $knowledgebases;
+
+			if (Yii::$app->request->isGet) {
+
+				if ($model->knowledgebase_id && !isset($model->knowledgebases[$model->knowledgebase_id])) {
+
+					$model->knowledgebase_id = 0;
+
+				}
+
+				if ($model->knowledgebase_id) {
+
+
+					// Get all categories of the current knowledgebase
+					$categories = KnowledgebaseEntry::find()->where([
+						'is_category' => 1,
+						'knowledgebase_id' => $model->knowledgebase_id
+					])->asArray()->indexBy('id')->all();
+
+
+					// Collect child IDs including the first level
+
+					$categories_child_ids = [];
+
+					foreach ($categories as $category) {
+
+						$parent_id = $category['category_id'];
+
+						if (!isset($categories_child_ids[$parent_id])) {
+
+							$categories_child_ids[$parent_id] = [];
+
+						}
+
+						$categories_child_ids[$parent_id][] = $category['id'];
+
+					}
+
+
+					// Prepare categories tree with HTML encoded texts
+
+					function _get_categories_child_items($parent_id, &$categories, &$categories_child_ids) {
+
+						$rv = [];
+
+						if (isset($categories_child_ids[$parent_id])) {
+
+							foreach ($categories_child_ids[$parent_id] as $category_id) {
+
+								$rv[] = [
+									'id' => $category_id,
+									'text' => Html::encode($categories[$category_id]['title']),
+									'children' => _get_categories_child_items($category_id, $categories, $categories_child_ids)
+								];
+
+							}
+
+						}
+
+						return $rv;
+
+					}
+
+					$categories_tree = _get_categories_child_items(0, $categories, $categories_child_ids);
+
+					$blank_option = [
+						'id' => 0,
+						'text' => '(None)',
+						'children' => []
+					];
+
+					array_unshift($categories_tree, $blank_option);
+
+					$model->categories_tree_json = json_encode($categories_tree);
+
+				}
+
+			}
 
 			break;
 
@@ -819,13 +986,13 @@ class AdminKnowledgebasesController extends Controller {
 
 				foreach ($files as $file) {
         
-					$validator->validate($file, $error);
+//					$validator->validate($file, $error);
         
-					if ($error) {
+//					if ($error) {
         
-						$errors[$file->name] = $error;
+//						$errors[$file->name] = $error;
         
-					} else {
+//					} else {
         
 						$model = new KnowledgebaseEntryFile;
         
@@ -851,7 +1018,7 @@ class AdminKnowledgebasesController extends Controller {
         
 						}
         
-					}
+//					}
         
 				}
 

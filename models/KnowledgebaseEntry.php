@@ -9,6 +9,8 @@ use yii\helpers\ArrayHelper;
 
 class KnowledgebaseEntry extends ActiveRecord {
 
+	public $knowledgebases;
+
 	public $statuses;
 
 	public $category;
@@ -16,6 +18,8 @@ class KnowledgebaseEntry extends ActiveRecord {
 	public $files;
 
 	public $file_ids;
+
+	public $categories_tree_json;
 
 	public static function tableName() {
 		return Yii::$app->db->tablePrefix . 'knowledgebase_entry';

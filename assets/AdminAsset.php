@@ -15,11 +15,13 @@ class AdminAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
 	'css/chosen.css',
+	'css/easyui.css',
 	'css/admin.css'
     ];
     public $js = [
 	'js/jquery.nicescroll.min.js',
 	'js/chosen.jquery.min.js',
+	'js/jquery.easyui.min.js',
 	'js/admin.js',
 //	'js/sett_knbase.js',
     ];

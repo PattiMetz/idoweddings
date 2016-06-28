@@ -69,9 +69,11 @@ echo Alert::widget([
 ?>
 
 <div class="input_wrapper">
-	<?php echo $form->field($model, 'knowledgebase_id')->textInput(); ?>
+	<?php echo $form->field($model, 'knowledgebase_id')->dropDownList($model->knowledgebases); ?>
 
 	<?php echo $form->field($model, 'category_id')->textInput(); ?>
+<!--input id="category_id" class="easyui-combotree"-->
+	<!--input class="easyui-combotree" value="0" data-options="url:'tree_data1.json',method:'get',required:false" style="width:200px;"-->
 
 	<?php echo $form->field($model, 'title')->textInput(); ?>
 </div>
@@ -105,9 +107,22 @@ echo Alert::widget([
 
 <?php
 
+$categories_tree_url = Url::to(['admin-knowledgebases/categories-tree']);
 $upload_url = Url::to(['admin-knowledgebases/entries-files-upload']);
 
 $js = <<<EOT
+	$('#category_id').combotree({
+		animate: true,
+		data: {$model->categories_tree_json}
+	});
+
+	$('#knowledgebase_id').on('change', function() {
+		$('#category_id').combotree({
+			url: '{$categories_tree_url}' + '?knowledgebase_id=' + $(this).val()
+		});
+		$('#category_id').combotree('setValue', '0');
+	});
+
 	var xhr;
 
 	$('#files-select').on('change', function() {
