@@ -1,4 +1,4 @@
-.panel {
+.panel.combo-p {
   overflow: hidden;
   text-align: left;
   margin: 0;
@@ -7,22 +7,22 @@
   -webkit-border-radius: 0 0 0 0;
   border-radius: 0 0 0 0;
 }
-.panel-header,
-.panel-body {
+.panel.combo-p .panel-header,
+.panel.combo-p .panel-body {
   border-width: 1px;
   border-style: solid;
 }
-.panel-header {
+.panel.combo-p .panel-header {
   padding: 5px;
   position: relative;
 }
-.panel-title {
+.panel.combo-p .panel-title {
   background: url('images/blank.gif') no-repeat;
 }
-.panel-header-noborder {
+.panel.combo-p .panel-header-noborder {
   border-width: 0 0 1px 0;
 }
-.panel-body {
+.panel.combo-p .panel-body {
   overflow: auto;
   border-top-width: 0;
   padding: 0;
@@ -107,11 +107,11 @@
 .panel-tool-expand {
   background: url('images/panel_tools.png') no-repeat -32px -16px;
 }
-.panel-header,
-.panel-body {
+.panel.combo-p .panel-header,
+.panel.combo-p .panel-body {
   border-color: #95B8E7;
 }
-.panel-header {
+.panel.combo-p .panel-header {
   background-color: #E0ECFF;
   background: -webkit-linear-gradient(top,#EFF5FF 0,#E0ECFF 100%);
   background: -moz-linear-gradient(top,#EFF5FF 0,#E0ECFF 100%);
@@ -120,12 +120,12 @@
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#EFF5FF,endColorstr=#E0ECFF,GradientType=0);
 }
-.panel-body {
+.panel.combo-p .panel-body {
   background-color: #ffffff;
   color: #000000;
   font-size: 12px;
 }
-.panel-title {
+.panel.combo-p .panel-title {
   font-size: 12px;
   font-weight: bold;
   color: #0E2D5F;
@@ -140,7 +140,7 @@
 .panel-footer-noborder {
   border-width: 1px 0 0 0;
 }
-.accordion {
+/*.accordion {
   overflow: hidden;
   border-width: 1px;
   border-style: solid;
@@ -180,7 +180,7 @@
 }
 .accordion .accordion-header-selected .panel-title {
   color: #000000;
-}
+}*/
 .window {
   overflow: hidden;
   padding: 5px;
