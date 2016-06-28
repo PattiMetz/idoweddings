@@ -1634,6 +1634,7 @@ a.desc:after {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
 	background: url(../images/multiselect_bg.png) no-repeat right 2px top;
+	cursor: pointer;
 }
 .panel.combo-p .panel-body {
 	border-top-width: 1px;
@@ -1647,6 +1648,9 @@ a.desc:after {
 .tree-node-selected {
 	color: #fff;
 	background: #f6be8d;
+}
+.tree-file {
+    background: url('images/tree_icons.png') no-repeat -224px 0;
 }
 
 /******** 14 - Other********/
