@@ -1648,6 +1648,9 @@ a.desc:after {
 	color: #fff;
 	background: #f6be8d;
 }
+.tree-file{
+		background: url('http://www.jeasyui.com/easyui/themes/default/images/tree_icons.png') no-repeat -224px 0;
+	}
 
 /******** 14 - Other********/
 
