@@ -1,6 +1,9 @@
 $(function() {
 	
-	$(document).on('pjax:end', function() {
+	$(document).on('ready pjax:end', function() {
+		$('select.chosen-style').chosen({disable_search_threshold: 10});
+	});
+	$( document ).ajaxComplete(function() {
 		$('select.chosen-style').chosen({disable_search_threshold: 10});
 	});
 	
@@ -296,7 +299,7 @@ $(function() {
 			$(this).parent().next().find('input[type=checkbox]').removeAttr('checked');
 	})
 	
-	$('select.chosen-style').chosen({disable_search_threshold: 10});
+	//$('select.chosen-style').chosen({disable_search_threshold: 10});
 	
 	$(window).resize(function(){
 		openPanel();
