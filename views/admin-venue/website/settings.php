@@ -66,7 +66,7 @@ $this->registerJs("
                        
 
                     
-                        <?php foreach($pages as $page){?>
+                        <?php foreach($pages as $page):?>
                              <tr>
                                 <td>
                                    
@@ -88,7 +88,7 @@ $this->registerJs("
                                     <?endif;?>
                                 </td>
                             </tr>
-                        <?php }?>
+                        <?php endforeach;?>
                     </table>
                 </div>
             </div>    
