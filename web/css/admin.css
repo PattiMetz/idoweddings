@@ -1,7 +1,5 @@
 /*
 1 - Main styles
-2 - Chosen plugin styles
-3 - 
 2 - Left panel styles
 3 - Header styles
 4 - Top panel styles
@@ -11,6 +9,10 @@
 8 - Footer styles
 9 - Modal styles
 10 - Sorting styles
+11 - Chosen plugin styles
+12 - Multiple-select plugin styles
+13 - Combo tree styles
+14 - Other
 */
 
 /******** 1 - Main styles********/
@@ -288,6 +290,34 @@ table, th {
   background-color: #ffe3c7;
   border-color: #ddd;
 }
+.panel-group {
+	margin: 20px 0;
+	clear: both;
+}
+.panel-default > .panel-heading.collapsed {
+	background: url(../images/collapseUp.png) no-repeat right 7px center #fff;
+}
+.panel-default > .panel-heading {
+	background: url(../images/collapseDown.png) no-repeat right 7px center #f5f5f5;
+	cursor: pointer;
+}
+.panel-default > .panel-heading.collapsed .panel-title > a {
+	color: #9e9a49;
+}
+.panel-default > .panel-heading.collapsed .panel-title > a:hover {
+	text-decoration: underline;
+	color: #868234;
+}
+.panel-default > .panel-heading .panel-title > a {
+	color: #de6830;
+}
+.panel-default > .panel-heading .panel-title > a:hover {
+	text-decoration: underline;
+	color: #f6be8d;
+}
+.panel-title > a:focus {
+	color: #868234;
+}
 .glyphicon-close {
 	width: 10px;
 	height: 9px;
@@ -512,9 +542,9 @@ table, th {
 /******** 3 - Header styles********/
 
 .header {
-	height: 80px;
+	min-height: 80px;
 	padding-top: 20px;
-	background: url(../images/header_bg.png) repeat-x;
+	background: url(../images/header_bg.png) repeat;
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
@@ -707,6 +737,53 @@ table, th {
 	cursor: pointer;
 	transition: inherit;
 }
+.update_top_block {
+	padding-top: 20px;
+}
+.update_top_block label,
+.collapse_form label {
+	margin: 0;
+	padding: 7px 0;
+    text-align: left !important;
+    color: #2e1106;
+}
+.update_top_block label.after:after {
+	content: "*";
+	padding-left: 3px;
+	color: #de6830;
+}
+.update_top_block p {
+	padding-top: 7px;
+	color: #777;
+}
+.update_top_block p a {
+	text-decoration: underline;
+}
+.update_top_block select,
+.update_top_block .chosen-container {
+	margin-bottom: 10px;
+}
+.update_top_block .field-venue-comment label {
+	padding-top: 0;
+}
+.update_top_block .field-venue-comment textarea {
+	min-height: 95px;
+}
+.checkbox_group label {
+	padding: 0;
+}
+.col-sm-9.phones {
+	padding: 0;
+}
+.col-sm-9.phones .col-sm-6:nth-child(2) {
+	padding: 0;
+}
+.add_phone,
+.add_contact {
+	min-width: 110px;
+	margin-top: 15px;
+	float: right;
+}
 
 /******** 6 - KNOWLEDGE BASE********/
 
@@ -816,7 +893,7 @@ table, th {
 	background: url(../images/select_bg.png) no-repeat top right 20px;
 }
 .choose_base .input-group-addon {
-	height: 33px;
+	height: 34px;
 	padding: 0 18px;
 	background: url(../images/icons/icon_15_hov.png)no-repeat center center;
 }
@@ -1299,6 +1376,9 @@ table, th {
     margin: 20px 0 5px;
     padding: 0 15px;
 }
+.panel-collapse .attach_block {
+	width: 100%;
+}
 .attach_block > span {
 	vertical-align: top;
     line-height: 34px;
@@ -1415,6 +1495,9 @@ a.desc:after {
 .top_panel .filter .chosen-container {
 	margin-bottom: 5px;
 }
+.panel-collapse .chosen-container {
+	width: 100% !important;
+}
 .chosen-container-single .chosen-single {
 	height: 34px;
 	padding: 6px 12px;
@@ -1486,21 +1569,31 @@ a.desc:after {
 	height: 34px;
 	border: 1px solid #ccc;
 	line-height: 34px;
+	background: url(../images/multiselect_bg.png) no-repeat right 2px top;
 }
 .ms-choice > span.placeholder,
 .ms-choice > span {
 	color: #777;
 }
+.drop_lg .ms-drop {
+	width: 300px;
+}
 .ms-drop {
 	border: 1px solid #ccc;
 }
+.ms-drop ul {
+	padding: 5px 0;
+}
 .ms-drop ul > li label {
-	padding-right: 0;
+	padding: 0 0 0 5px;
 	line-height: 29px;
 }
 .ms-drop input[type="checkbox"] {
 	margin: 0 5px 0 0;
 }
+.ms-drop ul > li.selected,
+.ms-drop ul > li.selected label,
+.ms-drop ul > li.selected span,
 .ms-drop ul > li label:hover {
 	color: #fff;
 	background: #f6be8d;
@@ -1512,7 +1605,55 @@ a.desc:after {
 	background: #f6be8d;
 }
 
-/******** 13 - Other********/
+/********13 - Combo tree styles********/
+
+.textbox.combo {
+	display: block;
+	width: 100% !important;
+	height: 34px !important;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+.textbox.combo.textbox-focused {
+	border-color: #ccc;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.textbox.combo .textbox-addon {
+	display: none;
+}
+.textbox.combo .textbox-text {
+	width: 100% !important;
+	height: 32px !important;
+	margin: 0 !important;
+	padding: 0 12px;
+	border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+	background: url(../images/multiselect_bg.png) no-repeat right 2px top;
+	cursor: pointer;
+}
+.panel.combo-p .panel-body {
+	border-top-width: 1px;
+	border-color: #ccc;
+}
+.tree-node {
+	height: 29px;
+	padding: 6px 0;
+}
+.tree-node-hover,
+.tree-node-selected {
+	color: #fff;
+	background: #f6be8d;
+}
+.tree-file {
+    background: url('images/tree_icons.png') no-repeat -224px 0;
+}
+
+/******** 14 - Other********/
 
 .tabs li {
 	float:left;
@@ -1541,7 +1682,7 @@ a.desc:after {
 	float:left;
 }
 
-.filter select, .filter input[type="text"] {
+/*.filter select, .filter input[type="text"] {
     float: left;
     width: 120px;
     height: 26px;
@@ -1555,7 +1696,7 @@ a.desc:after {
 	height:34px;
 	margin-right:0px;
 	border-radius: 5px;
-}
+}*/
 .navigation_pos li {
 	float:left;
 	margin-right:5px;
@@ -1984,6 +2125,9 @@ a.desc:after {
 		border: none;
 		padding-bottom: 0;
 	}
+	.sett_panel .chosen-container {
+		margin-left: -4px;
+	}
 	.choose_base {
 		display: block;
 		width: 256px;
@@ -2054,6 +2198,9 @@ a.desc:after {
 	/*==plugins for select==*/
 	.chosen-container-single .chosen-single {
 		text-align: left;
+	}
+	.drop_lg .ms-drop {
+		width: 100%;
 	}
 	.ms-drop {
 		text-align: left;
