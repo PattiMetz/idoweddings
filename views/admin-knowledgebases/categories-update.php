@@ -1,5 +1,6 @@
 ﻿<?php
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 ?>
@@ -24,7 +25,7 @@ $form = ActiveForm::begin([
 ?>
 
 <div class="pseudo_head">
-	<h4 class="modal-title"><?php if ($model->id): ?>Edit<?php else: ?>Add<?php endif; ?> Category</h4>
+	<h4 class="modal-title"><?php echo Html::encode($this->title); ?></h4>
 </div>
 
 <?php
@@ -40,9 +41,9 @@ echo Alert::widget([
 
 ?>
 
-<?php echo $form->field($model, 'knowledgebase_id')->textInput(); ?>
+<?php echo $form->field($model, 'knowledgebase_id')->dropDownList($model->knowledgebases, ['class'  => 'form-control chosen-style'])->label(false); ?>
 
-<?php echo $form->field($model, 'category_id')->textInput(); ?>
+<?php echo $form->field($model, 'category_id')->textInput()->label(false); ?>
 
 <?php echo $form->field($model, 'title')->textInput(); ?>
 
@@ -52,3 +53,23 @@ echo Alert::widget([
 </div>
 
 <?php ActiveForm::end(); ?>
+
+<?php
+
+$categories_tree_url = Url::to(['admin-knowledgebases/categories-tree']);
+
+$js = <<<EOT
+	$('#category_id').combotree({
+		animate: true,
+		data: {$model->categories_tree_json}
+	});
+
+	$('#knowledgebase_id').on('change', function() {
+		$('#category_id').combotree({
+			url: '{$categories_tree_url}' + '?knowledgebase_id=' + $(this).val()
+		});
+		$('#category_id').combotree('setValue', '0');
+	});
+EOT;
+
+$this->registerJS($js);

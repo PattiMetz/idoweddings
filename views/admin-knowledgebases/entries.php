@@ -100,7 +100,6 @@ use yii\bootstrap\Alert;
 									'class' => 'item_doc category'
 								]
 							);
-//<small>Attachment: <i>Excelsheet.xlsx</i> <i>Image.jpg</i> <i>Wordfile.docx</i> <i>Textfile.txt</i> <i>Pdffile.pdf</i></small>
 						} else {
 							if ($model->status == 'draft') {
 								$output = Html::a(
@@ -187,7 +186,7 @@ OUTPUT;
 					},
 					'buttons' => [
 						'update' => function($url, $model) {
-							return Html::button('<i class="glyphicon glyphicon-pencil"></i> Rename', [
+							return Html::button('<i class="glyphicon glyphicon-pencil"></i> Edit', [
 								'value' => $url,
 								'class' => 'btn btn-primary modal-ajax',
 							]);

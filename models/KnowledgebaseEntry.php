@@ -33,14 +33,16 @@ class KnowledgebaseEntry extends ActiveRecord {
 		return [
 			['knowledgebase_id', 'required'],
 			['knowledgebase_id', 'integer'],
-			['knowledgebase_id', 'knowledgebaseExists'],
+			['knowledgebase_id', 'inKnowledgebases'],
 			['category_id', 'required'],
 			['category_id', 'integer'],
-			['category_id', 'categoryExists'],
+			['category_id', 'checkCategory'],
 			['title', 'required'],
 //			['title', 'unique'],
 			['content', 'safe'],
-			['status', 'required'],
+			['status', 'required', 'when' => function($model) {
+				return $model->is_category == 0;
+			}],
 			['status', 'inStatuses']
 		];
 	}
@@ -59,14 +61,13 @@ class KnowledgebaseEntry extends ActiveRecord {
 		}
 	}
 
-	public function knowledgebaseExists() {
-		$exists = Knowledgebase::find()->where(['id' => $this->knowledgebase_id])->exists();
-		if (!$exists) {
+	public function inKnowledgebases() {
+		if (!isset($this->knowledgebases[$this->knowledgebase_id])) {
 			$this->addError('knowledgebase_id', 'Knowledgebase doesn\'t exist');
 		}
 	}
 
-	public function categoryExists() {
+	public function checkCategory() {
 		if ($this->hasErrors('knowledgebase_id')) return;
 		if (!$this->category_id) return;
 		$this->category = KnowledgebaseEntry::find()->where([
@@ -76,6 +77,13 @@ class KnowledgebaseEntry extends ActiveRecord {
 		])->asArray()->one();
 		if (!$this->category) {
 			$this->addError('category_id', 'Category doesn\'t exist');
+			return;
+		}
+		if ($this->is_category && $this->id) {
+			if ($this->id == $this->category_id || substr($this->category['tree_path'], 0, strlen($this->tree_path) + 1) == $this->tree_path . '|') {
+				$this->addError('category_id', 'Category isn\'t allowed');
+				return;
+			}
 		}
 	}
 
