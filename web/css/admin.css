@@ -1715,12 +1715,12 @@ a.desc:after {
 	cursor: pointer;
 }
 .panel.combo-p {
-	width: auto !important;
+	width: 100% !important;
 	max-width: 450px;
 	margin-top: -2px;
 }
 .panel.combo-p .panel-body {
-	width: auto !important;
+	width: 100% !important;
 	max-width: 450px;
 	border-top-width: 1px;
 	border-color: #ccc;
@@ -1746,6 +1746,7 @@ a.desc:after {
 	color: #fff;
 	background: #f6be8d;
 }
+.tree-folder,
 .tree-file {
     background: url('images/tree_icons_2.png') no-repeat -224px 0;
 }
