@@ -59,317 +59,471 @@ function add_phone(contact_id, key){
 <div class="venue-form clearfix">
     <?php $form = ActiveForm::begin([
             'layout' => 'horizontal',
-            'options' => ['enctype' => 'multipart/form-data'],
+            'options' => ['enctype' => 'multipart/form-data', 'class' => 'clearfix'],
             'fieldConfig' => [
                 'horizontalCssClasses' => [
-                    'label' => 'col-sm-4',
-                    'wrapper' => 'col-sm-8',
+                    'label' => 'col-md-4',
+                    'wrapper' => 'col-md-8',
                     'error' => '',
                     'hint' => '',
                 ]
             ],
         ]); ?>
-        <?php echo $form->errorSummary($model); ?>
-    <div class="col-sm-6">
-        
-        <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+	<?php echo $form->errorSummary($model); ?>
+	<div class="col-md-10 col-md-offset-1 update_top_block clearfix">
+		<div class="col-md-6">
+			<?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'featured_name')->textInput(['maxlength' => true]) ?>
+			<?= $form->field($model, 'featured_name')->textInput(['maxlength' => true]) ?>
+			
+			<div class="checkbox_group">
+				<?= $form->field($model, 'active',  [
+						'horizontalCssClasses' => [
+							'offset' => 'col-md-offset-5',
+							'wrapper' => '',
+						]
+					])->checkbox() ?>
+				
+				<?= $form->field($model, 'featured',  [
+						'horizontalCssClasses' => [
+							'offset' => 'col-md-offset-5',
+							'wrapper' => '',
+						]
+					])->checkbox() ?>
+			</div>
+			<div class="form-group field-location-payment required">
+				<label class="col-xs-4">Payment:</label>
+				<p class="col-xs-8">05.01.2016</p>
+			</div>
+			<div class="form-group field-location-payment required">
+				<label class="col-xs-4">Expiration Date:</label>
+				<p class="col-xs-8">05.01.2017</p>
+			</div>
+			<div class="form-group field-location-payment required">
+				<label class="col-xs-4">Number of users:</label>
+				<p class="col-xs-8"><a href="#" class="text-success">10</a></p>
+			</div>		
+		</div>
+		<div class="col-md-6">
+		
+			<?php $region           = new Region();?>
+			<?php $location         = $model->location;?>
+			<?php $location_list    = ($location)?$location->getList($location->destination_id):array();?>
+			<?php $destination      = new Destination();?>
+			<?php $destination_list = ($location)?$destination->getList($location->destination->region_id):array();?>
+			<?php $region_id        = ($location)?$location->destination->region_id:'';?>
+			<?php $destination_id   = ($location)?$location->destination_id:'';?>
+			<?php $type             = new VenueType();?>
+			<?php $vibe             = new Vibe();?>
+			<?php $service          = new VenueService();?>
 
-        <?php $region           = new Region();?>
-        <?php $location         = $model->location;?>
-        <?php $location_list    = ($location)?$location->getList($location->destination_id):array();?>
-        <?php $destination      = new Destination();?>
-        <?php $destination_list = ($location)?$destination->getList($location->destination->region_id):array();?>
-        <?php $region_id        = ($location)?$location->destination->region_id:'';?>
-        <?php $destination_id   = ($location)?$location->destination_id:'';?>
-        <?php $type             = new VenueType();?>
-        <?php $vibe             = new Vibe();?>
-        <?php $service          = new VenueService();?>
+			<div class="form-group field-location-name required">
+				<?php echo Html::label('Region','region_id',array('class'=>'control-label col-md-4'));?>
+				<div class="col-md-8">
+					<?= Html::dropDownList('region_id', $region_id, $region->getList(),
+						[
+							'class'  => 'form-control chosen-style',
+							'prompt' => 'Select a region', 
+							'onchange'=>'
+								var id = $(this).val();
+								$.ajax({
+								url:"'.Yii::$app->urlManager->createUrl(["admin-mastertable/dynamicdestinations"]).'",
+								method:"POST",
+								data:{"region_id":id},
+								success:function(data){
+									$("#destination_id").html( data );
+									$("#venue-location_id").html("");
+								}
+							})'
+						]);
+					?>
+				</div>
+			</div>
+			<div class="form-group field-destination-name required">
+				<?php echo Html::label('Destination','destination_id',array('class'=>'control-label col-md-4'));?>
+				<div class="col-md-8">
+					<?= Html::dropDownList('destination_id', $destination_id, $destination_list,
+						[
+							'id'=>'destination_id',
+							'class'  => 'form-control chosen-style',
+							'prompt' => 'Select a region', 
+							'onchange'=>'
+								var id = $(this).val();
+								$.ajax({
+								url:"'.Yii::$app->urlManager->createUrl(["admin-mastertable/dynamiclocations"]).'",
+								method:"POST",
+								data:{"destination_id":id},
+								success:function(data){
+									$("#venue-location_id").html( data );
+								}
+							})'
+						]);
+					?>
+				</div>
+			</div>
 
+			<?= $form->field($model, 'location_id')->dropDownList($location_list,['class'  => 'form-control chosen-style', 'prompt' => 'Select a location']) ?>
+		
+			<?= $form->field($model, 'comment')->textarea(['rows' => 3]) ?>
 
-        <div class="form-group field-location-name required">
-            <?php echo Html::label('Region','region_id',array('class'=>'control-label col-sm-4'));?>
-            <div class="col-sm-8">
-                <?= Html::dropDownList('region_id', $region_id, $region->getList(),
-                            [
-                                'class'  => 'form-control',
-                                'prompt' => 'Select a region', 
-                                'onchange'=>'
-                                    var id = $(this).val();
-                                    $.ajax({
-                                    url:"'.Yii::$app->urlManager->createUrl(["admin-mastertable/dynamicdestinations"]).'",
-                                    method:"POST",
-                                    data:{"region_id":id},
-                                    success:function(data){
-                                        $("#destination_id").html( data );
-                                        $("#venue-location_id").html("");
-                                    }
-                                })'
-                            ]);
-                ?>
-            </div>
-        </div>
-        <div class="form-group field-destination-name required">
-            <?php echo Html::label('Destination','destination_id',array('class'=>'control-label col-sm-4'));?>
-            <div class="col-sm-8">
-                <?= Html::dropDownList('destination_id', $destination_id, $destination_list,
-                    [
-                        'id'=>'destination_id',
-                        'class'  => 'form-control',
-                        'prompt' => 'Select a region', 
-                        'onchange'=>'
-                            var id = $(this).val();
-                            $.ajax({
-                            url:"'.Yii::$app->urlManager->createUrl(["admin-mastertable/dynamiclocations"]).'",
-                            method:"POST",
-                            data:{"destination_id":id},
-                            success:function(data){
-                                $("#venue-location_id").html( data );
-                            }
-                        })'
-                    ]);
-                ?>
-            </div>
-        </div>
+			<?= $form->field($model, 'guest_capacity')->textInput(['maxlength' => true]) ?>
+		</div>
+	</div>
+	<div class="panel-group" id="accordion">
+		<div class="panel panel-default">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+				<h4 class="panel-title">
+					<a class="text-success">Address Details</a>
+				</h4>
+			</div>
+			<div id="collapse1" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 collapse_form inner_col_box">
+						<?= $form->field($address, 'address')->textInput(['maxlength' => true]) ?>
+						
+						<?= $form->field($address, 'city')->textInput(['maxlength' => true]) ?>
+						
+						<?= $form->field($address, 'state')->textInput(['maxlength' => true]) ?>
+						
+						<?= $form->field($address, 'zip')->textInput(['maxlength' => true]) ?>
+						
+						<?php $country = new Country();?>
+						<?= $form->field($address, 'country_id')->dropDownList($country->getList(),['class'  => 'form-control chosen-style']) ?>
 
-        <?= $form->field($model, 'location_id')->dropDownList($location_list,['prompt' => 'Select a location']) ?>
+						<?= $form->field($address, 'timezone')->dropDownList(Yii::$app->params['timezones'],['class'  => 'form-control chosen-style']) ?>
 
-        
+						<?= $form->field($address, 'email')->textInput(['maxlength' => true]) ?>
 
-      <h2>Address details</h2>
-        <?php $country = new Country();?>
-        <?= $form->field($address, 'country_id')->dropDownList($country->getList()) ?>
+						<?= $form->field($address, 'site')->textInput(['maxlength' => true]) ?>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+				<h4 class="panel-title">
+					<a class="text-success">Contact Details</a>
+				</h4>
+			</div>
+			<div id="collapse2" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="col-md-10 col-md-offset-1 collapse_form inner_col_box2">
+						<?php $key=0;?>
+						<?php if(isset($contacts) && count($contacts)>0) {?> 
 
-        <?= $form->field($address, 'state')->textInput(['maxlength' => true]) ?>
+							<?php foreach ($contacts as $key=>$contact) {?>
 
-        <?= $form->field($address, 'zip')->textInput(['maxlength' => true]) ?>
+								<div class=" clearfix contact_<?=$key?>">
+									<div class="col-md-6">
+										<?= $form->field($contact, "[$key]contact_type")->dropDownList(['Contact - for Events', 'Contact - Manager/Sales', 'Contact - Groups/Accommodation'], ['class'  => 'form-control chosen-style']) ?> 
 
-        <?= $form->field($address, 'city')->textInput(['maxlength' => true]) ?>
+										<?= $form->field($contact, "[$key]name")->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($address, 'address')->textInput(['maxlength' => true]) ?>
+										<?= $form->field($contact, "[$key]email")->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($address, 'timezone')->dropDownList(Yii::$app->params['timezones']) ?>
+										<?= $form->field($contact, "[$key]skype")->textInput(['maxlength' => true]) ?>
+									</div>
+									<div class="col-md-6 form-group required">
+										
+										<?php echo Html::label('Phone','',array('class'=>'control-label col-sm-3'));?>
+										
+										<div class="col-sm-9 phones">
 
-        <?= $form->field($address, 'email')->textInput(['maxlength' => true]) ?>
+											<?php if(is_array($contact->phones)) {
+												
+												foreach($contact->phones as $k=>$phone) {?>
 
-        <?= $form->field($address, 'site')->textInput(['maxlength' => true]) ?>
+														<div class="col-sm-6">
+															<?= Html::dropDownList('VenueContact['.$key.'][phones]['.$k.'][type]', $phone['type'], ['General','Mobile','Fax'], ['class'  => 'form-control chosen-style']);?>
+														</div>
+														<div class="col-sm-6">
+															<?= Html::textInput('VenueContact['.$key.'][phones]['.$k.'][phone]', $phone['phone'], ['class'  => 'form-control chosen-style']);?>
+														</div>
 
-        <h2>Contact Details</h2>
-        <?php $key=0;?>
-        <?php if(isset($contacts) && count($contacts)>0) {?> 
+												<?php }
 
-            <?php foreach ($contacts as $key=>$contact) {?>
+											}?>
+										</div>
+										<div class="form_group clearfix">
+										   <?= Html::Button('Add phone', ['class' => 'btn btn-danger add_phone','onclick'=>'add_phone('.$contact->id.','.$key.')']) ?>
+										</div>
+										<div class="form_group clearfix">
+										   <?= Html::Button('Add contact', ['class' => 'btn btn-primary add_contact']) ?>
+										</div>
+									</div>
+								</div>
 
-                <div class="contact_<?=$key?>">
-                    <?= $form->field($contact, "[$key]contact_type")->dropDownList(['Contact - for Events', 'Contact - Manager/Sales', 'Contact - Groups/Accommodation']) ?> 
+							<?php }?>
+						
+						<?php }?>    
+						
+						<?php $key++;?>
+							<div class="add_contact_form contact_<?=$key?>" style="display:none">
+								<div class="col-md-6">
+							
+									<?php $new_contact = new VenueContact();
+										  $new_contact->venue_id = $model->id; 
+										  ?>
 
-                    <?= $form->field($contact, "[$key]name")->textInput(['maxlength' => true]) ?>
+									<?= $form->field($new_contact, "[$key]venue_id")->hiddenInput()->label(false) ?>
 
-                    <?= $form->field($contact, "[$key]email")->textInput(['maxlength' => true]) ?>
+									<?= $form->field($new_contact, "[$key]contact_type")->dropDownList(['Contact - for Events', 'Contact - Manager/Sales', 'Contact - Groups/Accommodation'], ['class'  => 'form-control chosen-style']) ?> 
 
-                    <?= $form->field($contact, "[$key]skype")->textInput(['maxlength' => true]) ?>
+									<?= $form->field($new_contact, "[$key]name")->textInput(['maxlength' => true]) ?>
 
-                    <div class="form-group required">
-                        
-                        <?php echo Html::label('Phone','',array('class'=>'control-label col-sm-4'));?>
-                        
-                        <div class="col-sm-8 phones">
+									<?= $form->field($new_contact, "[$key]email")->textInput(['maxlength' => true]) ?>
 
-                            <?php if(is_array($contact->phones)) {
-                                
-                                foreach($contact->phones as $k=>$phone) {?>
-                                    <p>
-                                        <?= Html::dropDownList('VenueContact['.$key.'][phones]['.$k.'][type]', $phone['type'], ['General','Mobile','Fax']);?>
-                                     
-                                        <?= Html::textInput('VenueContact['.$key.'][phones]['.$k.'][phone]', $phone['phone']);?>
-                                    </p>    
-                                <?php }
+									<?= $form->field($new_contact, "[$key]skype")->textInput(['maxlength' => true]) ?>
+								</div>
+								<div class="col-md-6 form-group required">
+									
+									<?php echo Html::label('Phone','',array('class'=>'control-label col-sm-3'));?>
+									
+									<div class="col-sm-9 phones">
+										<div class="col-sm-6">
+											<?= Html::dropDownList('VenueContact['.$key.'][phones][0][type]', '', ['General','Mobile','Fax'], ['class'  => 'form-control chosen-style']);?>
+										</div>
+										<div class="col-sm-6">		 
+											<?= Html::textInput('VenueContact['.$key.'][phones][0][phone]', '', ['class'  => 'form-control chosen-style']);?>
+										</div>
+									</div>
 
-                            }?>
-                        </div>
-                        <div class="form_group">
-                           <?= Html::Button('Add phone', ['class' => 'btn btn-primary add_phone','onclick'=>'add_phone('.$contact->id.','.$key.')']) ?>
-                        </div>
-                    </div>  
+									<div class="form_group clearfix">
+										<?= Html::Button('Add phone', ['class' => 'btn btn-danger add_phone','onclick'=>'add_phone('.(isset($contact->id)?$contact->id:0).', '.$key.')']) ?>
+									</div>
+								</div>    
+							</div>
+						<?if($model->id):?> 
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+				<h4 class="panel-title">
+					<a class="text-success">Venue Type</a>
+				</h4>
+			</div>
+			<div id="collapse3" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="col-md-4 col-md-offset-4 collapse_form">
+						<div class="form-group required">
+							
+							<?= Html::checkbox('select_type',false,['class'=>'select_all','id'=>'select_types']);?>
+							
+							<?= Html::label('Check all that apply','select_types',array('class'=>'checkbox-inline'));?>
 
-                </div>
+						</div>
 
-            <?php }?>
-        
-        <?php }?>    
-        <div class="form_group">
-           <?= Html::Button('Add contact', ['class' => 'btn btn-primary add_contact']) ?>
-        </div>
-        <?php $key++;?>
-        <div class="add_contact_form contact_<?=$key?>" style="display:none">
-            <?php $new_contact = new VenueContact();
-                  $new_contact->venue_id = $model->id; 
-                  ?>
+						<?= $form->field($model, 'types_array',['template'=>"{input}{hint}\n\t{error}"])->checkBoxList($type->getList(),['class'=>'checkBox_block', 'label'=>'']) ?>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse4">
+				<h4 class="panel-title">
+					<a class="text-success">Wedding Vibe</a>
+				</h4>
+			</div>
+			<div id="collapse4" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="col-md-4 col-md-offset-4 collapse_form">
+						<div class="form-group required">
+							
+							<?= Html::checkbox('select_type',false,['class'=>'select_all','id'=>'select_vibes']);?>
 
-            <?= $form->field($new_contact, "[$key]venue_id")->hiddenInput()->label(false) ?>
+							<?= Html::label('Check all that apply','select_vibes',array('class'=>'checkbox-inline'));?>
 
-            <?= $form->field($new_contact, "[$key]contact_type")->dropDownList(['Contact - for Events', 'Contact - Manager/Sales', 'Contact - Groups/Accommodation']) ?> 
+						</div>
+							  
+						<?= $form->field($model, 'vibes_array',['template'=>"{input}{hint}\n\t{error}"])->checkBoxList($vibe->getList(),['class'=>'checkBox_block']) ?>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse5">
+				<h4 class="panel-title">
+					<a class="text-success">Venue provides</a>
+				</h4>
+			</div>
+			<div id="collapse5" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="col-md-4 col-md-offset-4 collapse_form">
+						<div class="form-group required">
+		
+							<?= Html::checkbox('select_type',false,['class'=>'select_all','id'=>'select_services']);?>
 
-            <?= $form->field($new_contact, "[$key]name")->textInput(['maxlength' => true]) ?>
+							<?= Html::label('Check all that apply','select_services',array('class'=>'checkbox-inline'));?>
 
-            <?= $form->field($new_contact, "[$key]email")->textInput(['maxlength' => true]) ?>
+						</div>
+							  
+						<?= $form->field($model, 'services_array',['template'=>"{input}{hint}\n\t{error}"])->checkBoxList($service->getList(),['class'=>'checkBox_block']) ?>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse6">
+				<h4 class="panel-title">
+					<a class="text-success">Venue Tax</a>
+				</h4>
+			</div>
+			<div id="collapse6" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="col-md-10 col-md-offset-1 collapse_form clearfix">
+						<div class="col-md-6 tax_box clearfix">
+							<div class="col-sm-6">
+								
+								<?= $form->field($tax, 'tax')->textInput()->label('Tax Rate',['class'=>'control-label']) ?>
+								
+							</div>
+							<div class="col-sm-6">
 
-            <?= $form->field($new_contact, "[$key]skype")->textInput(['maxlength' => true]) ?>
+								<?= $form->field($tax, 'service_rate')->textInput()->label('Service Rate',['class'=>'control-label']) ?>
+								
+							</div>
+							<div class="col-sm-6">
 
-            <div class="form-group required">
-                
-                <?php echo Html::label('Phone','',array('class'=>'control-label col-sm-4'));?>
-                
-                <div class="col-sm-8 phones">
-                    <p>
-                        <?= Html::dropDownList('VenueContact['.$key.'][phones][0][type]', '', ['General','Mobile','Fax']);?>
-                             
-                        <?= Html::textInput('VenueContact['.$key.'][phones][0][phone]', '');?>
-                    </p>  
+								<?= $form->field($tax, 'our_service_rate')->textInput()->label('I Do Service Fee',['class'=>'control-label no_padding']) ?>
+								
+							</div>
+							<div class="col-sm-6">
 
-                </div>
+								<?= $form->field($tax, 'agency_service_rate')->textInput()->label('Agency Service Fee',['class'=>'control-label no_padding']) ?>
+								
+							</div>
+						</div>
+						<div class="col-md-6">
 
-                <div class="form_group">
-                    <?= Html::Button('Add phone', ['class' => 'btn btn-primary add_phone','onclick'=>'add_phone('.(isset($contact->id)?$contact->id:0).', '.$key.')']) ?>
-                </div>
-            </div>    
-        </div>
-        <?if($model->id):?> 
-           <h2>Documents</h2>
+							<?= $form->field($tax, 'comment')->textarea(['rows' => 1]) ?>
+						
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse7">
+				<h4 class="panel-title">
+					<a class="text-success">Venue Commission</a>
+				</h4>
+			</div>
+			<div id="collapse7" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="col-md-10 col-md-offset-1 collapse_form radiolist clearfix">
+					
+					<?= $form->field($tax, 'commission_type',['template'=>"{input}{hint}\n\t{error}",'horizontalCssClasses' => [
+					'wrapper' => 'required',
+					]])->radioList(['Prices are Net','Prices are Commissionable','Negotiated Wholesale rates']) ?>
+					
+					<div class="clearfix">
 
-             <?php if(isset($docs) && count($docs)>0) {?> 
-                <ul class="docs">
-                    <?php foreach ($docs as $doc) {?>
-                    <li>
-                        <?=Html::a($doc->doc,["/uploads/venue/".$model->id."/".$doc->doc],['target'=>'_blank','data-pjax'=>0])?>
-                        <?=Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$doc->id])],['class'=>'modal-ajax'])?>
-                    </li>
-                    <?php }?>
-                </ul>
-            <?php }?>
-            <h3>Upload Files.</h3>
-          
+						<?= $form->field($tax, 'commission', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
+					
+					</div>
+					<div class="clearfix">
+					
+						<?= $form->field($tax, 'commission_package', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
 
-            <?=$form->field($doc, 'files[]')->fileInput(['multiple' => 'multiple']);?>
-        <?endif;?>
-        <div class="form-group required">
-            <label>Updated by </label> <?=$model->user?> <?=$model->updated_at?>
-        </div>
-    </div>
-    <div class="col-sm-6">
-        <div class="col-sm-12">
-            <div class="col-sm-6">
-                 <?= $form->field($model, 'active',  [
-                        'horizontalCssClasses' => [
-                            'offset' => 'col-sm-offset-0',
-                            'wrapper' => '',
-                        ]
-                    ])->checkbox() ?>
-                  <div class="form-group field-location-payment required">
-                    <label>Payment:</label>
-                    <span>05.01.2016</span>
-                  </div>
-                  <div class="form-group field-location-payment required">
-                    <label>Number of users:</label>
-                    <a href="#">10</a>
-                  </div>
-             </div>
-            <div class="col-sm-6"> 
-                <?= $form->field($model, 'featured',  [
-                        'horizontalCssClasses' => [
-                            'offset' => 'col-sm-offset-0',
-                            'wrapper' => '',
-                        ]
-                    ])->checkbox() ?>
-                <div class="form-group field-location-payment required">
-                    <label>Expiration Date:</label>
-                    <span>05.01.2017</span>
-                  </div>
-            </div>
-        </div>    
-        <?= $form->field($model, 'comment')->textarea(['rows' => 2]) ?>
+						<?= $form->field($tax, 'commission_food', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
 
-        <?= $form->field($model, 'guest_capacity')->textInput(['maxlength' => true]) ?>
-        
-        <h2>Venue Type</h2>
+						<?= $form->field($tax, 'commission_items', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
+						
+					</div>
+					
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse8">
+				<h4 class="panel-title">
+					<a class="text-success">Accommodation Details</a>
+				</h4>
+			</div>
+			<div id="collapse8" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="col-md-10 col-md-offset-1 collapse_form clearfix">
+						<ul class="prices_list clearfix">
+							<li>
+								
+								<?= $form->field($tax, 'accommodation_commission_type',['template'=>"{input}{hint}\n\t{error}"])->radioList(['Prices are Net','Prices are Commissionable']) ?>
+								
+								<?= $form->field($tax, 'accommodation_commission', ['options' => ['class'=>'invisible']])->textInput() ?>
+								
+							</li>
+							<li>
 
-        <div class="form-group required">
-            
-            <?= Html::checkbox('select_type',false,['class'=>'select_all','id'=>'select_types']);?>
+								<?= $form->field($tax, 'accomodation_wholesale',['horizontalCssClasses' => ['offset' => 'col-sm-offset-0', 'wrapper' => ''], 'template'=>"{input}{hint}\n\t{error}"])->checkbox() ?>
+								
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse9">
+				<h4 class="panel-title">
+					<a class="text-success">Venue Package Type</a>
+				</h4>
+			</div>
+			<div id="collapse9" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="col-md-10 col-md-offset-1 collapse_form clearfix">
+						
+						<?= $form->field($model, 'type',['template'=>"{input}{hint}\n\t{error}"])->radioList([
+							'1' => 'Venue Package is optional; Site fee is given and WOMI can bring on their own professional Vendors. (Venue Package Type : 1)',
+							'2' => 'Venue Package is required, but WOMI can bring on their own professional Vendors. (Venue Package Type : 2)',
+							'3' => 'Venue Package is required and all Vendors must be arranged through Venue. (Venue Package Type : 3)',
+							'5' => 'PACKAGES are optional, WOMI chooses to use Venue Package and WOMI can bring on their own professional Vendors.. (Venue Package Type : 5)'
+						]) ?>
+						<?= $form->field($model, 'nonguest')->checkBox()->label('Venue allows NON-GUESTS to marry on the property. (Venue Package Type : 4)') ?>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse10">
+				<h4 class="panel-title">
+					<a class="text-success">Documents</a>
+				</h4>
+			</div>
+			<div id="collapse10" class="panel-collapse collapse">
+				<div class="panel-body">
+					<div class="col-md-10 col-md-offset-1 collapse_form">
+					
+						<?php if(isset($docs) && count($docs)>0) {?> 
+							<ul class="docs">
+								<?php foreach ($docs as $doc) {?>
+								<li>
+									<?=Html::a($doc->doc,["/uploads/venue/".$model->id."/".$doc->doc],['target'=>'_blank','data-pjax'=>0])?>
+									<?=Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$doc->id])],['class'=>'modal-ajax'])?>
+								</li>
+								<?php }?>
+							</ul>
+						<?php }?>
+						<!--h3>Upload Files.</h3-->
+						<div class="attach_block">
+							<span>Upload Files:</span>
+						</div>
+					  
 
-            <?= Html::label('Check all that apply','select_types',array('class'=>'control-label col-sm-4'));?>
-
-        </div>
-
-        <?= $form->field($model, 'types_array',['template'=>"{input}{hint}\n\t{error}"])->checkBoxList($type->getList(),['class'=>'checkBox_block', 'label'=>'']) ?>
-       
-        <h2>Venue Vibe</h2>
-
-        <div class="form-group required">
-            
-            <?= Html::checkbox('select_type',false,['class'=>'select_all','id'=>'select_vibes']);?>
-
-            <?= Html::label('Check all that apply','select_vibes',array('class'=>'control-label col-sm-4'));?>
-
-        </div>
-              
-        <?= $form->field($model, 'vibes_array',['template'=>"{input}{hint}\n\t{error}"])->checkBoxList($vibe->getList(),['class'=>'checkBox_block']) ?>
-
-        <h2>Venue provides</h2>
-
-        <div class="form-group required">
-            
-            <?= Html::checkbox('select_type',false,['class'=>'select_all','id'=>'select_services']);?>
-
-            <?= Html::label('Check all that apply','select_services',array('class'=>'control-label col-sm-4'));?>
-
-        </div>
-              
-        <?= $form->field($model, 'services_array',['template'=>"{input}{hint}\n\t{error}"])->checkBoxList($service->getList(),['class'=>'checkBox_block']) ?>
-       
-        <h2>Venue Tax type</h2>
-        
-        <?= $form->field($tax, 'tax')->textInput() ?>
-
-        <?= $form->field($tax, 'service_rate')->textInput() ?>
-
-        <?= $form->field($tax, 'our_service_rate')->textInput() ?>
-
-        <?= $form->field($tax, 'agency_service_rate')->textInput() ?>
-
-        <?= $form->field($tax, 'comment')->textarea(['rows' => 1]) ?>
-
-        <h2>Venue Commission</h2>
-        <?= $form->field($tax, 'commission_type',['template'=>"{input}{hint}\n\t{error}",'horizontalCssClasses' => [
-                            'wrapper' => 'required',
-                        ]])->radioList(['Prices are Net','Prices are Commissionable','Negotiated Wholesale rates']) ?>
-
-        <?= $form->field($tax, 'commission', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
-
-        <?= $form->field($tax, 'commission_package', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
-
-        <?= $form->field($tax, 'commission_food', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
-
-        <?= $form->field($tax, 'commission_items', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
-
-        <h2>Accommodation Details</h2>
-
-        <?= $form->field($tax, 'accommodation_commission_type',['template'=>"{input}{hint}\n\t{error}"])->radioList(['Prices are Net','Prices are Commissionable']) ?>
-
-        <?= $form->field($tax, 'accommodation_commission', ['options' => ['class'=>'invisible']])->textInput() ?>
-
-        <?= $form->field($tax, 'accomodation_wholesale',['horizontalCssClasses' => ['offset' => 'col-sm-offset-0'], 'template'=>"{input}{hint}\n\t{error}"])->checkbox() ?>
-        <h2>Venue Package Type</h2>
-        <?= $form->field($model, 'type',['template'=>"{input}{hint}\n\t{error}"])->radioList([
-            '1' => 'Venue Package is optional; Site fee is given and WOMI can bring on their own professional Vendors. (Venue Type : 1)',
-            '2' => 'Venue Package is required, but WOMI can bring on their own professional Vendors. (Venue Type : 2)',
-            '3' => 'Venue Package is required and all Vendors must be arranged through Venue. (Venue Type : 3)',
-            '5' => 'PACKAGES are optional, WOMI chooses to use Venue Package and WOMI can bring on their own professional Vendors.. (Venue Type : 5)'
-        ]) ?>
-        <?= $form->field($model, 'nonguest')->checkBox()->label('Venue allows NON-GUESTS to marry on the property. (Venue Type : 4)') ?>
-    </div>
-    </div>    
+						<?=$form->field($doc, 'files[]')->fileInput(['multiple' => 'multiple']);?>
+						<?endif;?>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group required">
+		<label>Updated by </label> <?=$model->user?> <?=$model->updated_at?>
+	</div>
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
