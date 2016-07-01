@@ -1,7 +1,7 @@
 <?php
 
 $params = require(__DIR__ . '/params.php');
-
+$params['timezones'] = require(__DIR__.'/timezones.php');
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
@@ -42,11 +42,10 @@ $config = [
             'baseUrl' => '',
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-		[
-		    'class' => 'app\components\UrlRule'
-		]
-	    ],
+            'rules' => array(
+                'admin/<controller>/<action:[0-9a-zA-Z_\-]+>' => 'admin-<controller>/<action>',
+            )
+           
         ],
     ],
     'params' => $params,
