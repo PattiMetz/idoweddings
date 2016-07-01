@@ -290,6 +290,17 @@ table, th {
   background-color: #ffe3c7;
   border-color: #ddd;
 }
+.breadcrumb {
+	margin-bottom: 0;
+	padding: 7px 0;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	background-color: #fff;
+}
+.breadcrumb a {
+	text-decoration: underline;
+}
 .panel-group {
 	margin: 20px 0;
 	clear: both;
@@ -318,6 +329,9 @@ table, th {
 .panel-title > a:focus {
 	color: #868234;
 }
+.no_padding {
+    padding: 0 !important;
+}
 .glyphicon-close {
 	width: 10px;
 	height: 9px;
@@ -335,12 +349,6 @@ table, th {
     font-size: 24px;
     color: #9e9a49;
 	vertical-align: middle;
-}
-.checkBox_block {
-	border:solid 1px;
-	height:140px;
-	overflow-y: scroll;
-	padding:0px 10px;
 }
 
 /******** 2 - Left panel styles********/
@@ -644,6 +652,20 @@ table, th {
 	cursor: default;
 	background: #fff;
 }
+.sett_panel {
+	padding: 15px 0;
+	border-bottom: 1px solid #e5e5e5;
+}
+.sett_panel select {
+	width: 178px;
+	padding: 6px 12px 7px;
+	border: 1px solid #ccc;
+	border-left: none;
+	border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+	color: #2e1106;
+	background: url(../images/select_bg.png) no-repeat top right 20px;
+}
 .top_panel {
 	position: relative;
 	padding: 15px 0;
@@ -737,6 +759,15 @@ table, th {
 	cursor: pointer;
 	transition: inherit;
 }
+.venue-form {
+	margin-bottom: 10px;
+}
+.venue-form  form > .form-group.required {
+	text-align: right;
+}
+.venue-form form > .form-group {
+	text-align: center;
+}
 .update_top_block {
 	padding-top: 20px;
 }
@@ -783,6 +814,86 @@ table, th {
 	min-width: 110px;
 	margin-top: 15px;
 	float: right;
+}
+.checkBox_block {
+	height: 152px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	overflow-y: scroll;
+}
+.checkBox_block .checkbox {
+	min-height: auto;
+	padding: 0;
+}
+.checkBox_block .checkbox label {
+	width: 100%;
+	padding: 5px 0 5px 30px;
+}
+.checkBox_block .checkbox label:hover {
+	color: #fff;
+	background: #f6be8d;
+}
+.tax_box {
+	padding: 0;
+}
+.tax_box .col-sm-6 {
+	padding-left: 0;
+}
+.tax_box .col-sm-6:nth-child(even) {
+	padding-right: 0;
+}
+.tax_box .col-sm-6 label {
+	width: 75px;
+	float: left;
+}
+.tax_box .col-sm-6 .col-md-8 {
+	width: 65px;
+	padding: 0;
+	float: right;
+}
+.tax_box + .col-md-6 {
+	padding-right: 0;
+}
+.tax_box + .col-md-6 textarea {
+	height: 85px;
+}
+.radiolist  > .clearfix {
+	clear: both;
+}
+.radiolist .radio {
+    display: inline-block;
+	margin-right: 20px;
+}
+.radiolist,
+.prices_list {
+	margin-top: 20px;
+}
+.prices_list li {
+	width: 344px;
+	float: left;
+}
+.prices_list li:last-child {
+	width: auto;
+}
+.radiolist .radio,
+.prices_list li .checkbox,
+.prices_list li .radio {
+	min-height: auto;
+    padding: 0;
+}
+.prices_list li .radio {
+	margin-right: 16px;
+	float: left;
+}
+.radiolist .radio label,
+.prices_list li .checkbox label,
+.prices_list li .radio label {
+	padding: 0 0 0 20px;
+}
+.prices_list .help-block {
+	clear: both;
 }
 
 /******** 6 - KNOWLEDGE BASE********/
@@ -878,20 +989,6 @@ table, th {
 	margin-top: 3px;
 }
 	/********Open kn base styles********/
-.sett_panel {
-	padding: 15px 0;
-	border-bottom: 1px solid #e5e5e5;
-}
-.sett_panel select {
-	width: 178px;
-	padding: 6px 12px 7px;
-	border: 1px solid #ccc;
-	border-left: none;
-	border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-	color: #2e1106;
-	background: url(../images/select_bg.png) no-repeat top right 20px;
-}
 .choose_base .input-group-addon {
 	height: 34px;
 	padding: 0 18px;
@@ -915,7 +1012,10 @@ table, th {
 	text-align: right;
     float: left;
 }
-.doc_table .arrows {
+.doc_table td:nth-child(2) {
+	text-align: left;
+}
+/*.doc_table .arrows {
 	display: none;
 	width: 22px;
     height: 34px;
@@ -945,10 +1045,7 @@ table, th {
 }
 .doc_table .arrows .arr_down.disabled {
 	background: url(../images/arr_down_dis.png) no-repeat;
-}
-.doc_table td:nth-child(2) {
-	text-align: left;
-}
+}*/
 .item_doc {
 	display: inline-block;
 	height: 24px;
@@ -990,21 +1087,6 @@ table, th {
 	border-radius: 4px;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
-}
-	/********Subcategories styles********/
-.sub_box {
-	display: none;
-}
-.breadcrumb {
-	margin-bottom: 0;
-	padding: 7px 0;
-	border-radius: 0;
-	-moz-border-radius: 0;
-	-webkit-border-radius: 0;
-	background-color: #fff;
-}
-.breadcrumb a {
-	text-decoration: underline;
 }
 
 /******** 7 - MASTERTABLE********/
@@ -1255,28 +1337,6 @@ table, th {
 
 	/*==modal Add Category==*/
 	
-.input_wrapper {
-	display: inline-block;
-	width: 720px;
-	margin-left: 15px;
-}
-.input_wrapper > div {
-	display: inline-block;
-	width: 31%;
-    margin: 0 2% 0 0;
-	vertical-align: top;
-}
-.input_wrapper > div:last-child {
-	margin: 0;
-}
-.field-status {
-	display: inline-block;
-	margin-top: 24px;
-    vertical-align: top;
-}
-.field-content {
-	margin: 0 15px;
-}
 /*.add_category {
 	width: 716px;
 	padding: 0 15px;
@@ -1317,7 +1377,7 @@ table, th {
 */
 
 	/*==modal Add Article==*/
-.line_table .input-group {
+/*.line_table .input-group {
 	float: left;
 }
 .line_table .input-group:first-child {
@@ -1337,14 +1397,27 @@ table, th {
 	border: 1px solid #ccc;
 	border-left: none;
 	box-shadow: none;
-}
+}*/
 .editor_block {
 	padding: 15px;
 	border-top: 1px solid #e5e5e5;
 	color: #777777;
 }
-#status {
-	margin-left: 30px;
+.input_wrapper > div {
+	display: inline-block;
+	width: 225px;
+    margin: 0 0 0 15px;
+	vertical-align: top;
+}
+.status_wrapper > div:first-child label {
+	width: 55px;
+}
+.status_wrapper > div:first-child input {
+	display: inline-block;
+	width: 410px;
+}
+.status_wrapper > div:last-child {
+	padding-left: 0;
 }
 #status > div.radio {
 	display: inline-block;
@@ -1369,6 +1442,9 @@ table, th {
 #status > div.radio label {
 	padding-left: 29px;
 	border-left: 1px solid #ccc;
+}
+.field-content {
+	margin: 0 15px;
 }
 .attach_block {
 	position: relative;
@@ -1438,6 +1514,7 @@ table, th {
 }
 
 /******** 10 - Add sorting icons to gridview sort links ********/
+
 a.asc:after, a.desc:after {
     position: relative;
     top: 1px;
@@ -1487,7 +1564,7 @@ a.desc:after {
     margin: 0 0 15px 0;
 }
 
-/******** 11 - Chosen plugin style********/
+/******** 11 - Chosen plugin styles********/
 
 .chosen-container {
 	display: inline-block;
@@ -1629,28 +1706,49 @@ a.desc:after {
 	width: 100% !important;
 	height: 32px !important;
 	margin: 0 !important;
-	padding: 0 12px;
+	padding: 0 34px 0 12px;
 	border-radius: 4px;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
+	font-size: 14px;
 	background: url(../images/multiselect_bg.png) no-repeat right 2px top;
 	cursor: pointer;
 }
+.panel.combo-p {
+	width: 100% !important;
+	max-width: 450px;
+	margin-top: -2px;
+}
 .panel.combo-p .panel-body {
+	width: 100% !important;
+	max-width: 450px;
 	border-top-width: 1px;
 	border-color: #ccc;
 }
+.tree-folder,
+.tree-file {
+	margin-top: 4px;
+}
+.tree-title {
+	height: 29px;
+	line-height: 29px;
+	font-size: 14px;
+}
+.tree-title:hover {
+	background: #f6be8d;
+}
 .tree-node {
 	height: 29px;
-	padding: 6px 0;
 }
 .tree-node-hover,
-.tree-node-selected {
+.tree-node-selected,
+.tree-node-selected .tree-title {
 	color: #fff;
 	background: #f6be8d;
 }
+.tree-folder,
 .tree-file {
-    background: url('images/tree_icons.png') no-repeat -224px 0;
+    background: url('images/tree_icons_2.png') no-repeat -224px 0;
 }
 
 /******** 14 - Other********/
@@ -1666,13 +1764,13 @@ a.desc:after {
 	display:none;
 }
 .small-input {
-	width:60px;
+	width: 70px;
 }
 .field-venuetax-commission_type {
 	width:100%;
 	float:left;
 }
-#venuetax-accommodation_commission_type .radio {
+/*#venuetax-accommodation_commission_type .radio {
 	float:left;
 	padding-right:10px;
 	margin-top:0px;
@@ -1682,7 +1780,7 @@ a.desc:after {
 	float:left;
 }
 
-/*.filter select, .filter input[type="text"] {
+.filter select, .filter input[type="text"] {
     float: left;
     width: 120px;
     height: 26px;
@@ -1770,18 +1868,15 @@ a.desc:after {
 		max-width: 740px;
 	}
 	/*==modal add article==*/
-	.line_table .input-group {
-		float: right;
-		margin: 0 30px 8px 0;
-	}
-	.line_table .input-group:first-child {
-		margin: 0 30px 8px 0;
-	}
-	.field-status {
-		margin-top: 0;
-	}
-	#status {
-		margin-left: 15px;
+		/*.line_table .input-group {
+			float: right;
+			margin: 0 30px 8px 0;
+		}
+		.line_table .input-group:first-child {
+			margin: 0 30px 8px 0;
+		}*/
+	.status_wrapper > div:last-child {
+		padding-left: 15px;
 	}
 	.attach_block {
 		width: 100%;
@@ -1837,6 +1932,53 @@ a.desc:after {
 		float: none;
 		clear: both;
 	}
+	.update_top_block {
+		padding: 20px 0 0 0;
+	}
+	.update_top_block > div,
+	.update_top_block > div .col-md-8 {
+		padding: 0;
+	}
+	.checkbox_group label {
+		padding-left: 20px;
+	}
+	.collapse_form label {
+		padding: 0 0 0 15px;
+	}
+	.collapse_form label.checkbox-inline {
+		padding: 0;
+		vertical-align: text-bottom;
+	}
+	.col-sm-9.phones .col-sm-6:nth-child(2) {
+		padding: 0 15px 0 0;
+	}
+	.add_phone,
+	.add_contact {
+		margin: 15px 15px 0 0;
+	}
+	.tax_box + .col-md-6 {
+		padding: 0;
+	}
+	.tax_box .no_padding {
+		padding: 7px 0 0 15px !important;
+	}
+	.tax_box .col-sm-6 label {
+		width: auto;
+	}
+	.radiolist .radio {
+		margin-right: 8px;
+	}
+	.radiolist .radio:last-child {
+		margin-right: 0;
+	}
+	.commissions label.col-md-4,
+	.commissions .col-md-8 {
+		display: inline-block;
+		padding: 0 15px 0 0;
+	}
+	.commissions label.col-md-4 {
+		min-width: 155px;
+	}
 	/*==Knowledgebase==*/
 	.doc_table td:last-child  a,
 	.doc_table td:last-child  button {
@@ -1856,6 +1998,7 @@ a.desc:after {
 	.contain:last-child {
 		margin-bottom: 0;
 	}
+	/*==Mastertable==*/
 	.list li {
 		width: 32%;
 	}
@@ -1941,6 +2084,52 @@ a.desc:after {
 	.modal .modal-dialog {
 		min-width: initial;
 		width: 90%;
+	}
+	/*==Venues==*/
+	.inner_col_box,
+	.inner_col_box2,
+	.inner_col_box2 >.clearfix > .col-md-6 {
+		padding: 0;
+	}
+	.col-sm-9.phones .col-sm-6:nth-child(2) {
+		margin-top: 15px;
+		padding: 0 15px;
+	}
+	.tax_box .col-sm-6 {
+		padding: 0;
+	}
+	.tax_box .col-sm-6 label,
+	.tax_box .no_padding {
+		padding: 7px 0 0 0 !important;
+	}
+	.tax_box + .col-md-6 label,
+	.tax_box + .col-md-6 .col-md-8 {
+		padding: 0;
+	}
+	.radiolist,
+	.prices_list {
+		margin-top: 13px;
+	}
+	.radiolist .radio {
+		display: block;
+		margin: 0 0 7px 0;
+	}
+	.prices_list li {
+		width: auto;
+		float: none;
+	}
+	.prices_list li .form-group {
+		margin: 0 !important;
+	}
+	.prices_list li .radio {
+		margin: 0 0 8px 0;
+		float: none;
+	}
+	.prices_list li .radio:last-child {
+		margin-bottom: 0;
+	}
+	.collapse_form .col-md-8.col-sm-offset-4 {
+		padding-left: 0;
 	}
 	/*==Knowledgebase==*/
 	.knbase_box,
@@ -2039,7 +2228,7 @@ a.desc:after {
 	.add_category .dropdown-menu {
 		left: initial;
 		right: 36%;
-	}*/
+	}
 	.line_table {
 		width: 247px;
 		margin: 0 auto;
@@ -2057,7 +2246,7 @@ a.desc:after {
 	}
 	.line_table .input-group .form-control {
 		width: 171px;
-	}
+	}*/
 	.input_wrapper {
 		display: block;
 		width: 256px;
@@ -2069,13 +2258,15 @@ a.desc:after {
 		width: 100%;
 		margin: 0;
 	}
+	.field-title,
 	.field-status {
 		display: block;
 		width: 256px;
 		margin: 0 auto;
 	}
-	#status {
-		margin-left: 0;
+	.status_wrapper > div:first-child input {
+		display: block;
+		width: 100%;
 	}
 	#status > div.radio,
 	#status > div.radio:last-child {
@@ -2083,10 +2274,23 @@ a.desc:after {
 		width: 100%;
 		margin: 0 0 15px 0;
 	}
+	/*==Combo tree styles==*/
+	.panel.combo-p,
+	.panel.combo-p .panel-body {
+		max-width: 256px;
+	}
 }
 @media (max-width: 560px) {
 	.container {
 		padding: 0 6px;
+	}
+	.breadcrumb {
+		width: 256px;
+		margin: 0 auto;
+		text-align: center;
+	}
+	.breadcrumb > li {
+		width: 100%;
 	}
 	.header {
 		height: 70px;
@@ -2173,18 +2377,11 @@ a.desc:after {
 	.list-view > div:nth-child(3n + 3) .knbase_box {
 		width: 256px;
 	}
-	.breadcrumb {
-		width: 256px;
-		margin: 0 auto;
-		text-align: center;
-	}
-	.breadcrumb > li {
-		width: 100%;
-	}
 	/*.add_category .dropdown-menu {
 		left: initial;
 		right: 23%;
 	}*/
+	/*==Mastertable==*/
 	.list li {
 		width: 100%;
 		margin-right: 0;

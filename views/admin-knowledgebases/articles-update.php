@@ -69,18 +69,23 @@ echo Alert::widget([
 ?>
 
 <div class="input_wrapper">
-	<?php echo $form->field($model, 'knowledgebase_id')->dropDownList($model->knowledgebases); ?>
+	<?php echo $form->field($model, 'knowledgebase_id')->dropDownList($model->knowledgebases, ['class'  => 'form-control chosen-style'])->label(false); ?>
 
-	<?php echo $form->field($model, 'category_id')->textInput(); ?>
+	<?php echo $form->field($model, 'category_id')->textInput()->label(false); ?>
 <!--input id="category_id" class="easyui-combotree"-->
 	<!--input class="easyui-combotree" value="0" data-options="url:'tree_data1.json',method:'get',required:false" style="width:200px;"-->
 
-	<?php echo $form->field($model, 'title')->textInput(); ?>
 </div>
+<div class="status_wrapper clearfix">
+	<div class="col-lg-6">
+		<?php echo $form->field($model, 'title')->textInput(); ?>
+	</div>
+	<div class="col-lg-6">
+		<?php echo $form->field($model, 'status')->radioList($model->statuses, ['unselect' => NULL])->label(false); ?>
+	</div>
+</div>	
 
-<?php echo $form->field($model, 'status')->radioList($model->statuses, ['unselect' => NULL])->label(false); ?>
-
-<?php echo $form->field($model, 'content')->textArea(['rows' => '6']); ?>
+	<?php echo $form->field($model, 'content')->textArea(['rows' => '6']); ?>
 
 <div class="attach_block">
 	<span>Attachments:</span>

@@ -383,61 +383,134 @@ class AdminKnowledgebasesController extends Controller {
 
 	public function actionCategoriesUpdate($id = 0) {
 
+		$this->view->title = ($id) ? 'Edit Category' : 'Add Category';
+
 		$alert = '';
 
-		if ($id) {
+		// Get all knowledgebases for SELECT options
+		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
 
-			$model = KnowledgebaseEntry::find()->where(['id' => $id])->one();
+		do {
 
-			if (!$model) {
+			if ($id) {
 
-				$alert = 'Category not found.';
+				$model = KnowledgebaseEntry::find()->where([
+					'id' => $id,
+					'is_category' => 1
+				])->one();
 
-			}
+				if (!$model) {
 
-		} else {
+					$alert = 'Category not found.';
 
-			$model = new KnowledgebaseEntry;
+					break;
 
-			$knowledgebase_id = Yii::$app->request->get('knowledgebase_id');
-
-			if (isset($knowledgebase_id)) {
-
-				$model->knowledgebase_id = $knowledgebase_id;
-
-			}
-
-			$category_id = Yii::$app->request->get('category_id');
-
-			if (isset($category_id)) {
-
-				$model->category_id = intval($category_id);
+				}
 
 			} else {
 
-				$model->category_id = 0;
+				$model = new KnowledgebaseEntry;
+
+				$knowledgebase_id = Yii::$app->request->get('knowledgebase_id');
+
+				if (isset($knowledgebase_id)) {
+
+					$model->knowledgebase_id = intval($knowledgebase_id);
+
+				} else {
+
+					$model->knowledgebase_id = 0;
+
+				}
+
+				$category_id = Yii::$app->request->get('category_id');
+
+				if (isset($category_id)) {
+
+					$model->category_id = intval($category_id);
+
+				} else {
+
+					$model->category_id = 0;
+
+				}
+
+				$model->is_category = 1;
 
 			}
 
-			$model->is_category = 1;
+			$model->knowledgebases = $knowledgebases;
 
-			$model->status = 'published';
+			if (Yii::$app->request->isGet) {
 
-		}
+				if ($model->knowledgebase_id && !isset($model->knowledgebases[$model->knowledgebase_id])) {
 
-		if ($model->load(Yii::$app->request->post())) {
+					$model->knowledgebase_id = 0;
 
-			$errors = ActiveForm::validate($model);
+				}
 
-			if (!count($errors)) {
+				if ($model->knowledgebase_id) {
+
+
+					// Get categories tree
+
+					$categories_tree_info = $this->_get_categories_tree($model->knowledgebase_id, $model->category_id, $model->id);
+
+					extract($categories_tree_info, EXTR_PREFIX_ALL, 'categories');
+
+					$model->categories_tree_json = json_encode($categories_tree);
+
+
+					// Skip category_id if there is no such ID in the tree
+
+					if ($model->category_id && !in_array($model->category_id, $categories_plain_ids)) {
+
+						$model->category_id = 0;
+
+					}
+
+
+				}
+
+			}
+
+			break;
+
+		} while(0);
+
+		if (Yii::$app->request->isPost) {
+
+			do {
+
+				if (!$model) {
+
+					break;
+
+				}
+
+				$post = Yii::$app->request->post();
+
+				$model->load($post);
+
+				$errors = ActiveForm::validate($model);
+
+				if (count($errors)) {
+
+					break;
+
+				}
 
 				if (!$model->save()) {
 
 					$alert = 'Category not saved.';
 
+					break;
+
 				}
 
-			}
+				break;
+
+			} while(0);
 
 			$pjax_reload = '#main';
 
@@ -501,78 +574,22 @@ class AdminKnowledgebasesController extends Controller {
 
 	function actionCategoriesTree($knowledgebase_id) {
 
-
 		// Check if knowledgebase exists
 		$exists = Knowledgebase::find()->where(['id' => $knowledgebase_id])->exists();
 
 		if ($exists) {
 
+			// Get categories tree
 
-			// Get all categories of the current knowledgebase
-			$categories = KnowledgebaseEntry::find()->where([
-				'is_category' => 1,
-				'knowledgebase_id' => $knowledgebase_id
-			])->asArray()->indexBy('id')->all();
+			$categories_tree_info = $this->_get_categories_tree($knowledgebase_id);
 
-
-			// Collect child IDs including the first level
-
-			$categories_child_ids = [];
-
-			foreach ($categories as $category) {
-
-				$parent_id = $category['category_id'];
-
-				if (!isset($categories_child_ids[$parent_id])) {
-
-					$categories_child_ids[$parent_id] = [];
-
-				}
-
-				$categories_child_ids[$parent_id][] = $category['id'];
-
-			}
-
-
-			// Prepare categories tree with HTML encoded texts
-
-			function _get_categories_child_items($parent_id, &$categories, &$categories_child_ids) {
-
-				$rv = [];
-
-				if (isset($categories_child_ids[$parent_id])) {
-
-					foreach ($categories_child_ids[$parent_id] as $category_id) {
-
-						$rv[] = [
-							'id' => $category_id,
-							'text' => Html::encode($categories[$category_id]['title']),
-							'children' => _get_categories_child_items($category_id, $categories, $categories_child_ids)
-						];
-
-					}
-
-				}
-
-				return $rv;
-
-			}
-
-			$categories_tree = _get_categories_child_items(0, $categories, $categories_child_ids);
+			extract($categories_tree_info, EXTR_PREFIX_ALL, 'categories');
 
 		} else {
 
 			$categories_tree = [];
 
 		}
-
-		$blank_option = [
-			'id' => 0,
-			'text' => '(None)',
-			'children' => []
-		];
-
-		array_unshift($categories_tree, $blank_option);
 
 		Yii::$app->response->format = Response::FORMAT_JSON;
 
@@ -593,7 +610,10 @@ class AdminKnowledgebasesController extends Controller {
 
 			if ($id) {
 
-				$model = KnowledgebaseEntry::findOne($id);
+				$model = KnowledgebaseEntry::find()->where([
+					'id' => $id,
+					'is_category' => 0
+				])->one();
 
 				if (!$model) {
 
@@ -665,67 +685,23 @@ class AdminKnowledgebasesController extends Controller {
 				if ($model->knowledgebase_id) {
 
 
-					// Get all categories of the current knowledgebase
-					$categories = KnowledgebaseEntry::find()->where([
-						'is_category' => 1,
-						'knowledgebase_id' => $model->knowledgebase_id
-					])->asArray()->indexBy('id')->all();
+					// Get categories tree
 
+					$categories_tree_info = $this->_get_categories_tree($model->knowledgebase_id, $model->category_id);
 
-					// Collect child IDs including the first level
-
-					$categories_child_ids = [];
-
-					foreach ($categories as $category) {
-
-						$parent_id = $category['category_id'];
-
-						if (!isset($categories_child_ids[$parent_id])) {
-
-							$categories_child_ids[$parent_id] = [];
-
-						}
-
-						$categories_child_ids[$parent_id][] = $category['id'];
-
-					}
-
-
-					// Prepare categories tree with HTML encoded texts
-
-					function _get_categories_child_items($parent_id, &$categories, &$categories_child_ids) {
-
-						$rv = [];
-
-						if (isset($categories_child_ids[$parent_id])) {
-
-							foreach ($categories_child_ids[$parent_id] as $category_id) {
-
-								$rv[] = [
-									'id' => $category_id,
-									'text' => Html::encode($categories[$category_id]['title']),
-									'children' => _get_categories_child_items($category_id, $categories, $categories_child_ids)
-								];
-
-							}
-
-						}
-
-						return $rv;
-
-					}
-
-					$categories_tree = _get_categories_child_items(0, $categories, $categories_child_ids);
-
-					$blank_option = [
-						'id' => 0,
-						'text' => '(None)',
-						'children' => []
-					];
-
-					array_unshift($categories_tree, $blank_option);
+					extract($categories_tree_info, EXTR_PREFIX_ALL, 'categories');
 
 					$model->categories_tree_json = json_encode($categories_tree);
+
+
+					// Skip category_id if there is no such ID in the tree
+
+					if ($model->category_id && !in_array($model->category_id, $categories_plain_ids)) {
+
+						$model->category_id = 0;
+
+					}
+
 
 				}
 
@@ -1033,6 +1009,118 @@ class AdminKnowledgebasesController extends Controller {
 			);
 
 		}
+
+	}
+
+	private function _get_categories_tree($knowledgebase_id, $selected_id = 0, $current_id = 0) {
+
+
+		// Get all categories of the knowledgebase
+		$categories = KnowledgebaseEntry::find()->where([
+			'is_category' => 1,
+			'knowledgebase_id' => $knowledgebase_id
+		])->asArray()->indexBy('id')->all();
+
+
+		// Get all categories IDs
+		$plain_ids = array_keys($categories);
+
+
+		// Skip selected_id if there is no such ID in categories
+
+		if ($selected_id && !in_array($selected_id, $plain_ids)) {
+
+			$selected_id = 0;
+
+		}
+
+
+		// All parents of the selected category will be open nodes
+
+		if ($selected_id) {
+
+			$open_ids = array_filter(explode('|', $categories[$selected_id]['tree_path']));
+
+		} else {
+
+			$open_ids = [];
+
+		}
+
+
+		// Collect child IDs including the first level
+
+		$child_ids = [];
+
+		foreach ($categories as $category) {
+
+			$parent_id = $category['category_id'];
+
+			if (!isset($child_ids[$parent_id])) {
+
+				$child_ids[$parent_id] = [];
+
+			}
+
+			$child_ids[$parent_id][] = $category['id'];
+
+		}
+
+
+		// Prepare categories tree with HTML encoded texts
+
+		function _get_categories_child_items(&$categories, &$child_ids, &$open_ids, &$stop_id, $parent_id = 0) {
+
+			$rv = [];
+
+			if (isset($child_ids[$parent_id])) {
+
+				foreach ($child_ids[$parent_id] as $category_id) {
+
+					if ($category_id != $stop_id) {
+
+						$node = [
+							'id' => $category_id,
+							'text' => Html::encode($categories[$category_id]['title']),
+							'children' => _get_categories_child_items($categories, $child_ids, $open_ids, $stop_id, $category_id)
+						];
+
+						if (!in_array($category_id, $open_ids) && count($node['children'])) {
+
+							$node['state'] = 'closed';
+
+						}
+
+						$rv[] = $node;
+
+					}
+
+				}
+
+			}
+
+			return $rv;
+
+		}
+
+		$tree = _get_categories_child_items($categories, $child_ids, $open_ids, $current_id);
+
+
+		// Prepend a blank option to combotree
+
+		$blank_option = [
+			'id' => 0,
+			'text' => '(None)',
+			'children' => []
+		];
+
+		array_unshift($tree, $blank_option);
+
+
+		return compact(
+			'tree',
+			'plain_ids'
+		);
 
 	}
 
