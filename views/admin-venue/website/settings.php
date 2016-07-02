@@ -20,7 +20,7 @@ $this->registerJs("
 <div class="col-sm-12">
     <div class="venue-index">
 
-        <h1><?= Html::encode($this->title) ?></h1>
+        <h1><?php echo Html::encode($this->title) ?></h1>
         <div class="venue-website-form">
 
             <?php
@@ -45,7 +45,7 @@ $this->registerJs("
             <div class="col-sm-6">
                 <div>Venue Website</div>
                 <div class="block">
-                    <div class="col-sm-9">http://<?= $model->url ?>.idoweddings.com</div>
+                    <div class="col-sm-9">http://<?php echo $model->url ?>.idoweddings.com</div>
                     <div class="col-sm-3">
                         <?php echo Html::a('Change Address', Url::to([Yii::$app->controller->id.'/editurl','id'=>$model->id]),['class' => 'btn btn-primary modal-ajax']) ?>
                         <br/>
@@ -70,20 +70,20 @@ $this->registerJs("
                              <tr>
                                 <td>
                                    
-                                    <span><?=$page->name?></span>
+                                    <span><?php echo $page->name?></span>
                                 </td>
                                 <td>
-                                    <?php if($page->type!='main'):?>
+                                    <?php if($page->type != 'main'):?>
                                         <?php echo $form->field($page, '['.$page->id.']active',['template'=>'{input}'])->dropDownList(['0'=>'Off', '1'=>'On'],['style'=>'width:80px']);?>
                                     <?endif;?>
                                 </td>
                                 <td>
-                                <?php if($page->type!='main'):?>
+                                <?php if($page->type != 'main'):?>
                                         <?php echo Html::a('Rename', Url::to([Yii::$app->controller->id.'/page-update','id'=>$page->id]),['class' => 'btn btn-primary modal-ajax']) ?>
                                     <?endif;?>
                                 </td>
                                 <td>
-                                    <?php if($page->type=='custom'):?>
+                                    <?php if($page->type == 'custom'):?>
                                         <?php echo Html::a('Delete', Url::to([Yii::$app->controller->id.'/page-delete','id'=>$page->id]), ['class' => 'btn btn-primary modal-ajax']) ?>
                                     <?endif;?>
                                 </td>
@@ -221,16 +221,16 @@ $this->registerJs("
                 
                 <div class="title">Display venue name</div>
                 <div class="col-sm-6">
-                    <?= $form->field($model, 'logo_type',['template'=>"{input}{hint}\n\t{error}"])->radioList(['Venue name','Featured venue name','Logo']) ?>
+                    <?php echo $form->field($model, 'logo_type',['template'=>"{input}{hint}\n\t{error}"])->radioList(['Venue name','Featured venue name','Logo']) ?>
                 </div>
                 <div class="col-sm-6">
-                     <?=$form->field($model, 'logo_file')->fileInput();?>
+                     <?php echo $form->field($model, 'logo_file')->fileInput();?>
                 </div>
                 <hr/>
                 <div style="float:left;width:100%">
                     <div class="title">Main Navigation</div>
 
-                    <?= $form->field($model, 'navigation_pos')->hiddenInput()->label(false) ?>
+                    <?php echo $form->field($model, 'navigation_pos')->hiddenInput()->label(false) ?>
                     <div class="title">Allignment</div>
                     <ul class="navigation_pos">
                         <li><?php echo Html::a(Html::img(Url::to('/images/m_bottom.png')).'<br/>top', '#', ['data-value'=>0]);?></li>
@@ -243,7 +243,7 @@ $this->registerJs("
     </div>
     
         <div class="form-group">
-            <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => 'btn-danger btn']) ?>
+            <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => 'btn-danger btn']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>

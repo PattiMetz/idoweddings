@@ -21,8 +21,6 @@ class DeleteAction extends base\Action
         $alert = '';
 
         $prev = new $this->modelClass;
-           
-        $alert = '';
 
         $model = $prev::findOne($id);
 

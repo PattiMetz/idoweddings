@@ -28,7 +28,7 @@ class UpdateAction extends base\Action
 
             if (!$model) {
 
-                $alert = ucfirst($exampleName).' not found.';
+                $alert = ucfirst($this->exampleName).' not found.';
 
             }
 
@@ -38,7 +38,7 @@ class UpdateAction extends base\Action
 
         }
 
-         $model_name = \yii\helpers\StringHelper::basename(get_class($model));
+        $model_name = \yii\helpers\StringHelper::basename(get_class($model));
         if ($model->load(Yii::$app->request->post())) {
             
             $errors = ActiveForm::validate($model);
@@ -46,10 +46,9 @@ class UpdateAction extends base\Action
             if (!count($errors)) {
 
                 if (!$model->save()) {
+                    $alert = ucfirst($this->exampleName).' not saved.';
 
-                    $alert = ucfirst($exampleName).' not saved.';
                     $errors = $model->getErrors();
-                    
                 }
 
             }

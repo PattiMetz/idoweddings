@@ -20,8 +20,26 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJsFile("/js/multiple-select.js",['depends'=>'yii\web\JqueryAsset']);
 $this->registerCssFile("/css/multiple-select.css");
 $this->registerJs("
-        $('.multiple').multipleSelect({
-        });");
+       
+		$(document).on('ready pjax:end', function() {
+			$('.multiple').multipleSelect({});
+			$('.grid-view table tr').on('click',function(){
+				$('.grid-view table tr').removeClass('active');
+				$(this).addClass('active');
+				$.ajax({
+					url:'".Url::to(["admin-venue/menu"])."',
+					method:'POST',
+					data:{'id':$(this).attr('data-key')},
+					success:function(data){
+						$('.venue_list').html(data);
+					}
+
+				})
+			})
+		});
+		
+
+");
 ?>
 <div class="venue-index">
 
@@ -61,8 +79,10 @@ $this->registerJs("
 												method:"POST",
 												data:{"region_id":id},
 												success:function(data){
-													$("#destination_id").html( data );
+													$("#destination_id").chosen("destroy");
+													$("#destination_id").empty().append( data );
 													$("#destination_id").removeAttr("disabled");
+								                    $("#destination_id").chosen({disable_search_threshold: 10});
 													$("#location_id").html("");
 												}
 											})'
@@ -81,7 +101,10 @@ $this->registerJs("
 										method:"POST",
 										data:{"destination_id":id},
 										success:function(data){
-											$("#location_id").html( data ).multipleSelect("refresh");
+											alert(data);
+											$("#location_id").chosen("destroy");
+											$("#location_id").empty().append( data ).multipleSelect("refresh");
+											$("#location_id").chosen({disable_search_threshold: 10});
 										}
 									})'
 								]);
@@ -96,8 +119,6 @@ $this->registerJs("
 								]);
 							?>
 							<?php echo Html::dropDownList('VenueSearch[featured]',$searchModel->featured,['Not featured', 'Featured'],['prompt'=>'Is featured', 'class'  => 'chosen-style'])?> 
-							 
-						
 						
 							<?php echo Html::dropDownList('VenueSearch[type_id][]',$searchModel->type_id,$type->getList(),['placeholder'=>'Venue type', 'class'  => 'multiple','multiple'=>'multiple'])?> 
 							<?php echo Html::dropDownList('VenueSearch[vibe_id][]',$searchModel->vibe_id,$vibe->getList(),['placeholder'=>'Wedding Vibe',  'class'  => 'multiple drop_lg','multiple'=>'multiple'])?>
@@ -117,20 +138,7 @@ $this->registerJs("
 		</div>
 	</div>
 	<div class="col-md-3 venue_list">
-		<div class="list_wrap">
-			<p>Venue Customization</p>
-			<ul>
-				<li><a>Venues general information</a></li>
-				<li><a>Website customization</a></li>
-				<li><a>Event locations</a></li>
-				<li><a>Availability calendar</a></li>
-				<li><a>Wedding packages</a></li>
-				<li><a>Wedding items</a></li>
-				<li><a>Food & Beverages</a></li>
-				<li><a>FAQ's</a></li>
-				<li><a>Websites</a></li>
-			</ul>
-		</div>
+		
 	</div>
 	<div class="col-md-9">
 		<?= GridView::widget([
@@ -141,17 +149,7 @@ $this->registerJs("
 			],
 			'columns' => [
 				
-				[
-					'attribute'=>'name',
-					
-					'format' => 'raw',
-					'value' => function($data){
-						return Html::a($data->name,
-							Url::to([Yii::$app->controller->id."/update", 'id'=>$data->id])
-						);
-						
-					},
-				],
+				'name',
 				'location.destination.name',
 				'location.name',
 				 [

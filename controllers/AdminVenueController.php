@@ -261,6 +261,15 @@ class AdminVenueController extends Controller
        
     }
 
+    public function actionMenu() {
+        $id = Yii::$app->request->post('id');
+      //  $id = 137;
+        $model = $this->findModel($id);
+        return $this->renderAjax('menu', [
+            'model' => $model
+        ]);
+    }
+
     /**
      * Updates an existing Venue model.
      * If update is successful, the browser will be redirected to the 'view' page.
