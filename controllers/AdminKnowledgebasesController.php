@@ -124,66 +124,11 @@ class AdminKnowledgebasesController extends Controller {
 
 	}
 
-	public function actionTest($id = 0) {
-
-		$alert = '';
-
-		$message = '';
-
-		if ($id) {
-
-			$model = Knowledgebase::find()->where(['id' => $id])->one();
-
-			if (!$model) {
-
-				$alert = 'Knowledge base not found.';
-
-			}
-
-		} else {
-
-			$model = new Knowledgebase;
-
-		}
-
-		if ($model->load(Yii::$app->request->post())) {
-
-			$errors = ActiveForm::validate($model);
-
-			if (!count($errors)) {
-
-				if (!$model->save()) {
-
-					$alert = 'Knowledge base not saved.';
-
-				} else {
-
-					$message = 'Knowledge base saved.';
-
-				}
-
-			}
-
-			Yii::$app->response->format = Response::FORMAT_JSON;
-
-			return compact(
-				'errors',
-				'alert',
-				'message'
-			);
-
-		}
-
-		return $this->render('test', [
-			'model' => $model,
-			'alert' => $alert
-		]);
-
-	}
-
 	function actionDelete($id) {
 
 		$alert = '';
+
+//		'LOCK TABLES ... WRITE, ... WRITE ...'
 
 		$model = Knowledgebase::findOne($id);
 
@@ -197,11 +142,97 @@ class AdminKnowledgebasesController extends Controller {
 
 			$errors = [];
 
-			if (!$model->delete()) {
+			do {
 
-				$alert = 'Knowledge base not deleted.';
+				if (!$model) {
 
-			}
+					break;
+
+				}
+
+				$transaction = Yii::$app->db->beginTransaction();
+
+				if (!$model->delete()) {
+
+					$alert = 'Knowledge base not deleted.';
+
+					$transaction = rollback();
+
+					break;
+
+				}
+
+
+				// Get all entries IDs
+
+				try {
+
+					$entry_ids = KnowledgebaseEntry::find()
+						->where(['knowledgebase_id' => $model->id])
+						->select('id')
+						->column();
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to get entries';
+
+					$transaction->rollback();
+
+					break;
+
+				}
+
+
+				if (count($entry_ids)) {
+
+					$s_ids = join(', ', $entry_ids);
+
+
+					// Unlink all files
+
+					try {
+
+						$result = Yii::$app->db->createCommand()->update(
+							'knowledgebase_entry_file', ['knowledgebase_entry_id' => 0], "knowledgebase_entry_id IN ($s_ids)"
+						)->execute();
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to unlink the files';
+
+						$transaction->rollback();
+
+						break;
+
+					}
+
+
+					// Delete all entries
+
+					try {
+
+						$result = Yii::$app->db->createCommand()->delete(
+							'knowledgebase_entry', "id IN ($s_ids)"
+						)->execute();
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to delete entries';
+
+						$transaction->rollback();
+
+						break;
+
+					}
+
+				}
+
+
+				$transaction->commit();
+
+				break;
+
+			} while(0);
 
 			$pjax_reload = '#main';
 
@@ -535,7 +566,10 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
-		$model = KnowledgebaseEntry::findOne($id);
+		$model = KnowledgebaseEntry::find()->where([
+			'id' => $id,
+			'is_category' => 1
+		])->one();
 
 		if (!$model) {
 
@@ -545,13 +579,97 @@ class AdminKnowledgebasesController extends Controller {
 
 		if (Yii::$app->request->isPost) {
 
-			$errors = [];
+			do {
 
-			if (!$model->delete()) {
+				if (!$model) {
 
-				$alert = 'Category not deleted.';
+					break;
 
-			}
+				}
+
+				$errors = [];
+
+				$transaction = Yii::$app->db->beginTransaction();
+
+				if (!$model->delete()) {
+
+					$alert = 'Category not deleted.';
+
+					$transaction->rollback();
+
+					break;
+
+				}
+
+
+				// Get all children IDs
+
+				$tree_path = (strlen($model->tree_path)) ? $model->tree_path . '|' . $model->id : $model->id;
+
+				try {
+
+					$child_ids = KnowledgebaseEntry::find()
+						->where(['tree_path' => $tree_path])
+						->orWhere(['like', 'tree_path', $tree_path . '|%', false])
+						->select('id')
+						->column();
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to get child items';
+
+					$transaction->rollback();
+
+					break;
+
+				}
+
+				$s_ids = join(', ', $child_ids);
+
+
+				// Unlink all files
+
+				try {
+
+					$result = Yii::$app->db->createCommand()->update(
+						'knowledgebase_entry_file', ['knowledgebase_entry_id' => 0], "knowledgebase_entry_id IN ($s_ids)"
+					)->execute();
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to unlink the files';
+
+					$transaction->rollback();
+
+					break;
+
+				}
+
+
+				// Delete all children
+
+				try {
+
+					$result = Yii::$app->db->createCommand()->delete(
+						'knowledgebase_entry', "id IN ($s_ids)"
+					)->execute();
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to delete child items';
+
+					$transaction->rollback();
+
+					break;
+
+				}
+
+
+				$transaction->commit();
+
+				break;
+
+			} while(0);
 
 			$pjax_reload = '#main';
 
