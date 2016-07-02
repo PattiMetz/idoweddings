@@ -44,22 +44,7 @@ echo Alert::widget([
 
 echo Alert::widget([
 	'options' => [
-		'id' => 'files-status-row',
 		'class' => 'alert-info',
-		'style' => 'display: none'
-	],
-	'body' => 'Uploading... <a id="abort" href="#">Abort</a>',
-	'closeButton' => false,
-]);
-
-?>
-
-<?php
-
-echo Alert::widget([
-	'options' => [
-		'id' => 'files-alert',
-		'class' => 'alert-danger',
 		'style' => 'display: none'
 	],
 	'body' => '',
@@ -135,11 +120,20 @@ $js = <<<EOT
 		// Disable browse files button
 		$('#files-select').attr('disabled', true);
 
-		// Hide alert row
-		$('#files-alert').hide();
+		// Hide alert
+		$('.alert-danger').hide();
 
-		// Display uploading status row
-		$('#files-status-row').show();
+		// Display uploading status
+		$('.alert-info').html('Uploading... <a id="files-abort" href="#">Abort</a>').show();
+
+		// Handle upload abort
+		$('#files-abort').on('click', function(e) {
+			// Prevent default action
+			e.preventDefault();
+
+			// Abort the request
+			xhr.abort();
+		});
 
 		// Create a new FormData object
 		var data = new FormData();
@@ -157,9 +151,9 @@ $js = <<<EOT
 			contentType: false,
 			processData: false,
 			type: 'POST',
-			complete: function () {
-				// Hide status row
-				$('#files-status-row').hide();
+			complete: function() {
+				// Hide uploading status
+				$('.alert-info').hide();
 
 				// Clear file input
 				$('#files-select').val('');
@@ -167,9 +161,19 @@ $js = <<<EOT
 				// Enable file browse button
 				$('#files-select').attr('disabled', false);
 			},
-			success: function(data){
+			error: function(jqXHR) {
+				var message;
+				if (jqXHR.status == 0) {
+					message = 'The request is aborted';
+				} else {
+					message = jqXHR.responseText;
+				}
+				$('.alert-danger').html(message).show();
+			},
+			success: function(data) {
 				if (data.list !== undefined && !$.isEmptyObject(data.list)) {
 					$.each(data.list, function(key, val) {
+						// Append uploaded file
 						var li = '<li id="file_' + key + '">';
 						li+= '<input type="hidden" name="file_ids[]" value="' + key + '">';
 						li+= '<i>' + val + '</i>';
@@ -178,9 +182,9 @@ $js = <<<EOT
 
 						$('#files').append(li);
 
+						// Handle remove file
 						$('.remove-file').off();
 						$('.remove-file').on('click', function() {
-alert(2);
 							var fileId = $(this).attr('data-id');
 							$('#file_' + fileId).remove();
 						});
@@ -188,35 +192,27 @@ alert(2);
 				}
 
 				if (data.alert !== undefined && data.alert != '') {
-					$('#files-alert').html(data.alert);
-					$('#files-alert').show();
+					// Show alert
+					$('.alert-danger').html(data.alert).show();
 				}
 
 				if (data.errors !== undefined && !$.isEmptyObject(data.errors)) {
+					// Collect errors
 					var html = '';
 					$.each(data.errors, function(key, val) {
 						html+= key + ': ' + val + '<br>';
 					});
 
-					$('#files-alert').html(html);
-					$('#files-alert').show();
+					// Show alert
+					$('.alert-danger').html(html).show();
 				}
 
 			}
 		});
 	});
 
-	$('#abort').on('click', function(e) {
-alert(3);
-		// Prevent default action
-		e.preventDefault();
-
-		// Abort the request
-		xhr.abort();
-	});
-
+	// Handle remove file
 	$('.remove-file').on('click', function() {
-alert(1);
 		var fileId = $(this).attr('data-id');
 		$('#file_' + fileId).remove();
 	});

@@ -40,7 +40,7 @@ class KnowledgebaseEntryFile extends ActiveRecord {
 				break;
 			}
 			if ($dir_ok) {
-				$this->fileSaved = $this->file->saveAs($dir . '/' . $this->id);
+				$this->fileSaved = $this->file->saveAs($dir . '/' . $this->id . '.data');
 			}
 //		} else {
 //			$dir = 'files/knowledgebases-entries/' . $this->knowledgebase_entry_id;
