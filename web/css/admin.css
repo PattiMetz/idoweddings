@@ -1013,6 +1013,7 @@ table, th {
     float: left;
 }
 .doc_table td:nth-child(2) {
+	max-width: 500px;
 	text-align: left;
 }
 /*.doc_table .arrows {
@@ -1057,11 +1058,12 @@ table, th {
 .item_doc:focus {
 	color: #2e1106;
 }
-.item_doc small{
+.attach_doc {
 	display: block;
+	padding-left: 36px;
 	white-space: initial;
 }
-.item_doc small i {
+.attach_doc i {
 	text-decoration: underline;
 	color: #868234;
 }
@@ -1405,18 +1407,28 @@ table, th {
 }
 .input_wrapper > div {
 	display: inline-block;
-	width: 225px;
-    margin: 0 0 0 15px;
+    margin: 0 10px 0 0;
 	vertical-align: top;
+}
+.input_wrapper > div:last-child {
+		margin: 0;	
+	}
+.input_wrapper label {
+	padding-right: 15px;
+}
+.input_wrapper select {
+	display: inline-block;
+	width: 225px;
 }
 .status_wrapper > div:first-child label {
 	width: 55px;
 }
 .status_wrapper > div:first-child input {
 	display: inline-block;
-	width: 410px;
+	width: 642px;
 }
 .status_wrapper > div:last-child {
+	margin-top: -50px;
 	padding-left: 0;
 }
 #status > div.radio {
@@ -1575,6 +1587,9 @@ a.desc:after {
 .panel-collapse .chosen-container {
 	width: 100% !important;
 }
+.input_wrapper .chosen-container {
+	width: 225px !important;
+}
 .chosen-container-single .chosen-single {
 	height: 34px;
 	padding: 6px 12px;
@@ -1692,6 +1707,10 @@ a.desc:after {
 	border-radius: 4px;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
+}
+.input_wrapper .textbox.combo {
+	display: inline-block;
+	width: 225px !important;
 }
 .textbox.combo.textbox-focused {
 	border-color: #ccc;
@@ -1876,6 +1895,7 @@ a.desc:after {
 			margin: 0 30px 8px 0;
 		}*/
 	.status_wrapper > div:last-child {
+		margin-top: 0;
 		padding-left: 15px;
 	}
 	.attach_block {
@@ -2251,9 +2271,11 @@ a.desc:after {
 		display: block;
 		width: 256px;
 		margin: 0 auto;
+		padding: 0;
 	}
 	.input_wrapper > div,
-	.input_wrapper > div:last-child {
+	.input_wrapper > div:last-child,
+	.input_wrapper select {
 		display: block;
 		width: 100%;
 		margin: 0;
@@ -2275,6 +2297,10 @@ a.desc:after {
 		margin: 0 0 15px 0;
 	}
 	/*==Combo tree styles==*/
+	.input_wrapper .chosen-container,
+	.input_wrapper .textbox.combo {
+		width: 100% !important;
+	}
 	.panel.combo-p,
 	.panel.combo-p .panel-body {
 		max-width: 256px;

@@ -126,7 +126,7 @@ use yii\bootstrap\Alert;
 							}
 							if ($model->count_files) {
 								$list_files = unserialize($model->list_files);
-								$output.= '<small>Attachments:';
+								$output.= '<small class="attach_doc">Attachments: ';
 								foreach ($list_files as $name) {
 									$output.= '<i>' . Html::encode($name) . '</i>' . "\n";
 								}
@@ -156,7 +156,9 @@ OUTPUT;
 						} else {
 							if ($model->count_files) {
 								$output = <<<OUTPUT
-									<div title="Attachments" class="item_doc attach">{$model->count_files}</div>
+									<div class="contain">
+										<div title="Attachments" class="item_doc attach">{$model->count_files}</div>
+									</div>
 OUTPUT;
 							} else {
 								$output = '&nbsp';

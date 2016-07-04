@@ -1725,9 +1725,9 @@
   line-height: 30px;
   font-size: 12px;
 }
-.pagination span {
+/*.pagination span {
   font-size: 12px;
-}
+}*/
 .pagination-link .l-btn-text {
   width: 24px;
   text-align: center;
