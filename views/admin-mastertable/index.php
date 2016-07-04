@@ -49,4 +49,12 @@ use yii\widgets\ActiveForm;
 		<div class="list_top"><?= Html::a("Vendor Types", ['vendortype-list']) ?></div>
 		<div class="list_bottom item_10"></div>
 	</li>
+	<li>
+		<div class="list_top"><?= Html::a("Package Types", ['packagetype-list']) ?></div>
+		<div class="list_bottom item_11"></div>
+	</li>
+	<li>
+		<div class="list_top"><?= Html::a("Agreements", ['agreement-list']) ?></div>
+		<div class="list_bottom item_11"></div>
+	</li>
 </ul>

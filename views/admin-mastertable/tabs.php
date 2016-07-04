@@ -18,11 +18,16 @@
 	<li><?= Html::a("Vendor Types", ['vendortype-list'], ['class' => (($exampleName == 'vendortype')?'active':'')]) ?></li>
 	<li><?= Html::a("Wedding Vibe", ['vibe-list'], ['class' => (($exampleName == 'vibe')?'active':'')]) ?></li>
 	<li><?= Html::a("Venue Provides", ['venueservice-list'], ['class' => (($exampleName == 'venueservice')?'active':'')]) ?></li>
-
+	<li><?= Html::a("Package types", ['packagetype-list'], ['class' => (($exampleName == 'package')?'active':'')]) ?></li>
+	<li><?= Html::a("Agreements", ['agreement-list'], ['class' => (($exampleName == 'agreement')?'active':'')]) ?></li>
 </ul>
 <div class="top_panel clearfix">
 	<div class="col-md-9 col-sm-8 col-xs-7">
-		<?php echo Html::button('Add '.$languages[$exampleName]['single'], ['value' => Url::to([Yii::$app->controller->id.'/'.$exampleName.'-update']), 'class' => 'btn btn-danger modal-ajax']); ?>
+		<?php if($exampleName == 'agreement') {?>
+			<?php echo Html::a('Add '.$languages[$exampleName]['single'],  Url::to([Yii::$app->controller->id.'/'.$exampleName.'-update']), ['class' => 'btn btn-danger']); ?>
+		<?php } else {?>
+			<?php echo Html::button('Add '.$languages[$exampleName]['single'], ['value' => Url::to([Yii::$app->controller->id.'/'.$exampleName.'-update']), 'class' => 'btn btn-danger modal-ajax']); ?>
+		<?php }?>
 
 		
 	</div>

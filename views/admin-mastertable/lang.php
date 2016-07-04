@@ -29,6 +29,12 @@ $languages = [
 'venueservice'	=>	
 	['single'=>'Venue provides','multiple'=>'Venue provides']
 ,
-'vendortype'	=>	
-	['single'=>'Vendor Type','multiple'=>'Vendor types']
+'packagetype'	=>	
+	['single'=>'Package Type','multiple'=>'Package types']
+,
+'itemcategory'	=>	
+	['single'=>'Item Category','multiple'=>'Item categories']
+,
+'agreement'	=>	
+	['single'=>'Agreement','multiple'=>'Agreements']
 ];

@@ -6,17 +6,22 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\web\Response;
+
+use app\models\Agreement;
 use app\models\Location;
 use app\models\Region;
 use app\models\Destination;
-use app\models\search\LocationSearch;
+
+use app\models\search\AgreementSearch;
 use app\models\search\CountrySearch;
-use app\models\search\DestinationSearch;
-use app\models\search\RegionSearch;
 use app\models\search\CurrencySearch;
+use app\models\search\DestinationSearch;
+use app\models\search\LocationSearch;
+use app\models\search\RegionSearch;
 use app\models\search\VibeSearch;
 use app\models\search\VenueTypeSearch;
 use app\models\search\VendorTypeSearch;
+use app\models\search\PackageTypeSearch;
 use app\models\search\VenueServiceSearch;
 use app\models\search\LanguageSearch;
 use app\actions\ListAction;
@@ -141,6 +146,17 @@ class AdminMastertableController extends Controller {
             	'modelClass'  => 'app\models\Currency',
             	'exampleName' => 'currency'
             ],
+            'agreement-list' => [
+                'class' => ListAction::className(),
+                'filterModel' => new AgreementSearch(),
+                'exampleName' => 'agreement',
+                'view'=>'@app/views/admin-mastertable/agreements'
+            ],
+            'agreement-delete' => [
+                'class'       => DeleteAction::className(),
+                'modelClass'  => 'app\models\Agreement',
+                'exampleName' => 'agreement'
+            ],
             'vibe-list' => [
                 'class' => ListAction::className(),
                 'filterModel' => new VibeSearch(),
@@ -221,6 +237,22 @@ class AdminMastertableController extends Controller {
                 'modelClass'  => 'app\models\VendorType',
                 'exampleName' => 'vendortype'
             ],
+            'packagetype-list' => [
+                'class' => ListAction::className(),
+                'filterModel' => new PackagetypeSearch(),
+                'exampleName' => 'packagetype',
+                'view'=>'@app/views/admin-mastertable/baselist'
+            ],
+            'packagetype-update' => [
+                'class'       => UpdateAction::className(),
+                'modelClass'  => 'app\models\Packagetype',
+                'exampleName' => 'packagetype',
+            ],
+            'packagetype-delete' => [
+                'class'       => DeleteAction::className(),
+                'modelClass'  => 'app\models\PackageType',
+                'exampleName' => 'packagetype'
+            ],
             
             
         ];
@@ -233,6 +265,7 @@ class AdminMastertableController extends Controller {
 		$destination = new Destination();
 		$data = $destination->getList($region_id);
 		$html = '';
+        $html .= "<option value=''>Destination</option>";
 		if($data) {
 			foreach($data as $k=>$v) {
 				$html .= "<option value='".$k."'>".$v."</option>";
@@ -248,6 +281,7 @@ class AdminMastertableController extends Controller {
         $location = new Location();
         $data = $location->getList($destination_id);
         $html = '';
+        $html .= "<option value=''>Location</option>";
         if($data) {
             foreach($data as $k=>$v) {
                 $html .= "<option value='".$k."'>".$v."</option>";
@@ -255,6 +289,67 @@ class AdminMastertableController extends Controller {
         }
         Yii::$app->response->format = Response::FORMAT_HTML;
         return $html;
+    }
+
+    public function actionAgreementUpdate($id = '', $copy_id=''){
+        $alert = '';
+        if ($id) {
+            $model = Agreement::find()->where(['id' => $id])->one();
+            if (!$model) {
+                $alert = 'Agreement not found.';
+            }
+
+        } else {
+            if ($copy_id!='') {
+                $old_model = Agreement::find()->where(['id' => $copy_id])->one();
+                $model = new Agreement();
+                $model->text = $old_model->text;
+                $model->agreement_for = $old_model->agreement_for;
+                $model->name = 'Copy '.$old_model->name;
+            } else {
+                $model = new Agreement;
+            }
+        }
+
+      
+        if ($model->load(Yii::$app->request->post())) {
+            $post = Yii::$app->request->post();
+            if(isset($post['save']) || isset($post['create'])) {
+                if (!$model->save()) {
+                    $alert = 'Agreement not saved.';
+
+                    $errors = $model->getErrors();
+                } else {
+                    if(isset($post['save'])) {
+                        return $this->redirect(['agreement-list']);
+                    }else {
+                        return $this->redirect(['agreement-update']);
+                    }
+                }
+            }
+            if(isset($post['clone'])) {
+                return $this->redirect(['agreement-update','copy_id'=>$model->id]);
+                
+            }
+
+
+        }
+
+        $codes = [];
+        $i = 1;
+        foreach(Yii::$app->params['shortcodes'] as $code=>$val){
+            $codes[] = [
+                'name'  => 'button'.$i,
+                'html'  => $code,
+                'title' => $val
+            ];
+            $i++;
+        }
+        return $this->render('agreement', [
+                'model' => $model,
+                'alert' => $alert,
+                'codes' => $codes
+            ]);
     }
 
 	public function actionIndex() {
