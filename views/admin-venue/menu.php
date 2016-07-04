@@ -5,9 +5,9 @@ use yii\helpers\Url;
 <div class="list_wrap">
 	<p>Venue <?php echo $model->name;?> Customization </p>
 	<ul>
-		<li><?php echo Html::a('Venues general information', [Url::to([Yii::$app->controller->id.'/update','id' => $model->id])])?></li>
-		<li><?php echo Html::a('Website Customization', [Url::to([Yii::$app->controller->id.'/settings','id' => $model->id])])?></li>
-		<li><?php echo Html::a('Event Locations', [Url::to(['admin-venue-location/index','venue_id' => $model->id])])?></li>
+		<li><?php echo Html::a('Venues general information', [Url::to([Yii::$app->controller->id.'/update','id' => $model->id])], ['data-pjax' => 0])?></li>
+		<li><?php echo Html::a('Website Customization', [Url::to([Yii::$app->controller->id.'/settings','id' => $model->id])], ['data-pjax' => 0])?></li>
+		<li><?php echo Html::a('Event Locations', [Url::to(['admin-venue-location/index','venue_id' => $model->id])], ['data-pjax' => 0])?></li>
 		<li><a>Availability calendar</a></li>
 		<li><a>Wedding packages</a></li>
 		<li><a>Wedding items</a></li>
