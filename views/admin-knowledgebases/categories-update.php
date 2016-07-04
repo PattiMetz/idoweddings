@@ -41,9 +41,9 @@ echo Alert::widget([
 
 ?>
 
-<?php echo $form->field($model, 'knowledgebase_id')->dropDownList($model->knowledgebases, ['class'  => 'form-control chosen-style'])->label(false); ?>
+<?php echo $form->field($model, 'knowledgebase_id')->dropDownList($model->knowledgebases, ['class'  => 'form-control chosen-style']); ?>
 
-<?php echo $form->field($model, 'category_id')->textInput()->label(false); ?>
+<?php echo $form->field($model, 'category_id')->textInput(); ?>
 
 <?php echo $form->field($model, 'title')->textInput(); ?>
 
