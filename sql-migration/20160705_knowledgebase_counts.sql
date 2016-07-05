@@ -1,0 +1,1 @@
+ALTER TABLE `knowledgebase` ADD `count_articles_published` INT UNSIGNED NOT NULL , ADD `count_articles_draft` INT UNSIGNED NOT NULL ;

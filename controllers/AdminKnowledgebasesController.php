@@ -438,7 +438,11 @@ class AdminKnowledgebasesController extends Controller {
 
 				}
 
+				$_old_knowledgebase_id = $model->knowledgebase_id;
+
 				$_old_category_id = $model->category_id;
+
+				$_old_tree_path = $model->tree_path;
 
 			} else {
 
@@ -470,7 +474,11 @@ class AdminKnowledgebasesController extends Controller {
 
 				$model->is_category = 1;
 
+				$_old_knowledgebase_id = 0;
+
 				$_old_category_id = 0;
+
+				$_old_tree_path = '';
 
 			}
 
@@ -548,6 +556,93 @@ class AdminKnowledgebasesController extends Controller {
 				}
 
 
+				if ($id && ($model->knowledgebase_id != $_old_knowledgebase_id || $model->category_id != $_old_category_id)) {
+
+
+					// Get all children IDs
+
+					$tree_path = (strlen($_old_tree_path)) ? $_old_tree_path . '|' . $model->id : $model->id;
+
+					try {
+
+						$child_ids = KnowledgebaseEntry::find()
+							->where(['tree_path' => $tree_path])
+							->orWhere(['like', 'tree_path', $tree_path . '|%', false])
+							->select('id')
+							->column();
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to get entries';
+
+						$transaction->rollback();
+
+						break;
+
+					}
+
+
+					if (count($child_ids)) {
+
+						$s_ids = join(', ', $child_ids);
+
+						$columns = [];
+
+						$values = [];
+
+						if ($model->knowledgebase_id != $_old_knowledgebase_id) {
+
+							$columns['knowledgebase_id'] = 'knowledgebase_id = :knowledgebase_id';
+
+							$values[':knowledgebase_id'] = $model->knowledgebase_id;
+
+						}
+
+						if ($model->category_id != $_old_category_id) {
+
+							$pos = (strlen($_old_tree_path)) ? strlen($_old_tree_path) + 2 : 1;
+
+							$columns['tree_path'] = 'tree_path = CONCAT(:tree_path, SUBSTR(tree_path, ' . $pos . '))';
+
+							$values[':tree_path'] = strlen($model->tree_path) ? $model->tree_path . '|' : '';
+
+						}
+
+
+						// Move all children
+
+						try {
+
+							$columns = join(', ', $columns);
+
+							$command = Yii::$app->db->createCommand(
+								'UPDATE {{%knowledgebase_entry}} SET ' . $columns . ' WHERE id IN (' . $s_ids . ')'
+							);
+
+							foreach ($values as $name => $value) {
+
+								$command->bindValue($name, $value);
+
+							}
+
+							$command->execute();
+
+						} catch (yii\db\Exception $ex) {
+
+							$alert = 'Failed to move entries';
+
+							$transaction->rollback();
+
+							break;
+
+						}
+
+					}
+
+
+				}
+
+
 				// Cache categories counts
 
 				$category_ids = [];
@@ -573,6 +668,41 @@ class AdminKnowledgebasesController extends Controller {
 					} catch (yii\db\Exception $ex) {
 
 						$alert = 'Failed to cache category counts';
+
+						$transaction->rollback();
+
+						break(2);
+
+					}
+
+				}
+
+
+				// Cache knowledge base counts
+
+				$knowledgebase_ids = [];
+
+				if ($_old_knowledgebase_id) {
+
+					$knowledgebase_ids[] = $_old_knowledgebase_id;
+
+				}
+
+				if ($model->knowledgebase_id != $_old_knowledgebase_id) {
+
+					$knowledgebase_ids[] = $model->knowledgebase_id;
+
+				}
+
+				foreach ($knowledgebase_ids as $knowledgebase_id) {
+
+					try {
+
+						$this->_cacheKnowledgebaseCounts($knowledgebase_id);
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to cache knowledge base counts';
 
 						$transaction->rollback();
 
@@ -733,6 +863,23 @@ class AdminKnowledgebasesController extends Controller {
 						break;
 
 					}
+
+				}
+
+
+				// Cache knowledge base counts
+
+				try {
+
+					$this->_cacheKnowledgebaseCounts($model->knowledgebase_id);
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to cache knowledge base counts';
+
+					$transaction->rollback();
+
+					break;
 
 				}
 
@@ -958,7 +1105,7 @@ class AdminKnowledgebasesController extends Controller {
 
 				if (!$model->save(false)) {
 
-					$alert = 'Article not saved.';
+					$alert = 'Article not saved';
 
 					$transaction->rollBack();
 
@@ -1059,6 +1206,41 @@ class AdminKnowledgebasesController extends Controller {
 					} catch (yii\db\Exception $ex) {
 
 						$alert = 'Failed to cache category counts';
+
+						$transaction->rollback();
+
+						break(2);
+
+					}
+
+				}
+
+
+				// Cache knowledge base counts
+
+				$knowledgebase_ids = [];
+
+				if ($_old_knowledgebase_id) {
+
+					$knowledgebase_ids[] = $_old_knowledgebase_id;
+
+				}
+
+				if ($model->knowledgebase_id != $_old_knowledgebase_id) {
+
+					$knowledgebase_ids[] = $model->knowledgebase_id;
+
+				}
+
+				foreach ($knowledgebase_ids as $knowledgebase_id) {
+
+					try {
+
+						$this->_cacheKnowledgebaseCounts($knowledgebase_id);
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to cache knowledge base counts';
 
 						$transaction->rollback();
 
@@ -1170,6 +1352,23 @@ class AdminKnowledgebasesController extends Controller {
 							break;
 
 						}
+
+					}
+
+
+					// Cache knowledge base counts
+
+					try {
+
+						$this->_cacheKnowledgebaseCounts($model->knowledgebase_id);
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to cache knowledge base counts';
+
+						$transaction->rollback();
+
+						break;
 
 					}
 
@@ -1414,6 +1613,29 @@ class AdminKnowledgebasesController extends Controller {
 				'count_articles_draft' => $count_articles_draft
 			], 'id = :category_id')
 			->bindValue(':category_id', $category_id)
+			->execute();
+
+	}
+
+	private function _cacheKnowledgebaseCounts($knowledgebase_id) {
+
+		$count_articles_published = KnowledgebaseEntry::find()->where([
+			'knowledgebase_id' => $knowledgebase_id,
+			'is_category' => 0,
+			'status' => 'published'
+		])->count();
+
+		$count_articles_draft = KnowledgebaseEntry::find()->where([
+			'knowledgebase_id' => $knowledgebase_id,
+			'is_category' => 0,
+			'status' => 'draft'
+		])->count();
+
+		return Yii::$app->db->createCommand()->update('knowledgebase', [
+				'count_articles_published' => $count_articles_published,
+				'count_articles_draft' => $count_articles_draft
+			], 'id = :knowledgebase_id')
+			->bindValue(':knowledgebase_id', $knowledgebase_id)
 			->execute();
 
 	}
