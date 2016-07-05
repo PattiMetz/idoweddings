@@ -77,11 +77,13 @@ class AdminKnowledgebasesController extends Controller {
 
 		if ($id) {
 
-			$model = Knowledgebase::find()->where(['id' => $id])->one();
+			Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE');
+
+			$model = Knowledgebase::findOne($id);
 
 			if (!$model) {
 
-				$alert = 'Knowledge base not found.';
+				$alert = 'Knowledge base not found';
 
 			}
 
@@ -97,13 +99,15 @@ class AdminKnowledgebasesController extends Controller {
 
 			if (!count($errors)) {
 
-				if (!$model->save()) {
+				if (!$model->save(false)) {
 
-					$alert = 'Knowledge base not saved.';
+					$alert = 'Knowledge base not saved';
 
 				}
 
 			}
+
+			Yii::$app->db->createCommand('UNLOCK TABLES');
 
 			$pjax_reload = '#main';
 
@@ -117,6 +121,8 @@ class AdminKnowledgebasesController extends Controller {
 
 		}
 
+		Yii::$app->db->createCommand('UNLOCK TABLES');
+
 		return $this->renderAjax('update', [
 			'model' => $model,
 			'alert' => $alert
@@ -128,7 +134,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
-//		'LOCK TABLES ... WRITE, ... WRITE ...'
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE');
 
 		$model = Knowledgebase::findOne($id);
 
@@ -154,7 +160,7 @@ class AdminKnowledgebasesController extends Controller {
 
 				if (!$model->delete()) {
 
-					$alert = 'Knowledge base not deleted.';
+					$alert = 'Knowledge base not deleted';
 
 					$transaction = rollback();
 
@@ -234,6 +240,8 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
+			Yii::$app->db->createCommand('UNLOCK TABLES');
+
 			$pjax_reload = '#main';
 
 			Yii::$app->response->format = Response::FORMAT_JSON;
@@ -245,6 +253,8 @@ class AdminKnowledgebasesController extends Controller {
 			);
 
 		}
+
+		Yii::$app->db->createCommand('UNLOCK TABLES');
 
 		return $this->renderAjax('delete', [
 			'model' => $model,
@@ -285,7 +295,7 @@ class AdminKnowledgebasesController extends Controller {
 
 				$knowledgebase_id = 0;
 
-				$alert = 'Knowledge base not found.';
+				$alert = 'Knowledge base not found';
 
 				break;
 
@@ -315,7 +325,7 @@ class AdminKnowledgebasesController extends Controller {
 
 				if (!$current_category) {
 
-					$alert = 'Category not found.';
+					$alert = 'Category not found';
 
 					break;
 
@@ -417,6 +427,8 @@ class AdminKnowledgebasesController extends Controller {
 		$this->view->title = ($id) ? 'Edit Category' : 'Add Category';
 
 		$alert = '';
+
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE');
 
 		// Get all knowledgebases for SELECT options
 		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
@@ -545,7 +557,7 @@ class AdminKnowledgebasesController extends Controller {
 
 				$transaction = Yii::$app->db->beginTransaction();
 
-				if (!$model->save()) {
+				if (!$model->save(false)) {
 
 					$alert = 'Category not saved';
 
@@ -719,6 +731,8 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
+			Yii::$app->db->createCommand('UNLOCK TABLES');
+
 			$pjax_reload = '#main';
 
 			Yii::$app->response->format = Response::FORMAT_JSON;
@@ -731,6 +745,8 @@ class AdminKnowledgebasesController extends Controller {
 
 		}
 
+		Yii::$app->db->createCommand('UNLOCK TABLES');
+
 		return $this->renderAjax('categories-update', [
 			'model' => $model,
 			'alert' => $alert
@@ -742,6 +758,8 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE');
+
 		$model = KnowledgebaseEntry::find()->where([
 			'id' => $id,
 			'is_category' => 1
@@ -749,7 +767,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		if (!$model) {
 
-			$alert = 'Category not found.';
+			$alert = 'Category not found';
 
 		}
 
@@ -769,7 +787,7 @@ class AdminKnowledgebasesController extends Controller {
 
 				if (!$model->delete()) {
 
-					$alert = 'Category not deleted.';
+					$alert = 'Category not deleted';
 
 					$transaction->rollback();
 
@@ -890,6 +908,8 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
+			Yii::$app->db->createCommand('UNLOCK TABLES');
+
 			$pjax_reload = '#main';
 
 			Yii::$app->response->format = Response::FORMAT_JSON;
@@ -901,6 +921,8 @@ class AdminKnowledgebasesController extends Controller {
 			);
 
 		}
+
+		Yii::$app->db->createCommand('UNLOCK TABLES');
 
 		return $this->renderAjax('categories-delete', [
 			'model' => $model,
@@ -940,6 +962,8 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE');
+
 		// Get all knowledgebases for SELECT options
 		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
 
@@ -954,7 +978,7 @@ class AdminKnowledgebasesController extends Controller {
 
 				if (!$model) {
 
-					$alert = 'Article not found.';
+					$alert = 'Article not found';
 
 					break;
 
@@ -1128,7 +1152,7 @@ class AdminKnowledgebasesController extends Controller {
 
 					} catch (yii\db\Exception $ex) {
 
-						$alert = 'Failed to delete the files';
+						$alert = 'Failed to unlink the files';
 
 						$transaction->rollback();
 
@@ -1153,7 +1177,7 @@ class AdminKnowledgebasesController extends Controller {
 
 					} catch (yii\db\Exception $ex) {
 
-						$alert = 'Failed to save the files';
+						$alert = 'Failed to link the files';
 
 						$transaction->rollback();
 
@@ -1257,6 +1281,8 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
+			Yii::$app->db->createCommand('UNLOCK TABLES');
+
 			$pjax_reload = '#main';
 
 			Yii::$app->response->format = Response::FORMAT_JSON;
@@ -1268,6 +1294,8 @@ class AdminKnowledgebasesController extends Controller {
 			);
 
 		}
+
+		Yii::$app->db->createCommand('UNLOCK TABLES');
 
 		return $this->renderAjax('articles-update', [
 			'model' => $model,
@@ -1281,6 +1309,8 @@ class AdminKnowledgebasesController extends Controller {
 		$this->view->title = 'Delete Article';
 
 		$alert = '';
+
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE');
 
 		$model = KnowledgebaseEntry::find()->where([
 			'id' => $id,
@@ -1326,7 +1356,7 @@ class AdminKnowledgebasesController extends Controller {
 
 					} catch (yii\db\Exception $ex) {
 
-						$alert = 'Failed to delete the files';
+						$alert = 'Failed to unlink the files';
 
 						$transaction->rollback();
 
@@ -1381,6 +1411,8 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
+			Yii::$app->db->createCommand('UNLOCK TABLES');
+
 			$pjax_reload = '#main';
 
 			Yii::$app->response->format = Response::FORMAT_JSON;
@@ -1392,6 +1424,8 @@ class AdminKnowledgebasesController extends Controller {
 			);
 
 		}
+
+		Yii::$app->db->createCommand('UNLOCK TABLES');
 
 		return $this->renderAjax('articles-delete', [
 			'model' => $model,
