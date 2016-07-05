@@ -21,11 +21,11 @@ use yii\helpers\BaseHtml;
 			</div>
 			<div class="col-sm-12">
 				<div class="col-sm-6 publish">Published:</div>
-				<div class="col-sm-6 block_2">0</div>
+				<div class="col-sm-6 block_2"><?php echo $model->count_articles_published; ?></div>
 			</div>
 			<div class="col-sm-12">
 				<div class="col-sm-6 drafts">Drafts:</div>
-				<div class="col-sm-6 block_2">0</div>
+				<div class="col-sm-6 block_2"><?php echo $model->count_articles_draft; ?></div>
 			</div>
 		</div>
 		<div class="col-sm-4 col-xs-4 block_3 clearfix">
