@@ -300,6 +300,22 @@ $(function() {
 	})
 	
 	//$('select.chosen-style').chosen({disable_search_threshold: 10});
+
+	
+	$('.table_of_pages select').change(function() {
+		var optVal = $(this).val();
+		if ( optVal == 0 ) {
+			$(this).next('.chosen-container').find('.chosen-single').addClass('off');
+		}
+		else {
+			$(this).next('.chosen-container').find('.chosen-single').removeClass('off');
+		}
+	});
+	
+	$('.navigation_pos li a').click(function() {
+		$('.navigation_pos li a').parent('li').removeClass('active');
+		$(this).parent('li').addClass('active');
+	});
 	
 	$(window).resize(function(){
 		openPanel();
