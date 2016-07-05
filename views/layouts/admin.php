@@ -114,7 +114,7 @@ Modal::end();
 			<li class="item_16"><a href="#">Reports</a></li>
 			<li class="item_17"><a href="#">Webs</a></li>
 			<li class="item_18"><a href="#">Settings</a></li>
-			<li class="item_19"><a href="#">User Manager</a></li>
+			<li class="item_19 <?php echo (Yii::$app->controller->id == 'admin-user-manager') ? 'active' : ''; ?>"><a href="<?php echo Url::to(['admin-user-manager/index']); ?>">User Manager</a></li>
 			<li class="item_20"><a href="#">Companies</a></li>
 			<li class="item_21 <?php echo (Yii::$app->controller->id == 'admin-mastertable') ? 'active' : ''; ?>"><a href="<?php echo Url::to(['admin-mastertable/index']); ?>">Mastertable</a></li>
 		</ul>
