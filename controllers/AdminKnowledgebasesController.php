@@ -438,6 +438,8 @@ class AdminKnowledgebasesController extends Controller {
 
 				}
 
+				$_old_category_id = $model->category_id;
+
 			} else {
 
 				$model = new KnowledgebaseEntry;
@@ -467,6 +469,8 @@ class AdminKnowledgebasesController extends Controller {
 				}
 
 				$model->is_category = 1;
+
+				$_old_category_id = 0;
 
 			}
 
@@ -531,13 +535,55 @@ class AdminKnowledgebasesController extends Controller {
 
 				}
 
+				$transaction = Yii::$app->db->beginTransaction();
+
 				if (!$model->save()) {
 
-					$alert = 'Category not saved.';
+					$alert = 'Category not saved';
+
+					$transaction->rollback();
 
 					break;
 
 				}
+
+
+				// Cache categories counts
+
+				$category_ids = [];
+
+				if ($_old_category_id) {
+
+					$category_ids[] = $_old_category_id;
+
+				}
+
+				if ($model->category_id && $model->category_id != $_old_category_id) {
+
+					$category_ids[] = $model->category_id;
+
+				}
+
+				foreach ($category_ids as $category_id) {
+
+					try {
+
+						$this->_cacheCategoryCounts($category_id);
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to cache category counts';
+
+						$transaction->rollback();
+
+						break(2);
+
+					}
+
+				}
+
+
+				$transaction->commit();
 
 				break;
 
@@ -616,28 +662,7 @@ class AdminKnowledgebasesController extends Controller {
 
 				} catch (yii\db\Exception $ex) {
 
-					$alert = 'Failed to get child items';
-
-					$transaction->rollback();
-
-					break;
-
-				}
-
-				$s_ids = join(', ', $child_ids);
-
-
-				// Unlink all files
-
-				try {
-
-					$result = Yii::$app->db->createCommand()->update(
-						'knowledgebase_entry_file', ['knowledgebase_entry_id' => 0], "knowledgebase_entry_id IN ($s_ids)"
-					)->execute();
-
-				} catch (yii\db\Exception $ex) {
-
-					$alert = 'Failed to unlink the files';
+					$alert = 'Failed to get entries';
 
 					$transaction->rollback();
 
@@ -646,21 +671,68 @@ class AdminKnowledgebasesController extends Controller {
 				}
 
 
-				// Delete all children
+				if (count($child_ids)) {
 
-				try {
+					$s_ids = join(', ', $child_ids);
 
-					$result = Yii::$app->db->createCommand()->delete(
-						'knowledgebase_entry', "id IN ($s_ids)"
-					)->execute();
 
-				} catch (yii\db\Exception $ex) {
+					// Unlink all files
 
-					$alert = 'Failed to delete child items';
+					try {
 
-					$transaction->rollback();
+						Yii::$app->db->createCommand()->update(
+							'knowledgebase_entry_file', ['knowledgebase_entry_id' => 0], "knowledgebase_entry_id IN ($s_ids)"
+						)->execute();
 
-					break;
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to unlink the files';
+
+						$transaction->rollback();
+
+						break;
+
+					}
+
+
+					// Delete all children
+
+					try {
+
+						Yii::$app->db->createCommand()->delete(
+							'knowledgebase_entry', "id IN ($s_ids)"
+						)->execute();
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to delete entries';
+
+						$transaction->rollback();
+
+						break;
+
+					}
+
+				}
+
+
+				// Cache category counts
+
+				if ($model->category_id) {
+
+					try {
+
+						$this->_cacheCategoryCounts($model->category_id);
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to cache category counts';
+
+						$transaction->rollback();
+
+						break;
+
+					}
 
 				}
 
@@ -749,6 +821,10 @@ class AdminKnowledgebasesController extends Controller {
 
 				$model->file_ids = array_keys($model->files);
 
+				$_old_knowledgebase_id = $model->knowledgebase_id;
+
+				$_old_category_id = $model->category_id;
+
 			} else {
 
 				$model = new KnowledgebaseEntry;
@@ -782,6 +858,10 @@ class AdminKnowledgebasesController extends Controller {
 				$model->files = [];
 
 				$model->file_ids = [];
+
+				$_old_knowledgebase_id = 0;
+
+				$_old_category_id = 0;
 
 			}
 
@@ -884,65 +964,110 @@ class AdminKnowledgebasesController extends Controller {
 
 					break;
 
-				} else {
-
-					// Unlink the files
-
-					foreach ($deleted_ids as $file_id) {
-
-						$file = $model->files[$file_id];
-
-						$file->knowledgebase_entry_id = 0;
-
-						if (!$file->save(false)) {
-
-							$alert = 'One of the files is not deleted.';
-
-							$transaction->rollBack();
-
-							break(2);
-
-						}
-
-					}
+				}
 
 
-					// Link the files
+				// Unlink the files
 
-					foreach ($new_ids as $file_id) {
+				if (count($deleted_ids)) {
 
-						$file = $files[$file_id];
+					$s_ids = join(', ', $deleted_ids);
 
-						$file->knowledgebase_entry_id = $model->id;
+					try {
 
-						if (!$file->save(false)) {
+						Yii::$app->db->createCommand()->update(
+							'knowledgebase_entry_file', ['knowledgebase_entry_id' => 0], "id IN ($s_ids)"
+						)->execute();
 
-							$alert = 'One of the files is not saved.';
+					} catch (yii\db\Exception $ex) {
 
-							$transaction->rollBack();
+						$alert = 'Failed to delete the files';
 
-							break(2);
-
-						}
-
-					}
-
-
-					// Cache files info
-
-					$need_cache = (count($deleted_ids) || count($new_ids));
-
-					if ($need_cache && !$model->cacheFilesInfo()) {
-
-						$alert = 'Failed to cache files information.';
-
-						$transaction->rollBack();
+						$transaction->rollback();
 
 						break;
 
 					}
 
 				}
+
+
+				// Link the files
+
+				if (count($new_ids)) {
+
+					$s_ids = join(', ', $new_ids);
+
+					try {
+
+						Yii::$app->db->createCommand()->update(
+							'knowledgebase_entry_file', ['knowledgebase_entry_id' => $model->id], "id IN ($s_ids)"
+						)->execute();
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to save the files';
+
+						$transaction->rollback();
+
+						break;
+
+					}
+
+				}
+
+
+				// Cache files info
+
+				try {
+
+					$model->cacheFilesInfo();
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to cache files information';
+
+					$transaction->rollback();
+
+					break;
+
+				}
+
+
+				// Cache categories counts
+
+				$category_ids = [];
+
+				if ($_old_category_id) {
+
+					$category_ids[] = $_old_category_id;
+
+				}
+
+				if ($model->category_id && $model->category_id != $_old_category_id) {
+
+					$category_ids[] = $model->category_id;
+
+				}
+
+				foreach ($category_ids as $category_id) {
+
+					try {
+
+						$this->_cacheCategoryCounts($category_id);
+
+					} catch (yii\db\Exception $ex) {
+
+						$alert = 'Failed to cache category counts';
+
+						$transaction->rollback();
+
+						break(2);
+
+					}
+
+				}
+
 
 				$transaction->commit();
 
@@ -975,11 +1100,14 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
-		$model = KnowledgebaseEntry::findOne($id);
+		$model = KnowledgebaseEntry::find()->where([
+			'id' => $id,
+			'is_category' => 0
+		])->one();
 
 		if (!$model) {
 
-			$alert = 'Article not found.';
+			$alert = 'Article not found';
 
 		}
 
@@ -993,15 +1121,11 @@ class AdminKnowledgebasesController extends Controller {
 
 				}
 
-				$files = KnowledgebaseEntryFile::find()->where([
-					'knowledgebase_entry_id' => $model->id
-				])->all();
-
 				$transaction = Yii::$app->db->beginTransaction();
 
 				if (!$model->delete()) {
 
-					$alert = 'Article not deleted.';
+					$alert = 'Article not deleted';
 
 					$transaction->rollBack();
 
@@ -1009,23 +1133,46 @@ class AdminKnowledgebasesController extends Controller {
 
 				} else {
 
+
 					// Unlink all files
 
-					foreach ($files as $file) {
+					try {
 
-						$file->knowledgebase_entry_id = 0;
+						Yii::$app->db->createCommand()->update(
+							'knowledgebase_entry_file', ['knowledgebase_entry_id' => 0], 'knowledgebase_entry_id = :id'
+						)->bindValue(':id', $model->id)->execute();
 
-						if (!$file->save(false)) {
+					} catch (yii\db\Exception $ex) {
 
-							$alert = 'One of the files is not deleted.';
+						$alert = 'Failed to delete the files';
 
-							$transaction->rollBack();
+						$transaction->rollback();
 
-							break(2);
+						break;
+
+					}
+
+
+					// Cache category counts
+
+					if ($model->category_id) {
+
+						try {
+
+							$this->_cacheCategoryCounts($model->category_id);
+
+						} catch (yii\db\Exception $ex) {
+
+							$alert = 'Failed to cache category counts';
+
+							$transaction->rollback();
+
+							break;
 
 						}
 
 					}
+
 
 				}
 
@@ -1239,6 +1386,35 @@ class AdminKnowledgebasesController extends Controller {
 			'tree',
 			'plain_ids'
 		);
+
+	}
+
+	private function _cacheCategoryCounts($category_id) {
+
+		$count_categories = KnowledgebaseEntry::find()->where([
+			'category_id' => $category_id,
+			'is_category' => 1
+		])->count();
+
+		$count_articles_published = KnowledgebaseEntry::find()->where([
+			'category_id' => $category_id,
+			'is_category' => 0,
+			'status' => 'published'
+		])->count();
+
+		$count_articles_draft = KnowledgebaseEntry::find()->where([
+			'category_id' => $category_id,
+			'is_category' => 0,
+			'status' => 'draft'
+		])->count();
+
+		return Yii::$app->db->createCommand()->update('knowledgebase_entry', [
+				'count_categories' => $count_categories,
+				'count_articles_published' => $count_articles_published,
+				'count_articles_draft' => $count_articles_draft
+			], 'id = :category_id')
+			->bindValue(':category_id', $category_id)
+			->execute();
 
 	}
 
