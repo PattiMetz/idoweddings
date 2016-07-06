@@ -418,19 +418,18 @@ table, th {
 .item_list li.item_2.active a {
 	background: url(../images/icons/icon_2_hov.png)no-repeat left 35px center #ffe3c7;
 }
-
 .item_list li.item_3 a {
 	background: url(../images/icons/icon_3.png)no-repeat left 35px center;
 }
-.item_list li.item_3 a:hover,
-.item_list li.item_3.active a {
+.item_list li.item_3 a:hover ,
+.item_list li.item_3.active a{
 	background: url(../images/icons/icon_3_hov.png)no-repeat left 35px center #ffe3c7;
 }
 .item_list li.item_4 a {
 	background: url(../images/icons/icon_4.png)no-repeat left 35px center;
 }
-.item_list li.item_4 a:hover ,
-.item_list li.item_4.active a{
+.item_list li.item_4 a:hover,
+.item_list li.item_4.active a {
 	background: url(../images/icons/icon_4_hov.png)no-repeat left 35px center #ffe3c7;
 }
 .item_list li.item_5 a {
@@ -441,18 +440,18 @@ table, th {
 	background: url(../images/icons/icon_5_hov.png)no-repeat left 35px center #ffe3c7;
 }
 .item_list li.item_6 a {
-	background: url(../images/icons/icon_6.png)no-repeat left 35px center;
+	background: url(../images/icons/icon_6.png)no-repeat left 38px center;
 }
 .item_list li.item_6 a:hover,
 .item_list li.item_6.active a {
-	background: url(../images/icons/icon_6_hov.png)no-repeat left 35px center #ffe3c7;
+	background: url(../images/icons/icon_6_hov.png)no-repeat left 38px center #ffe3c7;
 }
 .item_list li.item_7 a {
-	background: url(../images/icons/icon_7.png)no-repeat left 38px center;
+	background: url(../images/icons/icon_7.png)no-repeat left 35px center;
 }
 .item_list li.item_7 a:hover,
 .item_list li.item_7.active a {
-	background: url(../images/icons/icon_7_hov.png)no-repeat left 38px center #ffe3c7;
+	background: url(../images/icons/icon_7_hov.png)no-repeat left 35px center #ffe3c7;
 }
 .item_list li.item_8 a {
 	background: url(../images/icons/icon_8.png)no-repeat left 35px center;
@@ -490,18 +489,18 @@ table, th {
 	background: url(../images/icons/icon_12_hov.png)no-repeat left 35px center #ffe3c7;
 }
 .item_list li.item_13 a {
-	background: url(../images/icons/icon_13.png)no-repeat left 37px center;
+	background: url(../images/icons/icon_13.png)no-repeat left 35px center;
 }
 .item_list li.item_13 a:hover,
 .item_list li.item_13.active a {
-	background: url(../images/icons/icon_13_hov.png)no-repeat left 37px center #ffe3c7;
+	background: url(../images/icons/icon_13_hov.png)no-repeat left 35px center #ffe3c7;
 }
 .item_list li.item_14 a {
-	background: url(../images/icons/icon_14.png)no-repeat left 37px center;
+	background: url(../images/icons/icon_14.png)no-repeat left 35px center;
 }
 .item_list li.item_14 a:hover,
 .item_list li.item_14.active a {
-	background: url(../images/icons/icon_14_hov.png)no-repeat left 37px center #ffe3c7;
+	background: url(../images/icons/icon_14_hov.png)no-repeat left 35px center #ffe3c7;
 }
 .item_list li.item_15 a {
 	background: url(../images/icons/icon_15.png)no-repeat left 35px center;
@@ -537,20 +536,6 @@ table, th {
 .item_list li.item_19 a:hover,
 .item_list li.item_19.active a {
 	background: url(../images/icons/icon_19_hov.png)no-repeat left 35px center #ffe3c7;
-}
-.item_list li.item_20 a {
-	background: url(../images/icons/icon_20.png)no-repeat left 35px center;
-}
-.item_list li.item_20 a:hover,
-.item_list li.item_20.active a {
-	background: url(../images/icons/icon_20_hov.png)no-repeat left 35px center #ffe3c7;
-}
-.item_list li.item_21 a {
-	background: url(../images/icons/icon_21.png)no-repeat left 35px center;
-}
-.item_list li.item_21 a:hover,
-.item_list li.item_21.active a {
-	background: url(../images/icons/icon_21_hov.png)no-repeat left 35px center #ffe3c7;
 }
 
 /******** 3 - Header styles********/
