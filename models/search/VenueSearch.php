@@ -81,7 +81,6 @@ class VenueSearch extends VenueModel
 
         $query->andFilterWhere(['like', 'venue.name', $this->name])
             ->andFilterWhere(['like', 'featured_name', $this->featured_name])
-            ->andFilterWhere(['like', 'active', $this->active])
             ->andFilterWhere(['like', 'featured', $this->featured])
             ->andFilterWhere(['like', 'comment', $this->comment])
             ->andFilterWhere(['like', 'guest_capacity', $this->guest_capacity])
