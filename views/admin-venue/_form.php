@@ -499,10 +499,10 @@ function add_phone(contact_id, key){
 					
 						<?php if(isset($docs) && count($docs)>0) {?> 
 							<ul class="docs">
-								<?php foreach ($docs as $doc) {?>
+								<?php foreach ($docs as $sdoc) {?>
 								<li>
-									<?=Html::a($doc->doc,["/uploads/venue/".$model->id."/".$doc->doc],['target'=>'_blank','data-pjax'=>0])?>
-									<?=Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$doc->id])],['class'=>'modal-ajax'])?>
+									<?=Html::a($sdoc->doc,["/uploads/venue/".$model->id."/".$sdoc->doc],['target'=>'_blank','data-pjax'=>0])?>
+									<?=Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$sdoc->id])],['class'=>'modal-ajax'])?>
 								</li>
 								<?php }?>
 							</ul>
