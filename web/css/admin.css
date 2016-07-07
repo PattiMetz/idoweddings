@@ -1247,6 +1247,35 @@ table, th {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 }
+.knowledgebase-entry-reorder-form > div:nth-of-type(3) {
+	display: inline-block;
+	width: 200px;
+    margin-left: 170px;
+}
+.knowledgebase-entry-reorder-form > div:nth-of-type(3) .radio label {
+	width: 100%;
+	padding: 6px 12px 6px 38px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	background: url(../images/reorder_radio_bg.png) no-repeat;
+}
+.knowledgebase-entry-reorder-form > div:nth-of-type(3) .radio input {
+	margin-left: -27px;
+}
+.knowledgebase-entry-reorder-form > div:nth-of-type(4) {
+	display: inline-block;
+	width: 65px;
+	margin-left: 2px;
+	vertical-align: text-bottom;
+}
+.knowledgebase-entry-reorder-form > div:nth-of-type(4).has-error {
+	height: 49px;
+}
+.knowledgebase-entry-reorder-form > div:nth-of-type(4) .help-block {
+	white-space: nowrap;
+}
 
 /******** 7 - MASTERTABLE********/
 
@@ -1497,7 +1526,7 @@ table, th {
 }
 
 	/*==modal Change order==*/
-.order_pos {
+/*.order_pos {
 	position: relative;
 	padding-bottom: 5px;
 }
@@ -1510,7 +1539,7 @@ table, th {
 	top: 44px;
     right: 20%;
     width: 65px;
-}
+}*/
 
 	/*==modal Add Category==*/
 	
@@ -2517,12 +2546,15 @@ a.desc:after {
 		width: auto;
 		margin: 0;
 	}
-	.order_pos input[type=number] {
+	.knowledgebase-entry-reorder-form > div:nth-of-type(4) .help-block {
+		white-space: inherit;
+	}
+	/*.order_pos input[type=number] {
 		position: static;
 		width: 200px;
 		margin: 0 auto 10px;
 	}
-	/*.drop_wrapper {
+	.drop_wrapper {
 		margin-bottom: 10px;
 	}
 	.drop_wrapper .btn-group {
@@ -2701,6 +2733,18 @@ a.desc:after {
 	.top_panel .filter select {
 		width: 100%;
 		text-align: left;
+	}
+	.knowledgebase-entry-reorder-form > div:nth-of-type(3),
+	.knowledgebase-entry-reorder-form > div:nth-of-type(4) {
+		display: block;
+		width: 200px;
+		margin: 0 auto;
+	}
+	.knowledgebase-entry-reorder-form > div:nth-of-type(4) {
+		margin: -10px auto 0;
+	}
+	.knowledgebase-entry-reorder-form > div:nth-of-type(4).has-error {
+		height: initial;
 	}
 	/*==Venues==*/
 	.venue-index .sett_block_wrap {
