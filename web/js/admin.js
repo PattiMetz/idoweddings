@@ -291,7 +291,14 @@ $(function() {
 			}
 		}
 	});
-
+	
+	$('.doc_table td:first-child, .doc_table td:nth-child(2)').hover(function() {
+		$('.arrows').hide();
+		$(this).parent('tr').find('.arrows').show();
+	},function(){
+		$(this).parent('tr').find('.arrows').hide();
+	});
+	
 	$('.select_all').change(function(){
 		if($(this).is(':checked'))
 			$(this).parent().next().find('input[type=checkbox]').attr('checked', 'checked');
@@ -301,6 +308,20 @@ $(function() {
 	
 	//$('select.chosen-style').chosen({disable_search_threshold: 10});
 
+	
+	$('#venue-types_array label, #venue-vibes_array label, #venue-services_array label').each(function(){
+		var flag=0;
+		$(this).find('input').click(function(){
+			if (flag==0){
+				$(this).closest('label').addClass('active');
+				flag=1;
+			}
+			else{
+				flag=0;
+				$(this).closest('label').removeClass('active');
+			}
+		});
+	});
 	
 	$('.table_of_pages select').change(function() {
 		var optVal = $(this).val();
@@ -316,7 +337,7 @@ $(function() {
 		$('.navigation_pos li a').parent('li').removeClass('active');
 		$(this).parent('li').addClass('active');
 	});
-	
+		
 	$(window).resize(function(){
 		openPanel();
 		leftPanelHeight();		

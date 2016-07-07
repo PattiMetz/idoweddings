@@ -269,6 +269,7 @@ table, th {
 	line-height: 34px;
 	font-family: 'open_sans_lightregular';
 	color: #777777;
+	float: left;
 }
 .pagination {
 	margin: 0 0 15px;
@@ -286,15 +287,17 @@ table, th {
 }
 .pagination > li > a,
 .pagination > li > span {
+	margin-left: 0;
+	font-size: 14px;
 	color: #2e1106;
 }
 .pagination > li > a:hover,
 .pagination > li > span:hover,
 .pagination > li > a:focus,
 .pagination > li > span:focus {
-  color: #2e1106;
-  background-color: #ffe3c7;
-  border-color: #ddd;
+    color: #2e1106;
+    border-color: #ddd;
+	background-color: #ffe3c7;
 }
 .breadcrumb {
 	margin-bottom: 0;
@@ -667,6 +670,10 @@ table, th {
 .top_panel .col-md-3 {
 	padding-right: 0;
 }
+.top_panel .col-md-3 input {
+	max-width: 192px;
+	float: right;
+}
 .top_panel .col-md-9 {
 	padding-left: 0;
 }
@@ -728,7 +735,6 @@ table, th {
 .list_wrap p,
 .sett_block_wrap > p {
 	margin: 0;
-	/*line-height: 35px;*/
 	padding: 8px 0;
 	color: #fff;
 	background: #e39564;
@@ -774,6 +780,10 @@ table, th {
 	padding: 7px 0;
     text-align: left !important;
     color: #2e1106;
+}
+.collapse_form input.select_all {
+	margin-left: 12px;
+	vertical-align: sub;
 }
 .update_top_block label.after:after {
 	content: "*";
@@ -828,7 +838,8 @@ table, th {
 	width: 100%;
 	padding: 5px 0 5px 30px;
 }
-.checkBox_block .checkbox label:hover {
+.checkBox_block .checkbox label:hover,
+.checkBox_block .checkbox label.active {
 	color: #fff;
 	background: #f6be8d;
 }
@@ -1138,7 +1149,7 @@ table, th {
 .choose_base .input-group-addon {
 	height: 34px;
 	padding: 0 18px;
-	background: url(../images/icons/icon_15_hov.png)no-repeat center center;
+	background: url(../images/icons/icon_13_hov.png)no-repeat center center;
 }
 .choose_base_btn_box {
 	display: inline-block;
@@ -1162,7 +1173,7 @@ table, th {
 	max-width: 500px;
 	text-align: left;
 }
-/*.doc_table .arrows {
+.doc_table .arrows {
 	display: none;
 	width: 22px;
     height: 34px;
@@ -1176,18 +1187,18 @@ table, th {
 	cursor: pointer;
 }
 .doc_table .arrows .arr_up {
-	background: url(../images/arr_up.png) no-repeat;
+	background: url(../images/arr_up1.png) no-repeat;
 }
 .doc_table .arrows .arr_down {
 	background: url(../images/arr_down.png) no-repeat;
 }
 .doc_table .arrows .arr_up:hover {
-	background: url(../images/arr_up_hov.png) no-repeat;
+	background: url(../images/arr_up1_hov.png) no-repeat;
 }
 .doc_table .arrows .arr_down:hover {
 	background: url(../images/arr_down_hov.png) no-repeat;
 }
-.doc_table .arrows .arr_up.disabled {
+/*.doc_table .arrows .arr_up.disabled {
 	background: url(../images/arr_up_dis.png) no-repeat;
 }
 .doc_table .arrows .arr_down.disabled {
@@ -1334,6 +1345,24 @@ table, th {
 }
 .list_bottom.item_10:hover {
 	background: url(../images/master/icon_10.png) no-repeat center center #ffe3c7;
+}
+.list_bottom.item_11 {
+	background: url(../images/master/icon_11.png) no-repeat center center #fff;
+}
+.list_bottom.item_11:hover {
+	background: url(../images/master/icon_11.png) no-repeat center center #ffe3c7;
+}
+.list_bottom.item_12 {
+	background: url(../images/master/icon_12.png) no-repeat center center #fff;
+}
+.list_bottom.item_12:hover {
+	background: url(../images/master/icon_12.png) no-repeat center center #ffe3c7;
+}
+.list_bottom.item_13 {
+	background: url(../images/master/icon_13.png) no-repeat center center #fff;
+}
+.list_bottom.item_13:hover {
+	background: url(../images/master/icon_13.png) no-repeat center center #ffe3c7;
 }
 
 /******** 8 - Footer styles********/
@@ -2650,6 +2679,9 @@ a.desc:after {
 		padding: 0;
 		text-align: center;
 		float: none;
+	}
+	.top_panel .col-md-3 input {
+		max-width: inherit;
 	}
 	.top_panel > div:first-child  a,
 	.top_panel > div:first-child  button {
