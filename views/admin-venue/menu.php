@@ -3,7 +3,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 ?>
 <div class="list_wrap">
-	<p>Venue <?php echo $model->name;?> Customization </p>
+	<p>Venue Customization </p>
 	<ul>
 		<li><?php echo Html::a('Venues general information', [Url::to([Yii::$app->controller->id.'/update','id' => $model->id])], ['data-pjax' => 0])?></li>
 		<li><?php echo Html::a('Website Customization', [Url::to([Yii::$app->controller->id.'/settings','id' => $model->id])], ['data-pjax' => 0])?></li>

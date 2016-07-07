@@ -7,6 +7,8 @@ use app\models\VenueType;
 use app\models\VenueService;
 use app\models\Vibe;
 use app\models\Location;
+use app\models\Destination;
+use app\models\Region;
 use app\models\User;
 /**
  * This is the model class for table "venue".
@@ -125,6 +127,27 @@ class Venue extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Location::className(), ['id' => 'location_id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDestination()
+    {
+        return $this->hasOne(Destination::className(), ['id' => 'destination_id'])->viaTable('location', ['id'=>'location_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    /*public function getRegion()
+    {
+        return $this->hasOne(Region::className(), ['id' => 'region_id'])->viaTable('destination', ['id'=>'destination_id'])->viaTable('location', ['id'=>'location_id']);
+
+         ->onCondition(['id_role' => RoleHelper::getConsultantRole()->id]) 
+
+         The SQL being executed was: SELECT COUNT(*) FROM `venue` LEFT JOIN `location` ON `venue`.`location_id` = `location`.`id` LEFT JOIN `region` ON `location`.`region_id` = `region`.`id` WHERE (`destination_id`='2') AND (`region_id`='6')
+    }*/
+    
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -155,12 +178,41 @@ class Venue extends \yii\db\ActiveRecord
             return '';
     }
 
+    public function getLocationgroups(){
+         return $this->hasMany(VenueLocationGroup::className(), ['venue_id' => 'id']);
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getTax()
     {
         return $this->hasOne(VenueTax::className(), ['venue_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getActivepages() {
+       return VenuePage::find()
+            ->where(['venue_id' => $this->id, 'active' => '1'])
+            ->all();
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPages() {
+       return $this->hasMany(VenuePage::className(),['venue_id' => 'id']);
+    }
+
+    /**
+     * @return venuepage
+     */
+    public function getMainpage() {
+       return VenuePage::find()
+            ->where(['venue_id' => $this->id, 'type' => 'main'])
+            ->one();
     }
     
     public function beforeSave($insert) {

@@ -14,29 +14,36 @@ use app\models\Vibe;
 /* @var $searchModel app\models\search\Venue */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Venues list';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title  = '';
 
+$this->params['breadcrumbs'][] = $this->title;
+$this->params['title'] = 'Venue list';
 $this->registerJsFile("/js/multiple-select.js",['depends'=>'yii\web\JqueryAsset']);
 $this->registerCssFile("/css/multiple-select.css");
 $this->registerJs("
-       
+      
 		$(document).on('ready pjax:end', function() {
+			get_menu($('.grid-view table tbody tr:first-child').attr('data-key'));
+			$('.grid-view table tbody tr:first-child').addClass('active');
 			$('.multiple').multipleSelect({});
 			$('.grid-view table tr').on('click',function(){
-				$('.grid-view table tr').removeClass('active');
 				$(this).addClass('active');
-				$.ajax({
-					url:'".Url::to(["admin-venue/menu"])."',
-					method:'POST',
-					data:{'id':$(this).attr('data-key')},
-					success:function(data){
-						$('.venue_list').html(data);
-					}
-
-				})
+				get_menu($(this).attr('data-key'));
 			})
 		});
+		function get_menu(id) {
+			$('.grid-view table tr').removeClass('active');
+			
+			$.ajax({
+				url:'".Url::to(["admin-venue/menu"])."',
+				method:'POST',
+				data:{'id':id},
+				success:function(data){
+					$('.venue_list').html(data);
+				}
+
+			})
+		}
 		
 
 ");
@@ -88,6 +95,8 @@ $this->registerJs("
 											})'
 										]);
 							?>
+							<?php echo Html::dropDownList('VenueSearch[type_id][]',$searchModel->type_id,$type->getList(),['placeholder'=>'Venue type', 'class'  => 'multiple','multiple'=>'multiple'])?> 
+							<?php echo Html::dropDownList('VenueSearch[featured]',$searchModel->featured,['Not featured', 'Featured'],['prompt'=>'Is featured', 'class'  => 'chosen-style'])?> 
 							<?= Html::dropDownList('VenueSearch[destination_id]', $searchModel->destination_id, $destination_list,
 								[
 									'id'=>'destination_id',
@@ -101,7 +110,6 @@ $this->registerJs("
 										method:"POST",
 										data:{"destination_id":id},
 										success:function(data){
-											alert(data);
 											$("#location_id").chosen("destroy");
 											$("#location_id").empty().append( data ).multipleSelect("refresh");
 											$("#location_id").chosen({disable_search_threshold: 10});
@@ -109,19 +117,27 @@ $this->registerJs("
 									})'
 								]);
 							?>
-							<?= Html::dropDownList('VenueSearch[location_id][]', $searchModel->location_id, $location_list,
+
+							<?php echo Html::dropDownList('VenueSearch[vibe_id][]',$searchModel->vibe_id,$vibe->getList(),['placeholder'=>'Wedding Vibe',  'class'  => 'multiple drop_lg','multiple'=>'multiple'])?>
+							<div style="width:190px;float:left"> &nbsp;</div>
+							<?php echo Html::dropDownList('VenueSearch[location_id][]', $searchModel->location_id, $location_list,
 								[
 									'id'=>'location_id',
 									'class'  => 'multiple',
 									'placeholder' => 'Location', 
-									'multiple'=>'multiple'
+									'multiple'=>'multiple',
+									[
+								        'horizontalCssClasses' => [
+								            'offset' => 'col-sm-offset-4',
+								        ]
+								    ]
 								   
 								]);
 							?>
-							<?php echo Html::dropDownList('VenueSearch[featured]',$searchModel->featured,['Not featured', 'Featured'],['prompt'=>'Is featured', 'class'  => 'chosen-style'])?> 
+							
 						
-							<?php echo Html::dropDownList('VenueSearch[type_id][]',$searchModel->type_id,$type->getList(),['placeholder'=>'Venue type', 'class'  => 'multiple','multiple'=>'multiple'])?> 
-							<?php echo Html::dropDownList('VenueSearch[vibe_id][]',$searchModel->vibe_id,$vibe->getList(),['placeholder'=>'Wedding Vibe',  'class'  => 'multiple drop_lg','multiple'=>'multiple'])?>
+							
+							
 							<?php echo Html::dropDownList('VenueSearch[service_id][]',$searchModel->service_id,$type->getList(),['placeholder'=>'Venue provides', 'class'  => 'multiple','multiple'=>'multiple'])?>  
 					
 					</div>
@@ -148,20 +164,36 @@ $this->registerJs("
 				'class' => 'table table-bordered table-condensed'
 			],
 			'columns' => [
-				
-				'name',
-				'location.destination.name',
-				'location.name',
-				 [
-						'label' => 'Featured',
-						'format' => 'raw',
-						'value' => function($data){
-							return Html::checkbox('featured',
-								($data->featured==1)?true:false,['disabled'=>true]
-								
-							);
-						},
-					],
+				[
+					'label' => 'Destination',
+					'value' => 'location.destination.name'
+				],
+				[
+					'label' => 'Location',
+					'value' => 'location.name'
+				],
+				[
+					'label' => 'Airport Code',
+					'value' => 'location.airport'
+				],
+				[
+					'label'       => 'Venue Name<br/> Featured Name',
+					'encodeLabel' => false,
+					'format'      => 'raw',
+					'value'       => function($data){
+						return $data->name."<br/>".$data->featured_name;
+					},
+				],
+				[
+					'label' => 'Featured',
+					'format' => 'raw',
+					'value' => function($data){
+						return Html::checkbox('featured',
+							($data->featured==1)?true:false,['disabled'=>true]
+							
+						);
+					},
+				],
 				// 'featured',
 				// 'type_id',
 				// 'vibe_id',

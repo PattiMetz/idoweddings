@@ -64,13 +64,33 @@ class VenuePage extends \yii\db\ActiveRecord
         return false;
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getImages()
+    {
+        return $this->hasMany(VenuePageImage::className(), ['page_id' => 'id']);
+    }
 
-
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getVenuepagesetting()
+    {
+        return $this->hasOne(VenuePageSetting::className(), ['page_id' => 'id']);
+    }
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getVenue()
     {
         return $this->hasOne(Venue::className(), ['id' => 'venue_id']);
+    }
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        $setting = new VenuePageSetting(['top_type'=>'slideshow']);
+        $this->link('venuepagesetting', $setting);
+        parent::afterSave($insert, $changedAttributes);
     }
 }
