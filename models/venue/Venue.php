@@ -75,12 +75,12 @@ class Venue extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Venue Name',
             'featured_name' => 'Featured Name',
-            'location_id' => 'Location ID',
+            'location_id' => 'Location',
             'active' => 'Active venue profile',
             'featured' => ' Is Featured',
-            'type_id' => 'Type ID',
-            'vibe_id' => 'Vibe ID',
-            'service_id' => 'Service ID',
+            'type_id' => 'Type',
+            'vibe_id' => 'Vibe',
+            'service_id' => 'Service',
             'comment' => 'Comments',
             'guest_capacity' => 'Guest Capacity',
             'updated_by' => 'Updated By',
@@ -136,17 +136,6 @@ class Venue extends \yii\db\ActiveRecord
         return $this->hasOne(Destination::className(), ['id' => 'destination_id'])->viaTable('location', ['id'=>'location_id']);
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    /*public function getRegion()
-    {
-        return $this->hasOne(Region::className(), ['id' => 'region_id'])->viaTable('destination', ['id'=>'destination_id'])->viaTable('location', ['id'=>'location_id']);
-
-         ->onCondition(['id_role' => RoleHelper::getConsultantRole()->id]) 
-
-         The SQL being executed was: SELECT COUNT(*) FROM `venue` LEFT JOIN `location` ON `venue`.`location_id` = `location`.`id` LEFT JOIN `region` ON `location`.`region_id` = `region`.`id` WHERE (`destination_id`='2') AND (`region_id`='6')
-    }*/
     
     /**
      * @return \yii\db\ActiveQuery

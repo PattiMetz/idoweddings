@@ -5,8 +5,6 @@ use yii\helpers\Html;
 /* @var $model app\models\venue\Venue */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Venues', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $model->name;
 ?>
 <div class="venue-update">
 

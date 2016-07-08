@@ -21,7 +21,7 @@ $this->params['title'] = 'Venue list';
 $this->registerJsFile("/js/multiple-select.js",['depends'=>'yii\web\JqueryAsset']);
 $this->registerCssFile("/css/multiple-select.css");
 $this->registerJs("
-      
+
 		$(document).on('ready pjax:end', function() {
 			get_menu($('.grid-view table tbody tr:first-child').attr('data-key'));
 			$('.grid-view table tbody tr:first-child').addClass('active');
@@ -30,6 +30,9 @@ $this->registerJs("
 				$('.grid-view table tr').removeClass('active');
 				$(this).addClass('active');
 				get_menu($(this).attr('data-key'));
+			})
+			$('.filter_field').on('change',function(){
+				$('.venue_filter').submit();
 			})
 		});
 		function get_menu(id) {
@@ -70,62 +73,48 @@ $this->registerJs("
 		</div>
 		
 		<div class="col-md-10 filter">
-			<form name="search" class="clearfix" method="get" action="">
+			<form name="search" class="clearfix venue_filter" method="get" action="">
 				<div class="col-md-9">      
 					<label class="control-label"><i class="glyphicon glyphicon-filter"></i> Filter by:</label>
 					
 					<div>
-						<?php echo Html::dropDownList('VenueSearch[active]',$searchModel->active,['Not active', 'Active'],['prompt'=>'Status', 'class' => 'chosen-style'])?> 
+						<?php echo Html::dropDownList('VenueSearch[active]',$searchModel->active,['Not active', 'Active'],['prompt'=>'Status', 'class' => 'chosen-style filter_field'])?> 
 							 <?= Html::dropDownList('VenueSearch[region_id]', $searchModel->region_id, $region->getList(),
 										[
-											'class'  => 'chosen-style',
-											'prompt' => 'Region', 
-											'onchange'=>'
-												var id = $(this).val();
-												$.ajax({
-												url:"'.Yii::$app->urlManager->createUrl(["admin-mastertable/dynamicdestinations"]).'",
-												method:"POST",
-												data:{"region_id":id},
-												success:function(data){
+											'class'    => 'chosen-style',
+											'prompt'   => 'Region', 
+											'onchange' => '
 													$("#destination_id").chosen("destroy");
-													$("#destination_id").empty().append( data );
-													$("#destination_id").removeAttr("disabled");
-								                    $("#destination_id").chosen({disable_search_threshold: 10});
+													$("#destination_id").empty();
+								                    $("#location_id").chosen("destroy");
 													$("#location_id").html("");
-												}
-											})'
+													$(".venue_filter").submit();
+											'
 										]);
 							?>
-							<?php echo Html::dropDownList('VenueSearch[type_id][]',$searchModel->type_id,$type->getList(),['placeholder'=>'Venue type', 'class'  => 'multiple','multiple'=>'multiple'])?> 
-							<?php echo Html::dropDownList('VenueSearch[featured]',$searchModel->featured,['Not featured', 'Featured'],['prompt'=>'Is featured', 'class'  => 'chosen-style'])?> 
+							<?php echo Html::dropDownList('VenueSearch[type_id][]',$searchModel->type_id,$type->getList(), ['placeholder' => 'Venue type', 'class'  => 'multiple filter_field','multiple' => 'multiple'])?> 
+							<?php echo Html::dropDownList('VenueSearch[featured]', $searchModel->featured, ['Not featured', 'Featured'],['prompt' => 'Is featured', 'class'  => 'chosen-style filter_field'])?> 
 							<?= Html::dropDownList('VenueSearch[destination_id]', $searchModel->destination_id, $destination_list,
 								[
-									'id'=>'destination_id',
-									'class'  => 'chosen-style',
-									'prompt' => 'Destination', 
-									'onchange'=>'
-										var id = $(this).val();
-										$.ajax({
-										url:"'.Yii::$app->urlManager->createUrl(["admin-mastertable/dynamiclocations"]).'",
-										method:"POST",
-										data:{"destination_id":id},
-										success:function(data){
-											//$("#location_id").chosen("destroy");
-											$("#location_id").empty().append( data ).multipleSelect("refresh");
-											//$("#location_id").chosen({disable_search_threshold: 10});
-										}
-									})'
+									'id'       => 'destination_id',
+									'class'    => 'chosen-style',
+									'prompt'   => 'Destination', 
+									'onchange' => '
+										$("#location_id").chosen("destroy");
+										$("#location_id").html("");
+										$(".venue_filter").submit();
+									'
 								]);
 							?>
 
-							<?php echo Html::dropDownList('VenueSearch[vibe_id][]',$searchModel->vibe_id,$vibe->getList(),['placeholder'=>'Wedding Vibe',  'class'  => 'multiple drop_lg','multiple'=>'multiple'])?>
+							<?php echo Html::dropDownList('VenueSearch[vibe_id][]',$searchModel->vibe_id,$vibe->getList(),['placeholder' => 'Wedding Vibe',  'class' => 'multiple drop_lg filter_field','multiple'=>'multiple'])?>
 							<div style="width:190px;float:left"> &nbsp;</div>
 							<?php echo Html::dropDownList('VenueSearch[location_id][]', $searchModel->location_id, $location_list,
 								[
-									'id'=>'location_id',
-									'class'  => 'multiple',
+									'id'          => 'location_id',
+									'class'       => 'multiple filter_field',
 									'placeholder' => 'Location', 
-									'multiple'=>'multiple',
+									'multiple'    => 'multiple',
 									[
 								        'horizontalCssClasses' => [
 								            'offset' => 'col-sm-offset-4',
@@ -134,11 +123,7 @@ $this->registerJs("
 								   
 								]);
 							?>
-							
-						
-							
-							
-							<?php echo Html::dropDownList('VenueSearch[service_id][]',$searchModel->service_id,$type->getList(),['placeholder'=>'Venue provides', 'class'  => 'multiple','multiple'=>'multiple'])?>  
+							<?php echo Html::dropDownList('VenueSearch[service_id][]',$searchModel->service_id,$type->getList(),['placeholder' => 'Venue provides', 'class'  => 'multiple filter_field','multiple' => 'multiple'])?>  
 					
 					</div>
 			  

@@ -39,7 +39,8 @@ class VenueAddress extends \yii\db\ActiveRecord
             [['state'], 'string', 'max' => 100],
             [['zip'], 'string', 'max' => 10],
             [['city'], 'string', 'max' => 20],
-            [['address', 'site'], 'string', 'max' => 255],
+            [['address'], 'string', 'max' => 255],
+            ['site', 'url', 'defaultScheme' => 'http'],    
             [['email'], 'string', 'max' => 50],
             [['venue_id'], 'unique'],
             [['venue_id'], 'exist', 'skipOnError' => true, 'targetClass' => Venue::className(), 'targetAttribute' => ['venue_id' => 'id']],
@@ -52,15 +53,15 @@ class VenueAddress extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'venue_id' => 'Venue ID',
-            'country_id' => 'Country ID',
+            'venue_id' => 'Venue',
+            'country_id' => 'Country',
             'state' => 'State',
             'zip' => 'Zip',
             'city' => 'City',
             'address' => 'Address',
             'timezone' => 'Timezone',
             'email' => 'Email',
-            'site' => 'Site',
+            'site' => 'Website',
         ];
     }
 

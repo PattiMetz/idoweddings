@@ -12,15 +12,19 @@ use app\models\Vibe;
 use app\models\VenueService;
 use app\models\venue\VenueContact;
 use yii\helpers\Url;
-use yii\widgets\breadcrumbs;
 /* @var $this yii\web\View */
 /* @var $model app\models\venue\Venue */
 /* @var $form yii\widgets\ActiveForm */
 
 $this->registerJs("
 $('.add_contact').click(function(){
-    $('.add_contact_form').show();
-    $(this).hide();
+    $('.add_contact_form').each(function(){
+    	if($(this).css('display')=='none') {
+    		$(this).show();
+    		exit();
+    	}
+    })
+    //$(this).hide();
 })
 $('#venuetax-accommodation_commission_type input').change(function(){
     if($(this).val()=='0') {
@@ -61,18 +65,23 @@ function add_phone(contact_id, key){
         k=0;
     else
         k--;
-    html = html + '<p>';
-    html = html + '<select name=\"VenueContact[' + key + '][phones][' + k + '][type]\"><option value=\"0\">General</option><option value=\"1\">Mobile</option><option value=\"2\">Fax</option></select>';
-    html = html + '<input type=\"text\" name=\"VenueContact[' + key + '][phones][' + k + '][phone]\">';      
-    html = html + '</p>';  
-    $('.contact_' + key + ' .phones').append(html);           
+
+    html = html + '<div class=\"col-sm-6\">';
+    html = html + '<select name=\"VenueContact[' + key + '][phones][' + k + '][type]\" class=\"form-control chosen-style\"><option value=\"0\">General</option><option value=\"1\">Mobile</option><option value=\"2\">Fax</option><option value=\"3\">What\'s App</option></select>';
+     html = html + '</div>';  
+    html = html + '<div class=\"col-sm-6\">';
+    html = html + '<input type=\"text\" class=\"form-control\" name=\"VenueContact[' + key + '][phones][' + k + '][phone]\">';      
+    html = html + '</div>';  
+    $('.contact_' + key + ' .phones').append(html);        
+    $(\".chosen-style\").chosen();   
 }
 ",1);
 ?>
-<div class="top">
-	<?= Breadcrumbs::widget([
-         'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-      ]) ?>
+<div class="clearfix">
+	<ol class="breadcrumb">
+		<li><?php echo Html::a('Venues',Url::to(['admin-venue/index']),['class' => "return_link text-success",'data-pjax'=>'0'])?></li>
+		<li><?php echo $model->name?></li>
+	</ol>
 </div>
 <div class="venue-form clearfix">
     <?php $form = ActiveForm::begin([
@@ -146,16 +155,21 @@ function add_phone(contact_id, key){
 						<?php echo Html::dropDownList('region_id', $region_id, $region->getList(),
 							[
 								'class'  => 'form-control chosen-style',
-								'prompt' => 'Select a region', 
+								'prompt' => 'Region', 
 								'onchange'=>'
 									var id = $(this).val();
+
 									$.ajax({
 									url:"'.Yii::$app->urlManager->createUrl(["admin-mastertable/dynamicdestinations"]).'",
 									method:"POST",
 									data:{"region_id":id},
 									success:function(data){
+										$("#destination_id").chosen("destroy");
 										$("#destination_id").html( data );
+										$("#destination_id").chosen({disable_search_threshold: 10});
+										$("#venue-location_id").chosen("destroy");
 										$("#venue-location_id").html("");
+										$("#venue-location_id").chosen({disable_search_threshold: 10});
 									}
 								})'
 							]);
@@ -169,7 +183,7 @@ function add_phone(contact_id, key){
 							[
 								'id'=>'destination_id',
 								'class'  => 'form-control chosen-style',
-								'prompt' => 'Select a region', 
+								'prompt' => 'Destination', 
 								'onchange'=>'
 									var id = $(this).val();
 									$.ajax({
@@ -177,7 +191,9 @@ function add_phone(contact_id, key){
 									method:"POST",
 									data:{"destination_id":id},
 									success:function(data){
+										$("#venue-location_id").chosen("destroy");
 										$("#venue-location_id").html( data );
+										$("#venue-location_id").chosen({disable_search_threshold: 10});
 									}
 								})'
 							]);
@@ -185,7 +201,7 @@ function add_phone(contact_id, key){
 					</div>
 				</div>
 
-				<?php echo $form->field($model, 'location_id')->dropDownList($location_list,['class'  => 'form-control chosen-style', 'prompt' => 'Select a location']) ?>
+				<?php echo $form->field($model, 'location_id')->dropDownList($location_list,['class'  => 'form-control chosen-style', 'prompt' => 'Location']) ?>
 			
 				<?php echo $form->field($model, 'comment')->textarea(['rows' => 3]) ?>
 
@@ -203,7 +219,7 @@ function add_phone(contact_id, key){
 			<div id="collapse1" class="panel-collapse collapse">
 				<div class="panel-body">
 					<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 collapse_form inner_col_box">
-						<?php echo $form->field($address, 'address')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($address, 'address')->textArea(['rows' => 3]) ?>
 						
 						<?php echo $form->field($address, 'city')->textInput(['maxlength' => true]) ?>
 						
@@ -237,7 +253,7 @@ function add_phone(contact_id, key){
 
 							<?php foreach ($contacts as $key=>$contact) {?>
 
-								<div class=" clearfix contact_<?php echo$key?>">
+								<div class=" clearfix contact_<?php echo $key?>">
 									<div class="col-md-6">
 										<?php echo $form->field($contact, "[$key]contact_type")->dropDownList(['Contact - for Events', 'Contact - Manager/Sales', 'Contact - Groups/Accommodation'], ['class'  => 'form-control chosen-style']) ?> 
 
@@ -258,10 +274,10 @@ function add_phone(contact_id, key){
 												foreach($contact->phones as $k=>$phone) {?>
 
 														<div class="col-sm-6">
-															<?php echo Html::dropDownList('VenueContact['.$key.'][phones]['.$k.'][type]', $phone['type'], ['General','Mobile','Fax'], ['class'  => 'form-control chosen-style']);?>
+															<?php echo Html::dropDownList('VenueContact['.$key.'][phones]['.$k.'][type]', $phone['type'], ['General', 'Mobile', 'Fax', 'What\'s App'], ['class'  => 'form-control chosen-style']);?>
 														</div>
 														<div class="col-sm-6">
-															<?php echo Html::textInput('VenueContact['.$key.'][phones]['.$k.'][phone]', $phone['phone'], ['class'  => 'form-control chosen-style']);?>
+															<?php echo Html::textInput('VenueContact['.$key.'][phones]['.$k.'][phone]', $phone['phone'], ['class'  => 'form-control ']);?>
 														</div>
 
 												<?php }
@@ -271,22 +287,18 @@ function add_phone(contact_id, key){
 										<div class="form_group clearfix">
 										   <?php echo Html::Button('Add phone', ['class' => 'btn btn-danger add_phone','onclick'=>'add_phone('.$contact->id.','.$key.')']) ?>
 										</div>
-										<div class="form_group clearfix">
-										   <?php echo Html::Button('Add contact', ['class' => 'btn btn-primary add_contact']) ?>
-										</div>
 									</div>
 								</div>
 
 							<?php }?>
 						
-						<?php } else {?>
-							<div class="form_group clearfix">
-							   <?php echo Html::Button('Add contact', ['class' => 'btn btn-primary add_contact']) ?>
-							</div>
-						<?php }?>    
+						<?php } ?>
 						
-						<?php $key++;?>
-							<div class="add_contact_form contact_<?php echo$key?>" style="display:none">
+						   
+						<?php for($i=0;$i<5;$i++) {?>
+							<?php $key++;?>
+
+							<div class="add_contact_form contact_<?php echo $key?> clearfix" style="display:none">
 								<div class="col-md-6">
 							
 									<?php $new_contact = new VenueContact();
@@ -309,7 +321,7 @@ function add_phone(contact_id, key){
 									
 									<div class="col-sm-9 phones">
 										<div class="col-sm-6">
-											<?php echo Html::dropDownList('VenueContact['.$key.'][phones][0][type]', '', ['General','Mobile','Fax'], ['class'  => 'form-control chosen-style']);?>
+											<?php echo Html::dropDownList('VenueContact['.$key.'][phones][0][type]', '', ['General', 'Mobile', 'Fax', 'What\'s App'], ['class'  => 'form-control chosen-style']);?>
 										</div>
 										<div class="col-sm-6">		 
 											<?php echo Html::textInput('VenueContact['.$key.'][phones][0][phone]', '', ['class'  => 'form-control chosen-style']);?>
@@ -321,7 +333,10 @@ function add_phone(contact_id, key){
 									</div>
 								</div>    
 							</div>
-						<?if($model->id):?> 
+						<?php }?>
+						<div class="form_group clearfix">
+						   <?php echo Html::Button('Add contact', ['class' => 'btn btn-primary add_contact']) ?>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -542,7 +557,8 @@ function add_phone(contact_id, key){
 				</div>
 			</div>
 		</div>
-		<div class="panel panel-default">
+		<?if($model->id):?> 
+			<div class="panel panel-default">
 			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse10">
 				<h4 class="panel-title">
 					<a class="text-success">Documents</a>
@@ -551,33 +567,33 @@ function add_phone(contact_id, key){
 			<div id="collapse10" class="panel-collapse collapse">
 				<div class="panel-body">
 					<div class="col-md-10 col-md-offset-1 collapse_form">
-					
-						<?php if(isset($docs) && count($docs)>0) {?> 
-							<ul class="docs">
-								<?php foreach ($docs as $sdoc) {?>
-								<li>
-									<?php echoHtml::a($sdoc->doc,["/uploads/venue/".$model->id."/".$sdoc->doc],['target'=>'_blank','data-pjax'=>0])?>
-									<?php echoHtml::a('delete',[Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$sdoc->id])],['class'=>'modal-ajax'])?>
-								</li>
-								<?php }?>
-							</ul>
-						<?php }?>
-						<!--h3>Upload Files.</h3-->
+						
 						<div class="attach_block">
-							<span>Upload Files:</span>
-						</div>
-					  
+							<span>Attachments:</span>
+							<ul id="files" class="attach_list clearfix">
+								<?php foreach ($model->docs as $file): ?>
+									<li id="file_<?php echo $file->id; ?>">
+										<i><?php echo Html::a($sdoc->doc,["/uploads/venue/".$model->id."/".$sdoc->doc],['target'=>'_blank','data-pjax'=>0])?></i>
+										<?php echo Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$sdoc->id])],['class'=>'modal-ajax remove-file'])?>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+							<a class="btn btn-danger" href="#">Attach file</a>
+							<?php echo $form->field($doc, 'files[]')->fileInput(['multiple' => 'multiple', 'id' => 'files-select']);?>
 
-						<?php echo$form->field($doc, 'files[]')->fileInput(['multiple' => 'multiple']);?>
-						<?endif;?>
+						</div>
+
+
+						
 						
 					</div>
 				</div>
 			</div>
 		</div>
+		<?endif;?>
 	</div>
 	<div class="form-group required">
-		<label>Updated by </label> <?php echo$model->user?> <?php echo$model->updated_at?>
+		<label>Updated by </label> <?php echo $model->user?> <?php echo $model->updated_at?>
 	</div>
     <div class="form-group">
         <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
