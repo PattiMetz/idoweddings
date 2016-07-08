@@ -27,12 +27,13 @@ $this->registerJs("
 			$('.grid-view table tbody tr:first-child').addClass('active');
 			$('.multiple').multipleSelect({});
 			$('.grid-view table tr').on('click',function(){
+				$('.grid-view table tr').removeClass('active');
 				$(this).addClass('active');
 				get_menu($(this).attr('data-key'));
 			})
 		});
 		function get_menu(id) {
-			$('.grid-view table tr').removeClass('active');
+			
 			
 			$.ajax({
 				url:'".Url::to(["admin-venue/menu"])."',
@@ -52,14 +53,14 @@ $this->registerJs("
 
     <!--h1><!--?= Html::encode($this->title) ?></h1-->
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
     <?php 
         $region           = new Region();
-        $location_list    = isset($searchModel->location)?$searchModel->location->getList($searchModel->location->destination_id):array();
+        $location         = new Location;
+        $location_list    = isset($searchModel->destination_id)?$location->getList($searchModel->destination_id):array();
         $destination      = new Destination();
-        $destination_list = isset($searchModel->location)?$destination->getList($searchModel->location->destination->region_id):array();
-        $region_id        = isset($searchModel->location)?$searchModel->location->destination->region_id:'';
-        $destination_id   = isset($searchModel->location)?$searchModel->location->destination_id:'';
+        $destination_list = isset($searchModel->region_id)?$destination->getList($searchModel->region_id):array();
+        $region_id        = $searchModel->region_id;
+        $destination_id   = $searchModel->destination_id;
         $type             = new VenueType();
         $vibe             = new Vibe();
         $service          = new VenueService();?>
@@ -101,7 +102,6 @@ $this->registerJs("
 								[
 									'id'=>'destination_id',
 									'class'  => 'chosen-style',
-									'disabled'=>'disabled',
 									'prompt' => 'Destination', 
 									'onchange'=>'
 										var id = $(this).val();
@@ -110,9 +110,9 @@ $this->registerJs("
 										method:"POST",
 										data:{"destination_id":id},
 										success:function(data){
-											$("#location_id").chosen("destroy");
+											//$("#location_id").chosen("destroy");
 											$("#location_id").empty().append( data ).multipleSelect("refresh");
-											$("#location_id").chosen({disable_search_threshold: 10});
+											//$("#location_id").chosen({disable_search_threshold: 10});
 										}
 									})'
 								]);

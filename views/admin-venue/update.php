@@ -4,10 +4,9 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\venue\Venue */
 
-$this->title = 'Update Venue: ' . $model->name;
+$this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Venues', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = $model->name;
 ?>
 <div class="venue-update">
 

@@ -41,9 +41,9 @@ class VenueTax extends \yii\db\ActiveRecord
     {
         return [
             [['commission_type', 'accommodation_commission_type'] ,'required'],
-            [['venue_id', 'commission_type', 'accommodation_commission_type'], 'integer'],
+            [['venue_id', 'commission_type', 'accommodation_commission_type', 'deposit_currency', 'event_deposit'], 'integer'],
             [['tax', 'service_rate', 'our_service_rate', 'agency_service_rate', 'commission', 'commission_package', 'commission_food', 'commission_items', 'accommodation_commission'], 'number'],
-            [['comment', 'accomodation_wholesale'], 'string'],
+            [['comment', 'accomodation_wholesale','commission_note','accommodation_note','note'], 'string'],
             [['venue_id'], 'unique'],
             [['venue_id'], 'exist', 'skipOnError' => true, 'targetClass' => Venue::className(), 'targetAttribute' => ['venue_id' => 'id']],
         ];
@@ -66,9 +66,11 @@ class VenueTax extends \yii\db\ActiveRecord
             'commission_package' => 'Commission Package',
             'commission_food' => 'Commission Food',
             'commission_items' => 'Commission Items',
+            'commission_note' => 'Note',
             'accommodation_commission_type' => 'Accommodation Commission Type',
             'accommodation_commission' => 'Accommodation Commission',
             'accomodation_wholesale' => 'Accomodation Wholesale',
+            'accommodation_note' => 'Note',
         ];
     }
 

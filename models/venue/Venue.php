@@ -77,7 +77,7 @@ class Venue extends \yii\db\ActiveRecord
             'featured_name' => 'Featured Name',
             'location_id' => 'Location ID',
             'active' => 'Active venue profile',
-            'featured' => 'Featured',
+            'featured' => ' Is Featured',
             'type_id' => 'Type ID',
             'vibe_id' => 'Vibe ID',
             'service_id' => 'Service ID',

@@ -146,12 +146,13 @@ class AdminVenueController extends Controller
             $model->save();
         }
 
-        $pages = VenuePage::findAll(['venue_id'=>$id]);
+        $pages = $venue->pages;
         if(!$pages) {
             $this->setDefaultPages($id);
-            $pages = VenuePage::findAll(['venue_id'=>$id]);
+            return $this->redirect(['settings', 'id' => $venue->id]);
+            //$pages = $venue->pages;
         }
-        $fonts = ['Times New Roman', 'Arial'];
+        $fonts = Yii::$app->params['fonts'];
         $sizes = array();
         for($i=10;$i<40;$i++) {
             $sizes[] = $i;
@@ -362,7 +363,6 @@ class AdminVenueController extends Controller
             $contact->venue_id = $model->id;
             if ($contact->validate()) {
                 if (!empty($contact->name) || !empty($contact->phone)) {
-                   
                     $contact->save();
                 } else {
                     $contact->delete();
