@@ -771,6 +771,13 @@ table, th {
 .venue-form form > .form-group {
 	text-align: center;
 }
+.border-block {
+	border: solid 1px #ddd;
+	border-radius: 4px;
+	float:left;
+	width:100%;
+	margin:10px 0px;
+}
 .update_top_block {
 	padding-top: 20px;
 }
