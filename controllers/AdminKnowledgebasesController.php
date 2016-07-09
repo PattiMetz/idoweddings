@@ -15,6 +15,7 @@ use yii\validators\FileValidator;
 use yii\helpers\Html;
 use app\models\Knowledgebase;
 use app\models\KnowledgebaseEntry;
+use app\models\KnowledgebaseEntryReorderForm;
 use app\models\KnowledgebaseEntryFile;
 
 class AdminKnowledgebasesController extends Controller {
@@ -39,7 +40,7 @@ class AdminKnowledgebasesController extends Controller {
 //				],
 				'rules' => [
 					[
-						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'categories-tree', 'articles-update', 'articles-delete', 'entries-files-upload'],
+						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'categories-tree', 'articles-update', 'articles-delete', 'entries-reorder', 'entries-files-upload'],
 						'allow' => true,
 						'roles' => ['@'],
 					],
@@ -277,7 +278,7 @@ class AdminKnowledgebasesController extends Controller {
 		// Current path
 		$current_path = [];
 
-		// Categories cache
+		// Categories data
 		$categories = array();
 
 		// Get all knowledgebases for SELECT options
@@ -303,7 +304,7 @@ class AdminKnowledgebasesController extends Controller {
 
 
 			// Set page title
-			$this->view->title = $knowledgebases[$knowledgebase_id] . Yii::$app->request->get('page');
+			$this->view->title = $knowledgebases[$knowledgebase_id];
 
 			// Sanitize category ID
 			$category_id = intval($category_id);
@@ -404,11 +405,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		} while(0);
 
-		$this->view->params['js'] = '
-			$(document).on("change", "#_knowledgebase_id", function() {
-				$.pjax({url: "' . Url::to(['admin-knowledgebases/entries']) . '?knowledgebase_id=" + $(this).val(), container: "#main"});
-			});
-		';
+		$this->view->params['js'] = $this->_entries_js();
 
 		return $this->render('entries', [
 			'alert' => $alert,
@@ -417,7 +414,7 @@ class AdminKnowledgebasesController extends Controller {
 			'current_category_id' => $category_id,
 			'knowledgebases' => $knowledgebases, // SELECT options
 			'current_path' => $current_path,
-			'categories' => $categories // cache
+			'categories' => $categories // cached data
 		]);
 
 	}
@@ -444,17 +441,17 @@ class AdminKnowledgebasesController extends Controller {
 
 				if (!$model) {
 
-					$alert = 'Category not found.';
+					$alert = 'Category not found';
 
 					break;
 
 				}
 
-				$_old_knowledgebase_id = $model->knowledgebase_id;
+				$model->_old_knowledgebase_id = $model->knowledgebase_id;
 
-				$_old_category_id = $model->category_id;
+				$model->_old_category_id = $model->category_id;
 
-				$_old_tree_path = $model->tree_path;
+				$model->_old_tree_path = $model->tree_path;
 
 			} else {
 
@@ -486,11 +483,13 @@ class AdminKnowledgebasesController extends Controller {
 
 				$model->is_category = 1;
 
-				$_old_knowledgebase_id = 0;
+				$model->status = '';
 
-				$_old_category_id = 0;
+				$model->_old_knowledgebase_id = 0;
 
-				$_old_tree_path = '';
+				$model->_old_category_id = 0;
+
+				$model->_old_tree_path = '';
 
 			}
 
@@ -568,14 +567,14 @@ class AdminKnowledgebasesController extends Controller {
 				}
 
 
-				if ($id && ($model->knowledgebase_id != $_old_knowledgebase_id || $model->category_id != $_old_category_id)) {
+				if ($id && ($model->knowledgebase_id != $model->_old_knowledgebase_id || $model->category_id != $model->_old_category_id)) {
 
 
 					// Get all children IDs
 
-					$tree_path = (strlen($_old_tree_path)) ? $_old_tree_path . '|' . $model->id : $model->id;
-
 					try {
+
+						$tree_path = (strlen($model->_old_tree_path)) ? $model->_old_tree_path . '|' . $model->id : $model->id;
 
 						$child_ids = KnowledgebaseEntry::find()
 							->where(['tree_path' => $tree_path])
@@ -602,7 +601,7 @@ class AdminKnowledgebasesController extends Controller {
 
 						$values = [];
 
-						if ($model->knowledgebase_id != $_old_knowledgebase_id) {
+						if ($model->knowledgebase_id != $model->_old_knowledgebase_id) {
 
 							$columns['knowledgebase_id'] = 'knowledgebase_id = :knowledgebase_id';
 
@@ -610,9 +609,9 @@ class AdminKnowledgebasesController extends Controller {
 
 						}
 
-						if ($model->category_id != $_old_category_id) {
+						if ($model->category_id != $model->_old_category_id) {
 
-							$pos = (strlen($_old_tree_path)) ? strlen($_old_tree_path) + 2 : 1;
+							$pos = (strlen($model->_old_tree_path)) ? strlen($model->_old_tree_path) + 2 : 1;
 
 							$columns['tree_path'] = 'tree_path = CONCAT(:tree_path, SUBSTR(tree_path, ' . $pos . '))';
 
@@ -649,6 +648,7 @@ class AdminKnowledgebasesController extends Controller {
 
 						}
 
+
 					}
 
 
@@ -659,13 +659,13 @@ class AdminKnowledgebasesController extends Controller {
 
 				$category_ids = [];
 
-				if ($_old_category_id) {
+				if ($model->_old_category_id) {
 
-					$category_ids[] = $_old_category_id;
+					$category_ids[] = $model->_old_category_id;
 
 				}
 
-				if ($model->category_id && $model->category_id != $_old_category_id) {
+				if ($model->category_id && $model->category_id != $model->_old_category_id) {
 
 					$category_ids[] = $model->category_id;
 
@@ -694,13 +694,13 @@ class AdminKnowledgebasesController extends Controller {
 
 				$knowledgebase_ids = [];
 
-				if ($_old_knowledgebase_id) {
+				if ($model->_old_knowledgebase_id) {
 
-					$knowledgebase_ids[] = $_old_knowledgebase_id;
+					$knowledgebase_ids[] = $model->_old_knowledgebase_id;
 
 				}
 
-				if ($model->knowledgebase_id != $_old_knowledgebase_id) {
+				if ($model->knowledgebase_id != $model->_old_knowledgebase_id) {
 
 					$knowledgebase_ids[] = $model->knowledgebase_id;
 
@@ -798,9 +798,9 @@ class AdminKnowledgebasesController extends Controller {
 
 				// Get all children IDs
 
-				$tree_path = (strlen($model->tree_path)) ? $model->tree_path . '|' . $model->id : $model->id;
-
 				try {
+
+					$tree_path = (strlen($model->tree_path)) ? $model->tree_path . '|' . $model->id : $model->id;
 
 					$child_ids = KnowledgebaseEntry::find()
 						->where(['tree_path' => $tree_path])
@@ -962,7 +962,8 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
-		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE');
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE')
+			->execute();
 
 		// Get all knowledgebases for SELECT options
 		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
@@ -992,9 +993,9 @@ class AdminKnowledgebasesController extends Controller {
 
 				$model->file_ids = array_keys($model->files);
 
-				$_old_knowledgebase_id = $model->knowledgebase_id;
+				$model->_old_knowledgebase_id = $model->knowledgebase_id;
 
-				$_old_category_id = $model->category_id;
+				$model->_old_category_id = $model->category_id;
 
 			} else {
 
@@ -1024,15 +1025,17 @@ class AdminKnowledgebasesController extends Controller {
 
 				}
 
+				$model->is_category = 0;
+
 				$model->status = 'draft';
 
 				$model->files = [];
 
 				$model->file_ids = [];
 
-				$_old_knowledgebase_id = 0;
+				$model->_old_knowledgebase_id = 0;
 
-				$_old_category_id = 0;
+				$model->_old_category_id = 0;
 
 			}
 
@@ -1209,13 +1212,13 @@ class AdminKnowledgebasesController extends Controller {
 
 				$category_ids = [];
 
-				if ($_old_category_id) {
+				if ($model->_old_category_id) {
 
-					$category_ids[] = $_old_category_id;
+					$category_ids[] = $model->_old_category_id;
 
 				}
 
-				if ($model->category_id && $model->category_id != $_old_category_id) {
+				if ($model->category_id && $model->category_id != $model->_old_category_id) {
 
 					$category_ids[] = $model->category_id;
 
@@ -1244,13 +1247,13 @@ class AdminKnowledgebasesController extends Controller {
 
 				$knowledgebase_ids = [];
 
-				if ($_old_knowledgebase_id) {
+				if ($model->_old_knowledgebase_id) {
 
-					$knowledgebase_ids[] = $_old_knowledgebase_id;
+					$knowledgebase_ids[] = $model->_old_knowledgebase_id;
 
 				}
 
-				if ($model->knowledgebase_id != $_old_knowledgebase_id) {
+				if ($model->knowledgebase_id != $model->_old_knowledgebase_id) {
 
 					$knowledgebase_ids[] = $model->knowledgebase_id;
 
@@ -1281,7 +1284,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
-			Yii::$app->db->createCommand('UNLOCK TABLES');
+			Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 			$pjax_reload = '#main';
 
@@ -1295,7 +1298,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		}
 
-		Yii::$app->db->createCommand('UNLOCK TABLES');
+		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('articles-update', [
 			'model' => $model,
@@ -1428,6 +1431,135 @@ class AdminKnowledgebasesController extends Controller {
 		Yii::$app->db->createCommand('UNLOCK TABLES');
 
 		return $this->renderAjax('articles-delete', [
+			'model' => $model,
+			'alert' => $alert
+		]);
+
+	}
+
+	function actionEntriesReorder($id) {
+
+		$this->view->title = 'Change Order';
+
+		$alert = '';
+
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase_entry}} WRITE');
+
+		do {
+
+			$entry = KnowledgebaseEntry::findOne($id);
+
+			if (!$entry) {
+
+				$alert = 'Entry not found';
+
+				break;
+
+			}
+
+			$model = new KnowledgebaseEntryReorderForm();
+
+			$model->move_types = [
+				'top'		=>	'Move to the top',
+				'up'		=>	'Up',
+				'position'	=>	'Move to the position',
+				'down'		=>	'Down',
+				'bottom'	=>	'Move to the end'
+			];
+
+			$model->move_types_visible = $model->move_types;
+
+			unset(
+				$model->move_types_visible['up'],
+				$model->move_types_visible['down']
+			);
+
+			$model->move_type = 'top';
+
+			$model->position = 0;
+
+			break;
+
+		} while(0);
+
+		if (Yii::$app->request->isPost) {
+
+			do {
+
+				if (!$entry) {
+
+					break;
+
+				}
+
+				$model->load(Yii::$app->request->post());
+
+				$errors = ActiveForm::validate($model);
+
+				if (count($errors)) {
+
+					break;
+
+				}
+
+				$transaction = Yii::$app->db->beginTransaction();
+
+
+				// Change entry order
+
+				try {
+
+					$entry->changeOrder($model->move_type, $model->position);
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to change entry order';
+
+					$transaction->rollback();
+
+					break;
+
+				}
+
+
+				// Renumber current category
+
+				try {
+
+					$entry->renumberOrder($entry->knowledgebase_id, $entry->category_id, $entry->is_category);
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to renumber current category';
+
+					$transaction->rollback();
+
+					break;
+
+				}
+
+
+				$transaction->commit();
+
+				break;
+
+			} while(0);
+
+			Yii::$app->db->createCommand('UNLOCK TABLES');
+
+			$pjax_reload = '#main';
+
+			Yii::$app->response->format = Response::FORMAT_JSON;
+
+			return compact(
+				'alert',
+				'errors',
+				'pjax_reload'
+			);
+
+		}
+
+		return $this->renderAjax('entries-reorder', [
 			'model' => $model,
 			'alert' => $alert
 		]);
@@ -1671,6 +1803,99 @@ class AdminKnowledgebasesController extends Controller {
 			], 'id = :knowledgebase_id')
 			->bindValue(':knowledgebase_id', $knowledgebase_id)
 			->execute();
+
+	}
+
+	private function _entries_js() {
+
+		$entries_url = Url::to(['admin-knowledgebases/entries']);
+
+		$js = <<<JS
+			$('#_knowledgebase_id').on('change', function() {
+				$.pjax({url: '{$entries_url}?knowledgebase_id=' + $(this).val(), container: '#main'});
+			});
+
+			$('.reorder-knowledgebase-entry').on('click', function(e) {
+
+				e.preventDefault();
+
+				$('#main .alert-danger').hide();
+
+				$('#main .alert-success').hide();
+
+				$('#preloader').show();
+
+				$.ajax({
+					url: $(this).attr('href'),
+					type: 'POST',
+					data: {
+						move_type: $(this).attr('data-move-type')
+					},
+					timeout: ajaxTimeout,
+					complete: function() {
+
+						$('#preloader').hide();
+
+					},
+					error: function(jqXHR) {
+
+						var message;
+
+						if (jqXHR.status == 0) {
+
+							message = ajaxTimeoutMessage;
+
+						} else {
+
+							message = jqXHR.responseText;
+
+						}
+
+						$('#main .alert-danger').html(message).show().delay(2000).fadeOut();
+
+					},
+					success: function(data) {
+
+						var success = true;
+
+						if (data.errors !== undefined && !$.isEmptyObject(data.errors)) {
+
+							success = false;
+
+							// Collect errors
+							var html = '';
+							$.each(data.errors, function(key, val) {
+								html+= val + '<br>';
+							});
+
+							// Show alert
+							$('#main .alert-danger').html(html).show().delay(2000).fadeOut();
+
+						}
+
+						if (data.alert !== undefined && data.alert != '') {
+
+							success = false;
+
+							$('#main .alert-danger').html(data.alert).show().delay(2000).fadeOut();
+
+						}
+
+						if (success) {
+
+							$.pjax.reload({
+								container: '#main'
+							});
+
+						}
+
+					}
+				});
+
+			});
+JS;
+
+		return $js;
 
 	}
 

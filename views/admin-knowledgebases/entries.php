@@ -7,21 +7,21 @@ use yii\web\View;
 use yii\bootstrap\Alert;
 ?>
 
-<?php if ($alert != ''): ?>
+<?php
 
-	<?php
+echo Alert::widget([
+	'options' => [
+		'class' => 'alert-danger',
+		'style' => ($alert == '') ? 'display: none' : ''
+	],
+	'body' => $alert,
+		'body' => $alert,
+		'closeButton' => false
+]);
 
-		echo Alert::widget([
-			'options' => [
-				'class' => 'alert-danger'
-			],
-			'body' => $alert,
-			'closeButton' => false
-		]);
+?>
 
-	?>
-
-<?php else: ?>
+<?php if ($alert == ''): ?>
 
 	<?php if ($current_category_id): ?>
 
@@ -83,7 +83,22 @@ use yii\bootstrap\Alert;
 				'class' => 'table table-bordered doc_table'
 			],
 			'columns' => [
-				'order',
+				[
+					'attribute' => 'order',
+					'format' => 'raw',
+					'value' => function ($model) {
+						$url = Url::to(['admin-knowledgebases/entries-reorder', 'id' => $model->id]);
+						$order = floor($model->order / 10);
+						$output = <<<OUTPUT
+							<a href="{$url}" class="text-success modal-ajax">{$order}</a>
+							<div class="arrows">
+								<a href="{$url}" class="arr_up reorder-knowledgebase-entry" data-move-type="up" title="Up"></a>
+								<a href="{$url}" class="arr_down reorder-knowledgebase-entry" data-move-type="down" title="Down"></a>
+							</div>
+OUTPUT;
+						return $output;
+					}
+				],
 				[
 					'attribute' => 'title',
 					'format' => 'raw',
