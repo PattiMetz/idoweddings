@@ -78,7 +78,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		if ($id) {
 
-			Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE');
+			Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE')->execute();
 
 			$model = Knowledgebase::findOne($id);
 
@@ -108,7 +108,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			}
 
-			Yii::$app->db->createCommand('UNLOCK TABLES');
+			Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 			$pjax_reload = '#main';
 
@@ -122,7 +122,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		}
 
-		Yii::$app->db->createCommand('UNLOCK TABLES');
+		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('update', [
 			'model' => $model,
@@ -135,7 +135,8 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
-		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE');
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE')
+			->execute();
 
 		$model = Knowledgebase::findOne($id);
 
@@ -241,7 +242,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
-			Yii::$app->db->createCommand('UNLOCK TABLES');
+			Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 			$pjax_reload = '#main';
 
@@ -255,7 +256,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		}
 
-		Yii::$app->db->createCommand('UNLOCK TABLES');
+		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('delete', [
 			'model' => $model,
@@ -425,7 +426,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
-		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE');
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE')->execute();
 
 		// Get all knowledgebases for SELECT options
 		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
@@ -731,7 +732,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
-			Yii::$app->db->createCommand('UNLOCK TABLES');
+			Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 			$pjax_reload = '#main';
 
@@ -745,7 +746,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		}
 
-		Yii::$app->db->createCommand('UNLOCK TABLES');
+		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('categories-update', [
 			'model' => $model,
@@ -758,7 +759,8 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
-		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE');
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE')
+			->execute();
 
 		$model = KnowledgebaseEntry::find()->where([
 			'id' => $id,
@@ -908,7 +910,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
-			Yii::$app->db->createCommand('UNLOCK TABLES');
+			Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 			$pjax_reload = '#main';
 
@@ -922,7 +924,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		}
 
-		Yii::$app->db->createCommand('UNLOCK TABLES');
+		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('categories-delete', [
 			'model' => $model,
@@ -1313,7 +1315,8 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
-		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE');
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE')
+			->execute();
 
 		$model = KnowledgebaseEntry::find()->where([
 			'id' => $id,
@@ -1414,7 +1417,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
-			Yii::$app->db->createCommand('UNLOCK TABLES');
+			Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 			$pjax_reload = '#main';
 
@@ -1428,7 +1431,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		}
 
-		Yii::$app->db->createCommand('UNLOCK TABLES');
+		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('articles-delete', [
 			'model' => $model,
@@ -1443,7 +1446,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		$alert = '';
 
-		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase_entry}} WRITE');
+		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase_entry}} WRITE')->execute();
 
 		do {
 
@@ -1545,7 +1548,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			} while(0);
 
-			Yii::$app->db->createCommand('UNLOCK TABLES');
+			Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 			$pjax_reload = '#main';
 
@@ -1558,6 +1561,8 @@ class AdminKnowledgebasesController extends Controller {
 			);
 
 		}
+
+		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('entries-reorder', [
 			'model' => $model,

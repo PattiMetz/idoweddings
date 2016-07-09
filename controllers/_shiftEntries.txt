@@ -1,0 +1,56 @@
+	private function _shiftEntries($dir, $knowledgebase_id, $category_id, $is_category, $exclude_id, $operator, $order_1, $order_2 = false) {
+
+		$values = [
+			':knowledgebase_id'	=>	$knowledgebase_id,
+			':category_id'		=>	$category_id,
+			':is_category'		=>	$is_category,
+			':exclude_id'		=>	$exclude_id
+		];
+
+		$sign = ($dir == 'UP') ? '-' : '+';
+
+		switch ($operator) {
+
+			case 'BETWEEN':
+
+				$filter = '`order` BETWEEN :order_1 AND :order_2';
+
+				$values[':order_1'] = $order_1;
+				$values[':order_2'] = $order_2;
+
+				break;
+
+			case '>':
+
+				$filter = '`order` > :order';
+
+				$values[':order'] = $order_1;
+
+				break;
+
+			case '=':
+
+				$filter = '`order` = :order';
+
+				$values[':order'] = $order_1;
+
+				break;
+
+		}
+
+		$command = Yii::$app->db->createCommand("
+			UPDATE {{%knowledgebase_entry}}
+			SET `order` = `order` {$sign} 1
+			WHERE knowledgebase_id = :knowledgebase_id AND category_id = :category_id AND is_category = :is_category AND id != :exclude_id
+				AND {$filter}
+		");
+
+		foreach ($values as $name => $value) {
+
+			$command->bindValue($name, $value);
+
+		}
+
+		$command->execute();
+
+	}
