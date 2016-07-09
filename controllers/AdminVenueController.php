@@ -235,10 +235,10 @@ class AdminVenueController extends Controller
                         $tax->venue_id = $model->id;
                         Model::loadMultiple($contacts, $post);
                         if($address->save() && $tax->save()) {
-                            $this->saveContacts($contacts, $model);
-                            
-                            $transaction->commit();
-                            return $this->redirect(['update', 'id' => $model->id]);
+                            if ($this->saveContacts($contacts, $model)) {
+                                $transaction->commit();
+                                return $this->redirect(['update', 'id' => $model->id]);
+                            }
                         } else {
                              $transaction->rollback();
                         }
@@ -251,8 +251,9 @@ class AdminVenueController extends Controller
             }
             
         }
-        return $this->render('create', [
+        return $this->render('form', [
                 'model'   => $model,
+                'alert'   => '',
                 'address' => $address,
                 'tax'     => $tax,
                 'contacts'=> $contacts,
@@ -264,12 +265,59 @@ class AdminVenueController extends Controller
 
     public function actionMenu() {
         $id = Yii::$app->request->post('id');
-      //  $id = 137;
         $model = $this->findModel($id);
         return $this->renderAjax('menu', [
             'model' => $model
         ]);
     }
+
+    function actionFilesUpload($venue_id) {
+
+        $alert = '';
+        $errors = [];
+        $list = [];
+        $files = UploadedFile::getInstancesByName('files');
+        if (Yii::$app->request->isPost) {
+            if (!count($files)) {
+                if ($_SERVER['CONTENT_LENGTH']) {
+                    $alert = 'Content-Length exceeds the limit';
+                }
+
+            } else {
+
+                foreach ($files as $file) {
+                    $model = new VenueDoc;
+                    $model->venue_id = $venue_id;
+                    $model->doc = $file->name;
+                    $model->file = $file;
+
+                    $transaction = Yii::$app->db->beginTransaction();
+                    if ($model->save() && $model->fileSaved) {
+                            $list[$model->id] = $file->name;
+                        $transaction->commit();
+                    } else {
+                       
+                        $errors = $model->getErrors();
+                        
+                        $transaction->rollBack();
+                    }
+        
+                }
+
+            }
+
+            Yii::$app->response->format = Response::FORMAT_JSON;
+
+            return compact(
+                'alert',
+                'errors',
+                'list'
+            );
+
+        }
+
+    }
+
 
     /**
      * Updates an existing Venue model.
@@ -303,21 +351,6 @@ class AdminVenueController extends Controller
                         Model::loadMultiple($contacts, $post);
                         if($model->address->save() && $model->tax->save()) {
                             $this->saveContacts($contacts, $model);
-                            $doc = new VenueDoc();
-                            $doc->venue_id = $model->id;
-                            $doc->doc='';
-                            $files = UploadedFile::getInstances($doc, 'files');
-                            @mkdir('uploads/venue/'.$model->id);
-                            foreach($files as $file) {
-                                $baseName = str_replace(' ', '_', $file->basename);
-                                $file->saveAs('uploads/venue/'.$model->id.'/' . $baseName . '.' . $file->extension);
-                                $upload = new VenueDoc();
-                                $upload->venue_id = $model->id;
-                                $upload->doc = $baseName. '.' . $file->extension;
-                                $upload->save();
-                               
-                            }
-                            
                             
                             $transaction->commit();
                            return $this->redirect(['update', 'id' => $model->id]);
@@ -334,8 +367,9 @@ class AdminVenueController extends Controller
             
         }
 
-        return $this->render('update', [
-            'model' => $model,
+        return $this->render('form', [
+            'model'   => $model,
+            'alert'   => '',
             'address' => $model->address,
             'tax'     => $model->tax,
             'contacts'=> $model->contacts,
@@ -363,7 +397,9 @@ class AdminVenueController extends Controller
             $contact->venue_id = $model->id;
             if ($contact->validate()) {
                 if (!empty($contact->name) || !empty($contact->phone)) {
-                    $contact->save();
+                    if (!$contact->save())
+                        return false;
+                    return true;
                 } else {
                     $contact->delete();
                 }

@@ -15,7 +15,8 @@ use Yii;
  */
 class VenueDoc extends \yii\db\ActiveRecord
 {
-    public $files;
+    public $file;
+    public $fileSaved;
     /**
      * @inheritdoc
      */
@@ -32,7 +33,7 @@ class VenueDoc extends \yii\db\ActiveRecord
         return [
             [['venue_id'], 'required'],
             [['venue_id'], 'integer'],
-            [['files'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, xls, xlsx, doc, docx, csv', 'maxFiles' => 5],
+            [['file'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, xls, xlsx, doc, docx, csv'],
             [['doc'], 'string', 'max' => 255],
             [['venue_id'], 'exist', 'skipOnError' => true, 'targetClass' => Venue::className(), 'targetAttribute' => ['venue_id' => 'id']],
         ];
@@ -50,9 +51,20 @@ class VenueDoc extends \yii\db\ActiveRecord
         ];
     }
 
+    public function afterSave($insert, $changedAttributes) {
+        if ($insert) {
+            $dir = 'uploads/venue/'.$this->venue_id;
+            @mkdir($dir);
+            if (is_dir($dir)) {
+                $this->fileSaved = $this->file->saveAs($dir . '/' . $this->id . '.'.$this->file->extension);
+            }
+        }
+        parent::afterSave($insert, $changedAttributes);
+    }
+
     public function afterDelete()
     {
-        @unlink('uploads/venue/'.$this->venue_id.'/'.$this->doc);
+        @unlink('uploads/venue/'.$this->venue_id.'/'.$this->id.'.'.end(explode(".", $this->doc)));
         parent::afterDelete();
     }
 

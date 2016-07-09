@@ -36,8 +36,8 @@ class VenueContact extends \yii\db\ActiveRecord
             [['venue_id', 'contact_type'], 'integer'],
             [['phone'], 'string'],
             [['phones'], 'safe'],
-            [['name'], 'string', 'max' => 100],
-            ['email', 'email'],
+            [['name', 'email'], 'string', 'max' => 100],
+            ['email', 'email', 'skipOnEmpty'=>true],
             [['skype'], 'string', 'max' => 255],
             [['venue_id'], 'exist', 'skipOnError' => true, 'targetClass' => Venue::className(), 'targetAttribute' => ['venue_id' => 'id']],
         ];

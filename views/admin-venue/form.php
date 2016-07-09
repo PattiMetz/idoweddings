@@ -12,9 +12,12 @@ use app\models\Vibe;
 use app\models\VenueService;
 use app\models\venue\VenueContact;
 use yii\helpers\Url;
+use yii\bootstrap\Alert;
 /* @var $this yii\web\View */
 /* @var $model app\models\venue\Venue */
 /* @var $form yii\widgets\ActiveForm */
+
+$this->title = $model->id?$model->name:'Create Venue';
 
 $this->registerJs("
 $('.add_contact').click(function(){
@@ -96,6 +99,31 @@ function add_phone(contact_id, key){
                 ]
             ],
         ]); ?>
+    <?php
+
+		echo Alert::widget([
+			'options' => [
+				'class' => 'alert-danger',
+				'style' => ($alert == '') ? 'display: none' : ''
+			],
+			'body' => $alert,
+			'closeButton' => false,
+		]);
+
+		?>
+
+		<?php
+
+		echo Alert::widget([
+			'options' => [
+				'class' => 'alert-info',
+				'style' => 'display: none'
+			],
+			'body' => '',
+			'closeButton' => false,
+		]);
+
+		?>
 	<?php echo $form->errorSummary($model); ?>
 	<div class="border-block">
 		<div class="col-md-10 col-md-offset-1 update_top_block clearfix">
@@ -566,27 +594,22 @@ function add_phone(contact_id, key){
 			</div>
 			<div id="collapse10" class="panel-collapse collapse">
 				<div class="panel-body">
-					<div class="col-md-10 col-md-offset-1 collapse_form">
 						
 						<div class="attach_block">
 							<span>Attachments:</span>
 							<ul id="files" class="attach_list clearfix">
 								<?php foreach ($model->docs as $file): ?>
 									<li id="file_<?php echo $file->id; ?>">
-										<i><?php echo Html::a($sdoc->doc,["/uploads/venue/".$model->id."/".$sdoc->doc],['target'=>'_blank','data-pjax'=>0])?></i>
-										<?php echo Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$sdoc->id])],['class'=>'modal-ajax remove-file'])?>
+										<i><?php echo Html::a($file->doc,["/uploads/venue/".$model->id."/".$file->doc],['target'=>'_blank','data-pjax'=>0])?></i>
+										<button class="remove-file modal-ajax" type="button" data-id="16" title="Delete" value="<?php echo Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$file->id])?>"></button>
+										
 									</li>
 								<?php endforeach; ?>
 							</ul>
 							<a class="btn btn-danger" href="#">Attach file</a>
-							<?php echo $form->field($doc, 'files[]')->fileInput(['multiple' => 'multiple', 'id' => 'files-select']);?>
+							<input type="file" id="files-select" name="files[]" size="20" multiple />
 
 						</div>
-
-
-						
-						
-					</div>
 				</div>
 			</div>
 		</div>
@@ -602,3 +625,114 @@ function add_phone(contact_id, key){
     <?php ActiveForm::end(); ?>
 
 </div>
+<?php
+
+$upload_url = Url::to(['admin-venue/files-upload', 'venue_id' => $model->id]);
+
+$js = <<<EOT
+	var xhr;
+
+	$('#files-select').on('change', function() {
+
+		// Disable browse files button
+		$('#files-select').attr('disabled', true);
+
+		// Hide alert
+		$('.alert-danger').hide();
+
+		// Display uploading status
+		$('.alert-info').html('Uploading... <a id="files-abort" href="#">Abort</a>').show();
+
+		// Handle upload abort
+		$('#files-abort').on('click', function(e) {
+			// Prevent default action
+			e.preventDefault();
+
+			// Abort the request
+			xhr.abort();
+		});
+
+		// Create a new FormData object
+		var data = new FormData();
+
+		// Loop through each of the selected files
+		jQuery.each(jQuery('#files-select')[0].files, function(i, file) {
+			// Add the file to the request
+			data.append('files[]', file);
+		});
+
+		xhr = jQuery.ajax({
+			url: '{$upload_url}',
+			data: data,
+			cache: false,
+			contentType: false,
+			processData: false,
+			type: 'POST',
+			complete: function() {
+				// Hide uploading status
+				$('.alert-info').hide();
+
+				// Clear file input
+				$('#files-select').val('');
+
+				// Enable file browse button
+				$('#files-select').attr('disabled', false);
+			},
+			error: function(jqXHR) {
+				var message;
+				if (jqXHR.status == 0) {
+					message = 'The request is aborted';
+				} else {
+					message = jqXHR.responseText;
+				}
+				$('.alert-danger').html(message).show();
+			},
+			success: function(data) {
+				if (data.list !== undefined && !$.isEmptyObject(data.list)) {
+					$.each(data.list, function(key, val) {
+						// Append uploaded file
+						var li = '<li id="file_' + key + '">';
+						li+= '<input type="hidden" name="file_ids[]" value="' + key + '">';
+						li+= '<i>' + val + '</i>';
+						li+= '<button class="remove-file" type="button" data-id="' + key + '" title="Delete"></button>';
+						li+= '</li>';
+
+						$('#files').append(li);
+
+						// Handle remove file
+						$('.remove-file').off();
+						$('.remove-file').on('click', function() {
+							var fileId = $(this).attr('data-id');
+							$('#file_' + fileId).remove();
+						});
+					});
+				}
+
+				if (data.alert !== undefined && data.alert != '') {
+					// Show alert
+					$('.alert-danger').html(data.alert).show();
+				}
+
+				if (data.errors !== undefined && !$.isEmptyObject(data.errors)) {
+					// Collect errors
+					var html = '';
+					$.each(data.errors, function(key, val) {
+						html+= key + ': ' + val + '<br>';
+					});
+
+					// Show alert
+					$('.alert-danger').html(html).show();
+				}
+
+			}
+		});
+	});
+
+	// Handle remove file
+	$('.remove-file').on('click', function() {
+		var fileId = $(this).attr('data-id');
+		$('#file_' + fileId).remove();
+	});
+EOT;
+
+$this->registerJS($js);
