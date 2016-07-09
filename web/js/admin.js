@@ -1,19 +1,31 @@
+var ajaxTimeout = 5000;
+var ajaxTimeoutMessage = 'The request is aborted due to timeout';
+
 $(function() {
+
+	$(document).on('pjax:start', function() {
+		$('#preloader').show();
+	});
+
+	$(document).on('pjax:end', function() {
+		$('#preloader').hide();
+	});
 	
 	$(document).on('ready pjax:end', function() {
 		$('select.chosen-style').chosen({disable_search_threshold: 10});
 	});
+
 	$( document ).ajaxComplete(function() {
 		$('select.chosen-style').chosen({disable_search_threshold: 10});
 	});
 	
-	var ajaxTimeout = 5000;
-
-	var ajaxTimeoutMessage = 'The request is aborted due to timeout';
-
 	$('body').on('click', '.modal-ajax', function(e) {
 
 		e.preventDefault();
+
+		$('#main .alert-danger').hide();
+
+		$('#main .alert-success').hide();
 
 		$('#preloader').show();
 
@@ -125,7 +137,10 @@ $(function() {
 
 		$('.btn-primary', this).attr('disabled', true);
 
+		var container = ($(this).closest('#modal').length > 0) ? '#modal' : '#main';
+
 		var $form = $(this);
+
 		$.ajax({
 			url: $form.attr('action'),
 			method: 'POST',
@@ -151,15 +166,17 @@ $(function() {
 
 				}
 
-				$('.alert-danger').html(message).show();
+				$(container + ' .alert-danger').html(message).show();
 
 			},
 			success: function(data) {
 
 				var success = true;
+
 				if (data.errors !== undefined && !$.isEmptyObject(data.errors)) {
 
 					success = false;
+
 					$.each(data.errors, function(key, val) {
 						$('.field-' + key).addClass('has-error');
 						$('.field-' + key + ' .help-block').html(val);
@@ -168,19 +185,24 @@ $(function() {
 				}
 
 				if (data.alert !== undefined && data.alert != '') {
+
 					success = false;
 
-					$('.alert-danger').html(data.alert).show();
+					$(container + ' .alert-danger').html(data.alert).show();
 
 				} else {
 
-					$('.alert-danger').hide();
+					$(container + ' .alert-danger').hide();
 
 				}
 
 				if (success) {
 
-					$('#modal').modal('hide');
+					if (container == '#modal') {
+
+						$('#modal').modal('hide');
+
+					}
 
 					if (data.reload !== undefined) {
 
@@ -198,7 +220,7 @@ $(function() {
 
 					if (data.message !== undefined && data.message != '') {
 
-						$('.alert-success').html(data.message).show();
+						$(container + ' .alert-success').html(data.message).show();
 
 					}
 
@@ -228,7 +250,6 @@ $(function() {
 
 	});
 
-	
 	/***/
 	function openPanel() {
 		var winWidth = $(window).width();
@@ -292,11 +313,13 @@ $(function() {
 		}
 	});
 	
-	$('.doc_table td:first-child, .doc_table td:nth-child(2)').hover(function() {
-		$('.arrows').hide();
-		$(this).parent('tr').find('.arrows').show();
-	},function(){
-		$(this).parent('tr').find('.arrows').hide();
+	$(document).on('ready pjax:end', function() {
+		$('.doc_table td:first-child, .doc_table td:nth-child(2)').hover(function() {
+			$('.arrows').hide();
+			$(this).parent('tr').find('.arrows').show();
+		}, function() {
+			$(this).parent('tr').find('.arrows').hide();
+		});
 	});
 	
 	$('.select_all').change(function(){
@@ -305,9 +328,6 @@ $(function() {
 		else
 			$(this).parent().next().find('input[type=checkbox]').removeAttr('checked');
 	})
-	
-	//$('select.chosen-style').chosen({disable_search_threshold: 10});
-
 	
 	$('#venue-types_array label, #venue-vibes_array label, #venue-services_array label').each(function(){
 		var flag=0;
