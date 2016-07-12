@@ -149,25 +149,21 @@ $this->registerJs("
 				'class' => 'table table-bordered table-condensed'
 			],
 			'columns' => [
-				[
+				/*[
 					'label' => 'Destination',
 					'value' => 'location.destination.name'
 				],
 				[
 					'label' => 'Location',
 					'value' => 'location.name'
-				],
+				],*/
+				'destinationName',
+				'locationName',
 				[
-					'label' => 'Airport Code',
-					'value' => 'location.airport'
-				],
-				[
-					'label'       => 'Venue Name<br/> Featured Name',
+					'attribute'   => 'fullName',
+					'format'      => 'html',
 					'encodeLabel' => false,
-					'format'      => 'raw',
-					'value'       => function($data){
-						return $data->name."<br/>".$data->featured_name;
-					},
+					'label'       => 'Venue Name<br/>Featured Name'
 				],
 				[
 					'label' => 'Featured',

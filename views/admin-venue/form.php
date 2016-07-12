@@ -111,8 +111,19 @@ function add_phone(contact_id, key){
 		]);
 
 		?>
+	<?php
 
-		<?php
+		echo Alert::widget([
+			'options' => [
+				'class' => 'alert-success',
+				'style' => ($alert_success == '') ? 'display: none' : ''
+			],
+			'body' => $alert_success,
+			'closeButton' => false,
+		]);
+
+		?>	
+	<?php
 
 		echo Alert::widget([
 			'options' => [
@@ -711,6 +722,7 @@ $js = <<<EOT
 				if (data.alert !== undefined && data.alert != '') {
 					// Show alert
 					$('.alert-danger').html(data.alert).show();
+					$('body,html').animate({scrollTop: 0}, 400);
 				}
 
 				if (data.errors !== undefined && !$.isEmptyObject(data.errors)) {
@@ -719,7 +731,7 @@ $js = <<<EOT
 					$.each(data.errors, function(key, val) {
 						html+= key + ': ' + val + '<br>';
 					});
-
+					$('body,html').animate({scrollTop: 0}, 400);
 					// Show alert
 					$('.alert-danger').html(html).show();
 				}

@@ -66,27 +66,6 @@ class Venue extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'name' => 'Venue Name',
-            'featured_name' => 'Featured Name',
-            'location_id' => 'Location',
-            'active' => 'Active venue profile',
-            'featured' => ' Is Featured',
-            'type_id' => 'Type',
-            'vibe_id' => 'Vibe',
-            'service_id' => 'Service',
-            'comment' => 'Comments',
-            'guest_capacity' => 'Guest Capacity',
-            'updated_by' => 'Updated By',
-            'updated_at' => 'Updated At',
-        ];
-    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -203,7 +182,33 @@ class Venue extends \yii\db\ActiveRecord
             ->where(['venue_id' => $this->id, 'type' => 'main'])
             ->one();
     }
-    
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getDestinationName() {
+        return $this->location->destination->name;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocationName() {
+        return $this->location->name;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getAirport() {
+        return $this->location->airport;
+    }
+
+    /* Getter for venue base and featured names */
+    public function getFullName() {
+        return $this->name . '<br/>' . $this->featured_name;
+    }
+        
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
      
@@ -324,6 +329,30 @@ class Venue extends \yii\db\ActiveRecord
             }
         }
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'name' => 'Venue Name',
+            'featured_name' => 'Featured Name',
+            'location_id' => 'Location',
+            'active' => 'Active venue profile',
+            'featured' => ' Is Featured',
+            'type_id' => 'Type',
+            'vibe_id' => 'Vibe',
+            'service_id' => 'Service',
+            'comment' => 'Comments',
+            'guest_capacity' => 'Guest Capacity',
+            'updated_by' => 'Updated By',
+            'updated_at' => 'Updated At',
+            'fullName' => 'Name<br/>Featured name'
+        ];
+    }
+
 
     private function updateTax()
     {
