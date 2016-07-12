@@ -66,8 +66,6 @@ $(function() {
 
 				$('#preloader').hide();
 
-				$('#modal').modal('show');
-				
 				$('#modal .modal-dialog').show();
 				
 				$('#modal .loading').hide();
@@ -374,9 +372,13 @@ $(function() {
 			// add whatever conditions you need here
 			&&
 			!$parent.hasClass('cke_dialog_ui_input_select') && !$parent.hasClass('cke_dialog_ui_input_text')) {
-				$modalElement.focus()
+				$modalElement.focus();
 			}
 		});
 	};
+
+	/* Prevent Bootstrap Modal from disappearing when clicking outside or pressing escape */
+	$.fn.modal.prototype.constructor.Constructor.DEFAULTS.backdrop = 'static';
+	$.fn.modal.prototype.constructor.Constructor.DEFAULTS.keyboard = false;
 	
 });
