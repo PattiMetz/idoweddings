@@ -142,8 +142,12 @@ OUTPUT;
 							if ($model->count_files) {
 								$list_files = unserialize($model->list_files);
 								$output.= '<small class="attach_doc">Attachments: ';
-								foreach ($list_files as $name) {
-									$output.= '<i>' . Html::encode($name) . '</i>' . "\n";
+								foreach ($list_files as $id => $name) {
+									$url = Url::to([
+										'admin-knowledgebases/entries-files-download',
+										'id' => $id
+									]);
+									$output.= '<a class="text-success" href="' . $url . '" data-pjax="0">' . Html::encode($name) . '</a>' . "\n";
 								}
 								$output.= '</small>';
 							}

@@ -29,7 +29,7 @@ class KnowledgebaseEntryFile extends ActiveRecord {
 
 	public function afterSave($insert, $changedAttributes) {
 		if ($insert) {
-			$path = explode('/', number_format($this->id, 0, '', '/'));
+			$path = explode('/', $this->getNumericPath($this->id));
 			array_pop($path);
 			$dir = 'uploads/knowledgebase-entry';
 			$dir_ok = true;
@@ -64,6 +64,13 @@ class KnowledgebaseEntryFile extends ActiveRecord {
 	public function afterDelete() {
 		@unlink('files/knowledgebases-entries/' . $this->knowledgebase_entry_id . '/' . $this->id);
 		parent::afterDelete();
+	}
+
+	public function getNumericPath($id) {
+		$a = str_split(strrev($id), 3);
+		$a = array_map('strrev', $a);
+		$a = array_reverse($a);
+		return join('/', $a);
 	}
 
 }

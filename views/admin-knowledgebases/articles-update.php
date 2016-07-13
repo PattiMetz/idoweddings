@@ -82,7 +82,8 @@ echo Alert::widget([
 		<?php foreach ($model->files as $file): ?>
 			<li id="file_<?php echo $file['id']; ?>">
 				<input type="hidden" name="file_ids[]" value="<?php echo $file['id']; ?>">
-				<i><?php echo Html::encode($file['name']); ?></i>
+				<?php $url = Url::to(['admin-knowledgebases/entries-files-download', 'id' => $file['id']]); ?>
+				<a href="<?php echo $url; ?>"><?php echo Html::encode($file['name']); ?></a>
 				<button class="remove-file" type="button" data-id="<?php echo $file['id']; ?>" title="Delete"></button>
 			</li>
 		<?php endforeach; ?>
@@ -103,6 +104,7 @@ echo Alert::widget([
 
 $categories_tree_url = Url::to(['admin-knowledgebases/categories-tree']);
 $upload_url = Url::to(['admin-knowledgebases/entries-files-upload']);
+$download_url = Url::to(['admin-knowledgebases/entries-files-download']);
 
 $js = <<<EOT
 	$('#category_id').combotree({
@@ -180,7 +182,7 @@ $js = <<<EOT
 						// Append uploaded file
 						var li = '<li id="file_' + key + '">';
 						li+= '<input type="hidden" name="file_ids[]" value="' + key + '">';
-						li+= '<i>' + val + '</i>';
+						li+= '<a href="{$download_url}?id=' + key + '">' + val + '</a>';
 						li+= '<button class="remove-file" type="button" data-id="' + key + '" title="Delete"></button>';
 						li+= '</li>';
 

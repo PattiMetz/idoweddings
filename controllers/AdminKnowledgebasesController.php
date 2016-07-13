@@ -40,7 +40,7 @@ class AdminKnowledgebasesController extends Controller {
 //				],
 				'rules' => [
 					[
-						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'categories-tree', 'articles-update', 'articles-delete', 'entries-reorder', 'entries-files-upload'],
+						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'categories-tree', 'articles-update', 'articles-delete', 'entries-reorder', 'entries-files-upload', 'entries-files-download'],
 						'allow' => true,
 						'roles' => ['@'],
 					],
@@ -1579,11 +1579,11 @@ class AdminKnowledgebasesController extends Controller {
 
 		$list = [];
 
-		$validator = new FileValidator(['extensions' => ['png','jpg']]);
-
-		$files = UploadedFile::getInstancesByName('files');
-
 		if (Yii::$app->request->isPost) {
+
+			$validator = new FileValidator(); // no rules for now
+
+			$files = UploadedFile::getInstancesByName('files');
 
 			if (!count($files)) {
 
@@ -1597,13 +1597,13 @@ class AdminKnowledgebasesController extends Controller {
 
 				foreach ($files as $file) {
         
-//					$validator->validate($file, $error);
+					$validator->validate($file, $error);
         
-//					if ($error) {
+					if ($error) {
         
-//						$errors[$file->name] = $error;
+						$errors[Html::encode($file->name)] = $error;
         
-//					} else {
+					} else {
         
 						$model = new KnowledgebaseEntryFile;
         
@@ -1617,19 +1617,19 @@ class AdminKnowledgebasesController extends Controller {
         
 						if ($model->save(false) && $model->fileSaved) {
         
-							$list[$model->id] = $file->name;
+							$list[$model->id] = Html::encode($file->name);
         
 							$transaction->commit();
         
 						} else {
         
-							$errors[$file->name] = 'File not saved.';
+							$errors[$file->name] = 'File not saved';
         
 							$transaction->rollBack();
         
 						}
         
-//					}
+					}
         
 				}
 
@@ -1642,6 +1642,32 @@ class AdminKnowledgebasesController extends Controller {
 				'errors',
 				'list'
 			);
+
+		}
+
+	}
+
+	function actionEntriesFilesDownload($id) {
+
+		$model = KnowledgebaseEntryFile::findOne($id);
+
+		if (!$model) {
+
+			throw new \yii\web\NotFoundHttpException('File not found');
+
+		} else {
+
+			$path = Yii::getAlias('@webroot') . '/uploads/knowledgebase-entry/' . $model->getNumericPath($id) . '.data';
+
+			if (file_exists($path)) {
+
+				 return Yii::$app->response->sendFile($path, $model->name);
+
+			} else {
+
+				throw new \yii\web\NotFoundHttpException('File does not exist');
+
+			}
 
 		}
 
