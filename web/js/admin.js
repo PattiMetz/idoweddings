@@ -66,8 +66,6 @@ $(function() {
 
 				$('#preloader').hide();
 
-				$('#modal').modal('show');
-				
 				$('#modal .modal-dialog').show();
 				
 				$('#modal .loading').hide();
@@ -364,5 +362,23 @@ $(function() {
 		listMenu();
 	});
 	/***/
+
+	/* Fix for CKEditor in a Bootstrap Modal - http://jsfiddle.net/pvkovalev/4PACy/ */
+	$.fn.modal.Constructor.prototype.enforceFocus = function () {
+		var $modalElement = this.$element;
+		$(document).on('focusin.modal', function (e) {
+		var $parent = $(e.target.parentNode);
+		if ($modalElement[0] !== e.target && !$modalElement.has(e.target).length
+			// add whatever conditions you need here
+			&&
+			!$parent.hasClass('cke_dialog_ui_input_select') && !$parent.hasClass('cke_dialog_ui_input_text')) {
+				$modalElement.focus();
+			}
+		});
+	};
+
+	/* Prevent Bootstrap Modal from disappearing when clicking outside or pressing escape */
+	$.fn.modal.prototype.constructor.Constructor.DEFAULTS.backdrop = 'static';
+	$.fn.modal.prototype.constructor.Constructor.DEFAULTS.keyboard = false;
 	
 });

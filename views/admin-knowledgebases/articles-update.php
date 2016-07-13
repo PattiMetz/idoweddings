@@ -3,6 +3,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
+use dosamigos\ckeditor\CKEditor;
 ?>
 <?php
 
@@ -70,7 +71,10 @@ echo Alert::widget([
 	</div>
 </div>	
 
-	<?php echo $form->field($model, 'content')->textArea(['rows' => '6']); ?>
+<?php echo $form->field($model, 'content')->widget(CKEditor::className(), [
+	'options' => ['rows' => 6],
+	'preset' => 'basic',
+]); ?>
 
 <div class="attach_block">
 	<span>Attachments:</span>
