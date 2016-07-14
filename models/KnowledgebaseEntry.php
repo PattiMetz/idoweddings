@@ -55,7 +55,9 @@ class KnowledgebaseEntry extends ActiveRecord {
 	public function attributeLabels() {
 		return [
 			'order' => 'Order',
-			'title' => 'Title'
+			'title' => 'Title',
+			'knowledgebase_id' => 'Knowledgebase',
+			'category_id' => 'Category'
 		];
 	}
 
