@@ -15,6 +15,10 @@ class VenueSearch extends VenueModel
 {
     public $region_id;
     public $destination_id;
+    public $destinationName;
+    public $locationName;
+    public $airport;
+    public $fullName;
     public $mixedSearch;    
     /**
      * @inheritdoc
@@ -23,7 +27,7 @@ class VenueSearch extends VenueModel
     {
         return [
             [['id',  'updated_by'], 'integer'],
-            [['name', 'featured_name', 'active', 'featured', 'comment', 'guest_capacity', 'updated_at','location_id', 'type_id', 'vibe_id', 'service_id','region_id','destination_id'], 'safe'],
+            [['name', 'featured_name', 'active', 'featured', 'comment', 'guest_capacity', 'updated_at','location_id', 'type_id', 'vibe_id', 'service_id','region_id','destination_id', 'destinationName','locationName','airport', 'fullName'], 'safe'],
         ];
     }
 
@@ -52,6 +56,34 @@ class VenueSearch extends VenueModel
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        $dataProvider->setSort([
+            'attributes' => [
+                'fullName' => [
+                    'asc' => ['name' => SORT_ASC, 'featured_name' => SORT_ASC],
+                    'desc' => ['name' => SORT_DESC, 'featured_name' => SORT_DESC],
+                    'label' => 'Name<br/>Featured Name',
+                    'default' => SORT_ASC
+                ],
+                'destinationName' => [
+                    'asc' => ['destination.name' => SORT_ASC],
+                    'desc' => ['destination.name' => SORT_DESC],
+                    'label' => 'Destination'
+                ],
+                'locationName' => [
+                    'asc' => ['location.name' => SORT_ASC],
+                    'desc' => ['location.name' => SORT_DESC],
+                    'label' => 'Location'
+                ],
+                'airport' => [
+                    'asc' => ['location.airport' => SORT_ASC],
+                    'desc' => ['location.airport' => SORT_DESC],
+                    'label' => 'Airport Code'
+                ],
+                   
+            ]
+        ]);
+
         $this->load($params);
        // $this->location_id = $params['location_id'];
         if($this->location_id) {

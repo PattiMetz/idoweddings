@@ -84,4 +84,11 @@ class Location extends \yii\db\ActiveRecord
     public function getRegionName() {
         return $this->destination->region->name;
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLocationName() {
+        return $this->name;
+    }
 }

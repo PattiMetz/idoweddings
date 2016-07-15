@@ -38,6 +38,8 @@ use app\models\User;
 class Venue extends \yii\db\ActiveRecord
 {
     
+    
+
     /**
      * @inheritdoc
      */
@@ -52,7 +54,7 @@ class Venue extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name','location_id', 'featured_name'], 'required'],
+            [['name','location_id', 'featured_name', 'type'], 'required'],
             [['location_id','updated_by', 'type', 'nonguest'], 'integer'],
             [['active', 'featured', 'comment'], 'string'],
             [['name', 'featured_name'], 'string', 'max' => 100],
@@ -89,6 +91,11 @@ class Venue extends \yii\db\ActiveRecord
     public function getServices()
     {
         return $this->hasMany(VenueService::className(), ['id' => 'service_id'])->viaTable('venue_has_service', ['venue_id' => 'id']);
+    }
+
+    public function setAddress($value)
+    {
+        $this->address = $value;
     }
 
     /**
@@ -148,6 +155,11 @@ class Venue extends \yii\db\ActiveRecord
 
     public function getLocationgroups(){
          return $this->hasMany(VenueLocationGroup::className(), ['venue_id' => 'id']);
+    }
+
+    public function setTax($value)
+    {
+        $this->tax = $value;
     }
 
     /**
@@ -214,7 +226,7 @@ class Venue extends \yii\db\ActiveRecord
      
             $this->updated_at = date("Y/m/d h:i:s");
 
-            $this->updated_by = Yii::$app->user->identity->id;
+            $this->updated_by = isset(Yii::$app->user->identity->id)?Yii::$app->user->identity->id:100;
      
             return true;
         }
