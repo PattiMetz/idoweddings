@@ -1,0 +1,1 @@
+ALTER TABLE `venue_tax` CHANGE `event_deposit` `event_deposit` INT(11) NULL;
