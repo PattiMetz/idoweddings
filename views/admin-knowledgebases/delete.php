@@ -30,7 +30,7 @@ echo Alert::widget([
 
 ?>
 
-<p>Are you sure you want to delete this knowledge base?</p>
+<p>You are in one step from deleting the Knowledge Base - <?php echo Html::encode($model->name)?>.</p>
 
 <div class="pseudo_foo">
 	<?php echo Html::submitButton('Delete', ['class' => 'btn btn-primary']) ?>

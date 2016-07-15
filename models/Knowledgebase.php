@@ -25,7 +25,7 @@ class Knowledgebase extends ActiveRecord {
 
 	public function attributeLabels() {
 		return [
-			'name' => 'Name'
+			'name' => 'Knowledge Base Name'
 		];
 	}
 

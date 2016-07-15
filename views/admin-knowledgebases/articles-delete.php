@@ -30,7 +30,7 @@ echo Alert::widget([
 
 ?>
 
-<p>Are you sure you want to delete this article?</p>
+<p>You are in one step from deleting the article - <?php echo Html::encode($model->title)?>.</p>
 
 <div class="pseudo_foo">
 	<?php echo Html::submitButton('Delete', ['class' => 'btn btn-primary']) ?>

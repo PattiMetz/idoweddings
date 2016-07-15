@@ -30,7 +30,7 @@ echo Alert::widget([
 
 ?>
 
-<p>Are you sure you want to delete this category?</p>
+<p>You are in one step from deleting the category - <?php echo Html::encode($model->title)?> and all enclosed articles.</p>
 
 <div class="pseudo_foo">
 	<?php echo Html::submitButton('Delete', ['class' => 'btn btn-primary']) ?>

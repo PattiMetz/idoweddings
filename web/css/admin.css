@@ -89,12 +89,18 @@ a, a:hover, a:focus {
 	white-space: nowrap;
 	z-index: 1050;
 }
-#preloader:after {
+/*#preloader:after {
 	content: '';
 	display: inline-block;
 	width: 0;
 	height: 100%;
 	vertical-align: middle;
+}*/
+#preloader img {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin: -60px 0 0 -60px;
 }
 #main {
 	padding: 0 15px;
@@ -1127,7 +1133,7 @@ table, th {
 	min-height: 40px;
 	height: 100%;
 	padding: 0 0 0 35px;
-	line-height: 40px;
+	/*line-height: 40px;*/
 	background: url(../images/icons/base_2.png) no-repeat left center;
 }
 .knbase_cont .drafts {
@@ -1150,7 +1156,8 @@ table, th {
 	float: right;
 }
 .knbase_cont .permissions {
-	margin-top: 3px;
+	/*margin-top: 3px;*/
+	margin-right: 10px;
 }
 	/********Open kn base styles********/
 .choose_base .input-group-addon {
@@ -1636,7 +1643,7 @@ table, th {
 }
 .status_wrapper > div:first-child input {
 	display: inline-block;
-	width: 642px;
+	width: 608px;
 }
 .status_wrapper > div:last-child {
 	margin-top: -50px;
@@ -1703,7 +1710,8 @@ table, th {
     color: #868234;
 	float: left;
 }
-.attach_block .attach_list li i {
+.attach_block .attach_list li i,
+.attach_block .attach_list li a {
 	padding-right: 25px;
 }
 .attach_block .attach_list li button {
@@ -2622,7 +2630,7 @@ a.desc:after {
 		width: 100%;
 		margin: 0;
 	}
-	.field-title,
+	/*.field-title,*/
 	.field-status {
 		display: block;
 		width: 256px;
@@ -2646,6 +2654,7 @@ a.desc:after {
 	.panel.combo-p,
 	.panel.combo-p .panel-body {
 		max-width: 256px;
+		margin-top: -1px;
 	}
 }
 @media (max-width: 560px) {
