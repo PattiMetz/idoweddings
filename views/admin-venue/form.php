@@ -83,13 +83,13 @@ function add_phone(contact_id, key){
 <div class="clearfix">
 	<ol class="breadcrumb">
 		<li><?php echo Html::a('Venues',Url::to(['admin-venue/index']),['class' => "return_link text-success",'data-pjax'=>'0'])?></li>
-		<li><?php echo $model->name?></li>
+		<li><?php echo ($model->id)?$model->name:'Create'?></li>
 	</ol>
 </div>
 <div class="venue-form clearfix">
     <?php $form = ActiveForm::begin([
             'layout' => 'horizontal',
-            'options' => ['enctype' => 'multipart/form-data', 'class' => 'clearfix'],
+            'options' => ['enctype' => 'multipart/form-data', 'class' => 'clearfix ajax-form'],
             'fieldConfig' => [
                 'horizontalCssClasses' => [
                     'label' => 'col-md-4',
@@ -116,9 +116,9 @@ function add_phone(contact_id, key){
 		echo Alert::widget([
 			'options' => [
 				'class' => 'alert-success',
-				'style' => ($alert_success == '') ? 'display: none' : ''
+				'style' => ($message == '') ? 'display: none' : ''
 			],
-			'body' => $alert_success,
+			'body' => $message,
 			'closeButton' => false,
 		]);
 
@@ -258,22 +258,22 @@ function add_phone(contact_id, key){
 			<div id="collapse1" class="panel-collapse collapse">
 				<div class="panel-body">
 					<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 collapse_form inner_col_box">
-						<?php echo $form->field($address, 'address')->textArea(['rows' => 3]) ?>
+						<?php echo $form->field($model->address, 'address')->textArea(['rows' => 3]) ?>
 						
-						<?php echo $form->field($address, 'city')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($model->address, 'city')->textInput(['maxlength' => true]) ?>
 						
-						<?php echo $form->field($address, 'state')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($model->address, 'state')->textInput(['maxlength' => true]) ?>
 						
-						<?php echo $form->field($address, 'zip')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($model->address, 'zip')->textInput(['maxlength' => true]) ?>
 						
 						<?php $country = new Country();?>
-						<?php echo $form->field($address, 'country_id')->dropDownList($country->getList(),['class'  => 'form-control chosen-style']) ?>
+						<?php echo $form->field($model->address, 'country_id')->dropDownList($country->getList(),['class'  => 'form-control chosen-style']) ?>
 
-						<?php echo $form->field($address, 'timezone')->dropDownList(Yii::$app->params['timezones'],['class'  => 'form-control chosen-style']) ?>
+						<?php echo $form->field($model->address, 'timezone')->dropDownList(Yii::$app->params['timezones'],['class'  => 'form-control chosen-style']) ?>
 
-						<?php echo $form->field($address, 'email')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($model->address, 'email')->textInput(['maxlength' => true]) ?>
 
-						<?php echo $form->field($address, 'site')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($model->address, 'site')->textInput(['maxlength' => true]) ?>
 					</div>
 				</div>
 			</div>
@@ -288,9 +288,9 @@ function add_phone(contact_id, key){
 				<div class="panel-body">
 					<div class="col-md-10 col-md-offset-1 collapse_form inner_col_box2">
 						<?php $key=0;?>
-						<?php if(isset($contacts) && count($contacts)>0) {?> 
+						<?php if(isset($model->contacts) && count($model->contacts)>0) {?> 
 
-							<?php foreach ($contacts as $key=>$contact) {?>
+							<?php foreach ($model->contacts as $key=>$contact) {?>
 
 								<div class=" clearfix contact_<?php echo $key?>">
 									<div class="col-md-6">
@@ -459,28 +459,28 @@ function add_phone(contact_id, key){
 						<div class="col-md-6 tax_box clearfix">
 							<div class="col-sm-6">
 								
-								<?php echo $form->field($tax, 'tax')->textInput()->label('Tax Rate',['class'=>'control-label']) ?>
+								<?php echo $form->field($model->tax, 'tax')->textInput()->label('Tax Rate',['class'=>'control-label']) ?>
 								
 							</div>
 							<div class="col-sm-6">
 
-								<?php echo $form->field($tax, 'service_rate')->textInput()->label('Service Rate',['class'=>'control-label']) ?>
+								<?php echo $form->field($model->tax, 'service_rate')->textInput()->label('Service Rate',['class'=>'control-label']) ?>
 								
 							</div>
 							<div class="col-sm-6">
 
-								<?php echo $form->field($tax, 'our_service_rate')->textInput()->label('I Do Service Fee',['class'=>'control-label no_padding']) ?>
+								<?php echo $form->field($model->tax, 'our_service_rate')->textInput()->label('I Do Service Fee',['class'=>'control-label no_padding']) ?>
 								
 							</div>
 							<div class="col-sm-6">
 
-								<?php echo $form->field($tax, 'agency_service_rate')->textInput()->label('Agency Service Fee',['class'=>'control-label no_padding']) ?>
+								<?php echo $form->field($model->tax, 'agency_service_rate')->textInput()->label('Agency Service Fee',['class'=>'control-label no_padding']) ?>
 								
 							</div>
 						</div>
 						<div class="col-md-6">
 
-							<?php echo $form->field($tax, 'comment')->textarea(['rows' => 1]) ?>
+							<?php echo $form->field($model->tax, 'comment')->textarea(['rows' => 1]) ?>
 						
 						</div>
 					</div>
@@ -497,27 +497,27 @@ function add_phone(contact_id, key){
 				<div class="panel-body">
 					<div class="col-md-10 col-md-offset-1 collapse_form radiolist clearfix">
 					
-					<?php echo $form->field($tax, 'commission_type',['template'=>"{input}{hint}\n\t{error}",'horizontalCssClasses' => [
+					<?php echo $form->field($model->tax, 'commission_type',['template'=>"{input}{hint}\n\t{error}",'horizontalCssClasses' => [
 					'wrapper' => 'required',
 					]])->radioList(['Prices are Net','Prices are Commissionable','Negotiated Wholesale rates']) ?>
 					
 					<div class="clearfix">
 
-						<?php echo $form->field($tax, 'commission', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
+						<?php echo $form->field($model->tax, 'commission', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
 					
 					</div>
 					<div class="clearfix">
 
-						<?php echo $form->field($tax, 'commission_note', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control']) ?>
+						<?php echo $form->field($model->tax, 'commission_note', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control']) ?>
 					
 					</div>
 					<div class="clearfix">
 					
-						<?php echo $form->field($tax, 'commission_package', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
+						<?php echo $form->field($model->tax, 'commission_package', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
 
-						<?php echo $form->field($tax, 'commission_food', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
+						<?php echo $form->field($model->tax, 'commission_food', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
 
-						<?php echo $form->field($tax, 'commission_items', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
+						<?php echo $form->field($model->tax, 'commission_items', ['options' => ['class' => 'form-group invisible commissions']])->textInput(['class'=>'form-control small-input']) ?>
 						
 					</div>
 					
@@ -537,19 +537,19 @@ function add_phone(contact_id, key){
 						<ul class="prices_list clearfix">
 							<li>
 								
-								<?php echo $form->field($tax, 'accommodation_commission_type',['template'=>"{input}{hint}\n\t{error}"])->radioList(['Prices are Net','Prices are Commissionable']) ?>
+								<?php echo $form->field($model->tax, 'accommodation_commission_type',['template'=>"{input}{hint}\n\t{error}"])->radioList(['Prices are Net','Prices are Commissionable']) ?>
 								
-								<?php echo $form->field($tax, 'accommodation_commission', ['options' => ['class'=>'invisible']])->textInput() ?>
+								<?php echo $form->field($model->tax, 'accommodation_commission', ['options' => ['class'=>'invisible']])->textInput() ?>
 													
 							</li>
 							<li>
 
-								<?php echo $form->field($tax, 'accomodation_wholesale',['horizontalCssClasses' => ['offset' => 'col-sm-offset-0', 'wrapper' => ''], 'template'=>"{input}{hint}\n\t{error}"])->checkbox() ?>
+								<?php echo $form->field($model->tax, 'accomodation_wholesale',['horizontalCssClasses' => ['offset' => 'col-sm-offset-0', 'wrapper' => ''], 'template'=>"{input}{hint}\n\t{error}"])->checkbox() ?>
 								
 							</li>
 						</ul>
 						<div class="clearfix">
-							<?php echo $form->field($tax, 'accommodation_note', ['options' => ['class' => 'form-group invisible']])->textInput(['class'=>'form-control'])->label('Note',['class'=>'control-label col-md-1']) ?>
+							<?php echo $form->field($model->tax, 'accommodation_note', ['options' => ['class' => 'form-group invisible']])->textInput(['class'=>'form-control'])->label('Note',['class'=>'control-label col-md-1']) ?>
 						</div>
 					</div>
 				</div>
@@ -566,21 +566,21 @@ function add_phone(contact_id, key){
 					<div class="col-md-10 col-md-offset-1 collapse_form clearfix">
 						
 						
-						<?php echo $form->field($tax, 'event_deposit')->textInput() ?>
-						<?php echo $form->field($tax, 'deposit_currency')->dropDownList($currency->list) ?>
+						<?php echo $form->field($model->tax, 'event_deposit')->textInput() ?>
+						<?php echo $form->field($model->tax, 'deposit_currency')->dropDownList($currency->list) ?>
 						<?php //Добавить проверку - показывать только Патти ?>
-						<?php echo $form->field($tax, 'note')->textarea(['rows' => 3]) ?>
+						<?php echo $form->field($model->tax, 'note')->textarea(['rows' => 3]) ?>
 					</div>
 				</div>
 			</div>
 		</div>
 		<div class="panel panel-default">
-			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse9">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse10">
 				<h4 class="panel-title">
 					<a class="text-success">Venue Package Type</a>
 				</h4>
 			</div>
-			<div id="collapse9" class="panel-collapse collapse">
+			<div id="collapse10" class="panel-collapse collapse">
 				<div class="panel-body">
 					<div class="col-md-10 col-md-offset-1 collapse_form clearfix">
 						
@@ -611,7 +611,7 @@ function add_phone(contact_id, key){
 							<ul id="files" class="attach_list clearfix">
 								<?php foreach ($model->docs as $file): ?>
 									<li id="file_<?php echo $file->id; ?>">
-										<i><?php echo Html::a($file->doc,["/uploads/venue/".$model->id."/".$file->doc],['target'=>'_blank','data-pjax'=>0])?></i>
+										<i><?php echo Html::a($file->doc,["/uploads/venue/".$model->id."/".$file->id . '.' . end(explode('.', $file->doc))],['target'=>'_blank','data-pjax'=>0])?></i>
 										<button class="remove-file modal-ajax" type="button" data-id="16" title="Delete" value="<?php echo Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$file->id])?>"></button>
 										
 									</li>
@@ -653,7 +653,7 @@ $js = <<<EOT
 
 		// Display uploading status
 		$('.alert-info').html('Uploading... <a id="files-abort" href="#">Abort</a>').show();
-
+		$('body,html').animate({scrollTop: 0}, 400);
 		// Handle upload abort
 		$('#files-abort').on('click', function(e) {
 			// Prevent default action

@@ -8,7 +8,7 @@ use dosamigos\ckeditor\CKEditor;
 use yii\widgets\breadcrumbs;
 
 ?>
-<?php $this->registerJs("CKEDITOR.plugins.addExternal('htmlbuttons', '/js/ckeditor/plugins/htmlbuttons/', 'plugin.js');", 4);?>
+<?php //$this->registerJs("CKEDITOR.plugins.addExternal('htmlbuttons', '/js/ckeditor/plugins/htmlbuttons/', 'plugin.js');", 4);?>
 <?php //$this->registerJs("CKEDITOR.plugins.addExternal('timestamp', '/js/ckeditor/plugins/timestamp/', 'plugin.js');", 4);?>
 <?php
 $this->title = $model->id?$model->name:'Add Agreement';
@@ -32,7 +32,7 @@ $form = ActiveForm::begin([
 
 ?>
 <div class="top">
-	<?php echo Breadcrumbs::widget([
+	<?= Breadcrumbs::widget([
              'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
           ]) ?>
 	<?php echo Html::submitButton('Save', ['class' => 'btn btn-primary', 'name' => 'save']) ?>
@@ -63,13 +63,15 @@ echo Alert::widget([
 <?php echo $form->field($model, 'agreement_for')->dropDownList(['Vendor' => 'Vendor','Venue' => 'Venue', 'Agent Travel' => 'Agent Travel', 'Customer' => 'Customer', 'Staff'=>'Staff', 'Other'=>'Other']); ?>
 
 
-<?php echo $form->field($model, 'text')->widget(CKEditor::className(), [
+<?php echo $form->field($model, 'text')->textarea();/*widget(CKEditor::className(), [
         'options' => ['rows' => 6],
+        'preset' => 'standart',
         'clientOptions' => [
-            'extraPlugins' => 'htmlbuttons',
+        	'preset' => 'full',
+            'extraPlugins' => 'timestamp',
             'htmlbuttons' => [
 				[
-					'name'=>'shortcodes',
+					'name'=>'basicstyles',
 					'icon'=>'puzzle.png',
 					'title'=>'shortcodes',
 					'toolbar'=>'basicstyles',
@@ -80,6 +82,38 @@ echo Alert::widget([
 			
 
         ]
-    ]) ?>
+    ])*/ ?>
+<?php $this->registerJsFile("/ckeditor/ckeditor.js",['depends'=>'yii\web\JqueryAsset']);?>
 
+<?php $this->registerJs("
+$('document').ready(function(){
+CKEDITOR.plugins.addExternal('htmlbuttons', '/ckeditor/plugins/htmlbuttons/', 'plugin.js');
+
+//CKEDITOR.config.customConfig = '/js/ckeditor/config.js'
+//CKEDITOR.config.extraPlugins='htmlbuttons'; 
+CKEDITOR.editorConfig = function( config ) {
+	// Define changes to default configuration here. For example:
+	
+	//config.extraPlugins = 'htmlbuttons';
+	config.htmlbuttons =	[
+		{
+			name:'button1',
+			icon:'icon1.png',
+			html:'<a> test</a>',
+			title:'A link to Google',
+			toolbar:'insert'
+		},
+	];
+	config.toolbar = [
+	    { name: 'document', items: [ 'Source', '-', 'NewPage', 'Preview', '-', 'Templates' ] },
+	    { name: 'clipboard', items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] },
+	    '/',
+	    { name: 'basicstyles', items: [ 'Bold', 'Italic' ] },
+	    { name: 'inset', items: [ 'Table','button1' ] }
+	];
+	// config.uiColor = '#AADC6E';
+};
+CKEDITOR.replace( 'agreement-text');
+})
+", 4);?>
 <?php ActiveForm::end(); ?>

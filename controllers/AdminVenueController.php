@@ -206,63 +206,6 @@ class AdminVenueController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new Venue model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Venue();
-        $address = new VenueAddress;
-        $tax = new VenueTax;
-        $contacts = [new VenueContact];
-        $post = Yii::$app->request->post();
-        if($post) {
-
-             if($model->load($post)) {
-            
-                $address->load($post);
-                $tax->load($post);
-                
-                $transaction = Yii::$app->db->beginTransaction();
-                try {
-                    if (!$model->save()) {
-                            $transaction->rollback();
-                            
-                    }else {
-                        $address->venue_id = $model->id;
-                        $tax->venue_id = $model->id;
-                        Model::loadMultiple($contacts, $post);
-                        if($address->save() && $tax->save()) {
-                            if ($this->saveContacts($contacts, $model)) {
-                                $transaction->commit();
-                                return $this->redirect(['update', 'id' => $model->id]);
-                            }
-                        } else {
-                             $transaction->rollback();
-                        }
-                        
-                    }
-                   
-                }catch (Exception $ex) {
-                    $transaction->rollback();
-                }
-            }
-            
-        }
-        return $this->render('form', [
-                'model'   => $model,
-                'alert'   => '',
-                'address' => $address,
-                'tax'     => $tax,
-                'contacts'=> $contacts,
-                'docs'    => [],
-                'doc'     => ''
-        ]);
-       
-    }
-
     public function actionMenu() {
         $id = Yii::$app->request->post('id');
         $model = $this->findModel($id);
@@ -320,56 +263,89 @@ class AdminVenueController extends Controller
 
 
     /**
-     * Updates an existing Venue model.
-     * If update is successful, the browser will be redirected to the 'view' page.
+     * Updates an existing or create new Venue model.
+     * If create is successful, the browser will be redirected to the 'update' page.
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id ='')
     {
-        $model = $this->findModel($id);
+        if($id!='')
+            $model = $this->findModel($id);
+        else {
+            $model = new Venue;
+            $model->address = new VenueAddress();
+            $model->tax = new VenueTax();
+        }
+
+        $alert  = $message = '';
+
+        $errors = [];
 
         $post = Yii::$app->request->post();
         if($post) {
 
-             if($model->load($post)) {
-            
+            if($model->load($post)) {
                 $model->address->load($post);
+               
                 $model->tax->load($post);
                 
+
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     if (!$model->save()) {
                         //echo '<pre>';print_r($model);
-                            $transaction->rollback();
+                        $transaction->rollback();
+                        $alert = 'Info not saved. Venue error';
+                        $errors = $model->getErrors();
                             
                     }else {
                         $contacts = $model->getContacts()->all();
+                        $model->address->link('venue', $model);
+                        $model->tax->link('venue', $model);
+
                         foreach (array_diff_key($post['VenueContact'], $contacts) as $new) {
-                            $contacts[] = new VenueContact(['venue_id' => $model->id]);
+                            if($new['email']!='' || $new['phones'][0]['phone']!='' || $new['name']!='' || $new['skype']!='')
+                                $contacts[] = new VenueContact(['venue_id' => $model->id]);
                         }
                         Model::loadMultiple($contacts, $post);
                         if($model->address->save() && $model->tax->save()) {
-                            $this->saveContacts($contacts, $model);
-                            
+                            if(count($contacts)>0) {
+                                if (!$this->saveContacts($contacts, $model)) {
+                                    $alert = 'Info not saved. Contacts error '.count($contacts);
+                                    $transaction->rollback();
+                                }
+                            }
                             $transaction->commit();
-                           return $this->redirect(['update', 'id' => $model->id]);
+                            if($id == '') {
+                                return $this->redirect(['update','id' => $model->id]);
+                            }
+                            $message = 'Succesfully saved';
                         } else {
-                             $transaction->rollback();
+                            $alert = 'Info not saved. Address/tax error';
+                            $transaction->rollback();
                         }
                         
                     }
                    
                 }catch (Exception $ex) {
                     $transaction->rollback();
+                    $alert = 'Info not saved';
                 }
+                    Yii::$app->response->format = Response::FORMAT_JSON;    
+                    return compact(
+                    'alert',
+                    'message',
+                    'errors'
+                );
             }
             
         }
 
         return $this->render('form', [
             'model'   => $model,
-            'alert'   => '',
+            'alert'   => $alert,
+            'message'   => $message,
             'address' => $model->address,
             'tax'     => $model->tax,
             'contacts'=> $model->contacts,

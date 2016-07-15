@@ -5,33 +5,21 @@ namespace app\controllers;
 use Yii;
 use app\models\venue\VenueLocation;
 use app\models\venue\VenueLocationGroup;
-use app\models\venue\VenueLocationTime;
-use app\models\venue\VenueLocationImage;
-use app\models\search\VenueLocationSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\web\Response;
 use yii\data\ActiveDataProvider;
-use app\actions\DeleteAction;
-use yii\web\UploadedFile;
-use yii\imagine\Image;
+
 /**
  * VenueLocationController implements the CRUD actions for VenueLocation model.
  */
-class AdminVenueLocationController extends Controller
+class AdminVenueCustomizationController extends Controller
 {
     public $layout = 'admin';
     /**
      * @inheritdoc
      */
-
-    public function beforeAction($action) {
-
-        $this->view->params['section_title'] = 'Venues';
-        return parent::beforeAction($action);
-
-    }
     public function behaviors()
     {
         return [
@@ -44,25 +32,10 @@ class AdminVenueLocationController extends Controller
         ];
     }
 
-    public function actions()
-    {
-        return [
-            
-            'location-delete' => [
-                'class'       => DeleteAction::className(),
-                'modelClass'  => 'app\models\venue\VenueLocation',
-                'exampleName' => 'location'
-            ],
-            'group-delete' => [
-                'class'       => DeleteAction::className(),
-                'modelClass'  => 'app\models\venue\VenueLocationGroup',
-                'exampleName' => 'group'
-            ],
-        ];
-    }
+   
 
     /**
-     * Lists all VenueLocation models.
+     * Main page editor
      * @return mixed
      */
     public function actionIndex($venue_id)
@@ -132,7 +105,6 @@ class AdminVenueLocationController extends Controller
      */
     public function actionLocation($id = '', $group_id = '')
     {
-        $alert = $message = '';
         if($id)
             $model = $this->findModel($id);
         else {
@@ -148,13 +120,28 @@ class AdminVenueLocationController extends Controller
                 $time->time_from = $new_time['time_from'];
                 $time->time_to = $new_time['time_to'];
                 $time->days = serialize($new_time['days']);
-                if(!$time->save())
-                    $alert = 'Error time slot';
+                $time->save();
             }
-            $message = 'Location successfuly saved';
 
-            
-               
+            //save files
+            $files = UploadedFile::getInstances($model, 'files');
+            @mkdir('uploads/venue/'.$model->group->venue_id.'/');
+            @mkdir('uploads/venue/'.$model->group->venue_id.'/location/');
+            @mkdir('uploads/venue/'.$model->group->venue_id.'/location/thumb/');
+
+
+            foreach($files as $file) {
+                //save files model
+                $baseName = str_replace(' ', '_', $file->basename);
+                $file->saveAs('uploads/venue/'.$model->group->venue_id.'/location/' . $baseName . '.' . $file->extension);
+                $upload = new VenueLocationImage();
+                $upload->location_id = $model->id;
+                $upload->image = $baseName. '.' . $file->extension;
+                $upload->save();
+                //image thumb
+                Image::thumbnail('uploads/venue/'.$model->group->venue_id.'/location/' . $baseName . '.' . $file->extension, 120, 120)
+                ->save(Yii::getAlias('uploads/venue/'.$model->group->venue_id.'/location/thumb/' . $baseName . '.' . $file->extension), ['quality' => 80]);
+            }                  
 
             return $this->redirect(['location', 'id' => $model->id]);
         } else {
@@ -172,59 +159,12 @@ class AdminVenueLocationController extends Controller
                 'time'  => $time,
                 'times' => $times,
                 'days'  => $days,
-                'alert' => $alert,
-                'message' => $message,
                 'images' => $model->images,
             ]);
         }
     }
 
-    function actionFilesUpload($location_id) {
 
-        $alert = '';
-        $errors = [];
-        $list = [];
-        $files = UploadedFile::getInstancesByName('files');
-        if (Yii::$app->request->isPost) {
-            if (!count($files)) {
-                if ($_SERVER['CONTENT_LENGTH']) {
-                    $alert = 'Content-Length exceeds the limit';
-                }
-
-            } else {
-
-                foreach ($files as $file) {
-                    $model = new VenueLocationImage;
-                    $model->location_id = $location_id;
-                    $model->image = $file->name;
-                    $model->file = $file;
-
-                    $transaction = Yii::$app->db->beginTransaction();
-                    if ($model->save() && $model->fileSaved) {
-                            $list[$model->id] = $model->id.'.'.$file->extension;
-                        $transaction->commit();
-                    } else {
-                       
-                        $errors = $model->getErrors();
-                        
-                        $transaction->rollBack();
-                    }
-        
-                }
-
-            }
-
-            Yii::$app->response->format = Response::FORMAT_JSON;
-
-            return compact(
-                'alert',
-                'errors',
-                'list'
-            );
-
-        }
-
-    }
     /**
      * Deletes an existing VenueLocation model.
      * If deletion is successful, the browser will be redirected to the 'index' page.

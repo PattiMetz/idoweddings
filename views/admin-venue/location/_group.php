@@ -7,29 +7,34 @@ use yii\widgets\ListView;
 use app\models\venue\VenueLocation;
 use app\models\venue\VenueLocationGroup;
 ?>
-<div class="location_group">
-	<div class="top">
-		<?=$model->name?>
-		<?php
-			echo Html::button('Edit', [
-				'value' => Url::to(['/admin/venue-location/group', 'id' => $model->id]),
-				'class' => 'btn btn-primary modal-ajax'
-			]);
-		?>
-		<?php
-			echo Html::button('Delete', [
-				'value' => Url::to(['/admin/venue-location/group-delete', 'id' => $model->id]),
-				'class' => 'btn btn-primary  modal-ajax'
-			]);
-		?>
-		<?php
-			echo Html::a('Add location', [
-				Url::to(['/admin/venue-location/create', 'group_id' => $model->id])],
-				['class' => 'btn btn-primary']
-			);
-		?>
-	</div>
-	<div class="content">
+
+<div class="sett_block_wrap">
+	<span><?php echo ucfirst($model->name)?>
+		<?php if($model->one_event){?>
+			<div class="btn" style="float:right;background-color:#ece1df;color:#ae8082;border-radius:5px;border:solid 1px #e2d4d4;margin-top:-5px">Only one event per time slot</div>
+		<?php }?>
+	</span>
+	<?php
+		echo Html::a('Add location', [
+			Url::to(['/admin/venue-location/location', 'group_id' => $model->id])],
+			['class' => 'btn btn-danger']
+		);
+	?>
+	<?php
+		echo Html::button('<i class="glyphicon glyphicon-pencil"></i> Rename', [
+			'value' => Url::to(['/admin/venue-location/group', 'id' => $model->id]),
+			'class' => 'btn btn-primary modal-ajax'
+		]);
+	?>
+	<?php
+		echo Html::button('<i class="glyphicon glyphicon-close"></i> Delete', [
+			'value' => Url::to(['/admin/venue-location/group-delete', 'id' => $model->id]),
+			'class' => 'btn btn-primary  modal-ajax'
+		]);
+	?>
+	
+	<div class="panel-group" id="accordion">
+		
 		<?php $id = $model->id;?>
 		<?php $dataProvider2 = new ActiveDataProvider([
             'query' => VenueLocation::find()->where(['group_id'=>$id]),
@@ -41,5 +46,6 @@ use app\models\venue\VenueLocationGroup;
 	            'itemView' => '_location',
 	        ]);
 	    ?>
+	
 	</div>
 </div>

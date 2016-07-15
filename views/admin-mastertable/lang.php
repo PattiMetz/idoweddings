@@ -3,38 +3,44 @@
 $languages = [
 
 'location'	=>	
-	['single'=>'Location','multiple'=>'Locations']
+	['single' => 'Location','multiple' => 'Locations']
 ,
 'country'	=>	
-	['single'=>'Country','multiple'=>'Countries']
+	['single' => 'Country','multiple' => 'Countries']
 ,
 'region'	=>	
-	['single'=>'Region','multiple'=>'Regions']
+	['single' => 'Region','multiple' => 'Regions']
 ,
 'destination'	=>	
-	['single'=>'Destination','multiple'=>'Destinations']
+	['single' => 'Destination','multiple' => 'Destinations']
 ,
 'currency'	=>	
-	['single'=>'Currency','multiple'=>'Currencies']
+	['single' => 'Currency','multiple' => 'Currencies']
 ,
 'vibe'	=>	
-	['single'=>'Wedding Vibe','multiple'=>'Wedding vibes']
+	['single' => 'Wedding Vibe','multiple' => 'Wedding vibes']
 ,
 'language'	=>	
-	['single'=>'Language','multiple'=>'Languages']
+	['single' => 'Language','multiple' => 'Languages']
 ,
 'venuetype'	=>	
-	['single'=>'Venue type','multiple'=>'Venue types']
+	['single' => 'Venue type','multiple' => 'Venue types']
 ,
 'venueservice'	=>	
-	['single'=>'Venue provides','multiple'=>'Venue provides']
+	['single' => 'Venue provides','multiple' => 'Venue provides']
 ,
 'packagetype'	=>	
-	['single'=>'Package Type','multiple'=>'Package types']
+	['single' => 'Package Type','multiple' => 'Package types']
 ,
 'itemcategory'	=>	
-	['single'=>'Item Category','multiple'=>'Item categories']
+	['single' => 'Item Category','multiple' => 'Item categories']
+,
+'venuelocationgroup' =>
+	['single' => 'Event Location Group', 'multiple' => 'Event Location Groups']
+,
+'venuelocation' =>
+	['single' => 'Event Location', 'multiple' => 'Event Locations']
 ,
 'agreement'	=>	
-	['single'=>'Agreement','multiple'=>'Agreements']
+	['single' => 'Agreement','multiple' => 'Agreements']
 ];

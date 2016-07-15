@@ -22,7 +22,7 @@ $this->registerJsFile("/js/multiple-select.js",['depends'=>'yii\web\JqueryAsset'
 $this->registerCssFile("/css/multiple-select.css");
 $this->registerJs("
 
-		$(document).on('ready pjax:end', function() {
+		$(document).on('ready pjax:end', function(e) {
 			get_menu($('.grid-view table tbody tr:first-child').attr('data-key'));
 			$('.grid-view table tbody tr:first-child').addClass('active');
 			$('.multiple').multipleSelect({});
@@ -35,18 +35,23 @@ $this->registerJs("
 				$('.venue_filter').submit();
 			})
 		});
-		function get_menu(id) {
-			
-			
-			$.ajax({
-				url:'".Url::to(["admin-venue/menu"])."',
-				method:'POST',
-				data:{'id':id},
-				success:function(data){
-					$('.venue_list').html(data);
-				}
+		$('body').on('submit', 'form.event-filter', function(e) {
 
-			})
+			e.preventDefault();
+
+		});
+		function get_menu(id) {
+			if(id) {
+				$.ajax({
+					url:'".Url::to(["admin-venue/menu"])."',
+					method:'POST',
+					data:{'id':id},
+					success:function(data){
+						$('.venue_list').html(data);
+					}
+
+				})
+			}
 		}
 		
 
@@ -69,11 +74,11 @@ $this->registerJs("
         $service          = new VenueService();?>
     <div class="top_panel clearfix">
 		<div class="col-md-2 col-sm-2">
-			 <?= Html::a('Create Venue', ['create'], ['class' => 'btn btn-danger']) ?>        
+			 <?= Html::a('Create Venue', ['update'], ['class' => 'btn btn-danger']) ?>        
 		</div>
 		
 		<div class="col-md-10 filter">
-			<form name="search" class="clearfix venue_filter" method="get" action="">
+				<?php echo Html::beginForm(['?'], 'get', ['data-pjax' => '', 'class' => 'clearfix venue_filter']); ?>
 				<div class="col-md-9">      
 					<label class="control-label"><i class="glyphicon glyphicon-filter"></i> Filter by:</label>
 					
@@ -85,10 +90,12 @@ $this->registerJs("
 											'prompt'   => 'Region', 
 											'onchange' => '
 													$("#destination_id").chosen("destroy");
-													$("#destination_id").empty();
+													$("#destination_id").empty().html("<option value=\'\'>Destination</option>");
+													$("#destination_id").chosen();
 								                    $("#location_id").chosen("destroy");
 													$("#location_id").html("");
 													$(".venue_filter").submit();
+													
 											'
 										]);
 							?>
@@ -101,7 +108,8 @@ $this->registerJs("
 									'prompt'   => 'Destination', 
 									'onchange' => '
 										$("#location_id").chosen("destroy");
-										$("#location_id").html("");
+										$("#location_id").html("<option>Location</option>");
+										//$("#location_id").chosen();
 										$(".venue_filter").submit();
 									'
 								]);
@@ -135,7 +143,7 @@ $this->registerJs("
 						<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span></button>
 					</span>
 				</div>
-		  </form>
+		  <?php echo Html::endForm() ?>
 		</div>
 	</div>
 	<div class="col-md-3 venue_list">

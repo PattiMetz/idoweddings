@@ -1,13 +1,13 @@
-<?php
+﻿<?php
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
-
 ?>
 <?php
 
 $form = ActiveForm::begin([
 	'layout' => 'horizontal',
+	'id' => 'categories-update',
 	'options' => [
 		'class' => 'ajax-form'
 	],
@@ -24,7 +24,7 @@ $form = ActiveForm::begin([
 ?>
 
 <div class="pseudo_head">
-	<h4 class="modal-title"><?php if ($model->id): ?>Edit<?php else: ?>Add<?php endif; ?> Group of Locations</h4>
+	<h4 class="modal-title"><?php if ($model->id): ?>Edit<?php else: ?>Add<?php endif; ?> Category</h4>
 </div>
 
 <?php
@@ -40,14 +40,12 @@ echo Alert::widget([
 
 ?>
 
+<?php echo $form->field($model, 'knowledgebase_id')->textInput(); ?>
 
-<?php echo $form->field($model, 'venue_id',['template'=>'{input}'])->hiddenInput();?>
-<?php echo $form->field($model, 'name')->textInput(); ?>
-<?php echo $form->field($model, 'one_event',  [
-        'horizontalCssClasses' => [
-            'offset' => 'col-sm-offset-4',
-        ]
-    ])->checkbox(); ?>
+<?php echo $form->field($model, 'category_id')->textInput(); ?>
+
+<?php echo $form->field($model, 'title')->textInput(); ?>
+
 <div class="pseudo_foo">
 	<?php echo Html::submitButton('Save', ['class' => 'btn btn-primary']) ?>
 	<?php echo Html::Button('Cancel', ['class' => 'btn btn-default btn-cancel']) ?>

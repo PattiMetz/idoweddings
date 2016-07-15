@@ -4,7 +4,7 @@ use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
 ?>
 <?php
-
+$this->render('/admin-mastertable/lang.php');
 $form = ActiveForm::begin([
 	'options' => [
 		'class' => 'ajax-form'
@@ -12,9 +12,8 @@ $form = ActiveForm::begin([
 ]);
 
 ?>
-
 <div class="pseudo_head">
-	<h4 class="modal-title">Delete <?php echo \yii\helpers\StringHelper::basename(get_class($model))?></h4>
+	<h4 class="modal-title">Delete <?php echo isset($languages[$exampleName]['single'])?$languages[$exampleName]['single']:'item'?>?</h4>
 </div>
 
 <?php
