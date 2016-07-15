@@ -89,8 +89,10 @@ class VenuePage extends \yii\db\ActiveRecord
 
     public function afterSave($insert, $changedAttributes)
     {
-        $setting = new VenuePageSetting(['top_type'=>'slideshow']);
-        $this->link('venuepagesetting', $setting);
+        if($this->isNewRecord) {
+            $setting = new VenuePageSetting(['top_type'=>'slideshow']);
+            $this->link('venuepagesetting', $setting);
+        }
         parent::afterSave($insert, $changedAttributes);
     }
 }

@@ -82,10 +82,11 @@ $this->params['breadcrumbs'][] = $this->title;
 			
 		</div>
 		<div class="upload_block top_block">
-			<div class="attach_block">
-				<span>Upload Files:</span>
+			<div class="attach_block" style="width:250px;float:left">
+				<a class="btn btn-danger" href="#">Attach file</a>
+				<input type="file" id="files-select" name="files[]" size="20" multiple />
 			</div>
-			<?php echo $form->field($image, 'file')->fileInput();?>
+			
 			 <span>Recommended image size: <span>Height: <?php echo Yii::$app->params['slide']['height']?>px;</span> <span>Width: <?php echo Yii::$app->params['slide']['width']?>px;</span>
 		</div>
 		<div class="video_block top_block">

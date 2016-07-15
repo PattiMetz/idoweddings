@@ -16,7 +16,7 @@ use yii\bootstrap\Alert;
     <?php 
     	$upload_dir = "/uploads/venue/".$model->group->venue_id."/location";
     	$this->title = $model->group->venue->name;
-		$this->params['breadcrumbs'][] = ['label' => 'Venues', 'url' => ['admin-venue/index']];
+		$this->params['breadcrumbs'][] = ['label' => 'Venues', 'url' => ['admin-venue/index'], 'data-pjax'=>0];
 		$this->params['breadcrumbs'][] = $this->title;
 
     	$form = ActiveForm::begin([
@@ -29,6 +29,7 @@ use yii\bootstrap\Alert;
 
     	<?php echo Breadcrumbs::widget([
              'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+             'homeLink' => false
           ]) ?>
 
     </div>

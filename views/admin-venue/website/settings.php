@@ -4,43 +4,95 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\bootstrap\ActiveForm;
 use kartik\color\ColorInput;
+use yii\widgets\breadcrumbs;
+use yii\bootstrap\Alert;
 /* @var $this yii\web\View */
 /* @var $model app\models\venue\VenueWebsite */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 <?php
+$this->title = 'Website Customization';
+$this->params['breadcrumbs'][] = ['label' => 'Venues', 'url' => ['admin-venue/index'], 'data-pjax'=>0];
+$this->params['breadcrumbs'][] = $this->title;
 $this->registerJs("
     $('.navigation_pos li a').click(function(){
         $('#venuewebsite-navigation_pos').val($(this).attr('data-value'));
         return false;
-    }
-        )
+    })
+	$('.table_of_pages select').change(function() {
+		setOffStyle($(this));
+	});
+	function setOffstyle(obj) {
+		var optVal = obj.val();
+		if ( optVal == 0 ) {
+			obj.next('.chosen-container').find('.chosen-single').addClass('off');
+		}
+		else {
+			obj.next('.chosen-container').find('.chosen-single').removeClass('off');
+		}
+	}
+	$(document).on('ready pjax:end', function() {
+		
+		$('.table_of_pages select').each(function(){
+			setOffstyle($(this));	
+		})
+	})
+	
+	
+	
     ",4);
 ?>
+<?php
+    $form = ActiveForm::begin([
+        'layout' => 'horizontal',
+        'options' => ['enctype' => 'multipart/form-data'],
+        'options' => [
+            'class' => 'ajax-form clearfix'
+        ],
+        'fieldConfig' => [
+            'horizontalCssClasses' => [
+                'label' => 'col-sm-4',
+                'wrapper' => 'col-sm-8',
+                'error' => '',
+                'hint' => '',
+            ]
+        ],
+    ]);
+
+    ?>
+<div class="clerafix">
+
+    	<?php echo Breadcrumbs::widget([
+             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+             'homeLink' => false
+          ]) ?>
+        <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => 'btn-primary btn']) ?>  
+    </div>
+    <?php
+    	echo Alert::widget([
+			'options' => [
+				'class' => 'alert-danger',
+				'style' => ($alert == '') ? 'display: none' : ''
+			],
+			'body' => $alert,
+			'closeButton' => false,
+		]);
+
+		?>
+	<?php
+		echo Alert::widget([
+			'options' => [
+				'class' => 'alert-success',
+				'style' => ($message == '') ? 'display: none' : ''
+			],
+			'body' => $message,
+			'closeButton' => false,
+		]);
+
+		?>	
 <div class="col-lg-12 no_padding">
     <div class="venue-index">
-
-        <h1><?php echo Html::encode($this->title) ?></h1>
-        <div class="venue-website-form clearfix">
-
-            <?php
-            $form = ActiveForm::begin([
-                'layout' => 'horizontal',
-                'options' => ['enctype' => 'multipart/form-data'],
-                'options' => [
-                    'class' => 'ajax-form clearfix'
-                ],
-                'fieldConfig' => [
-                    'horizontalCssClasses' => [
-                        'label' => 'col-sm-4',
-                        'wrapper' => 'col-sm-8',
-                        'error' => '',
-                        'hint' => '',
-                    ]
-                ],
-            ]);
-
-            ?>
+    	<div class="venue-website-form clearfix">
             <?php echo $form->errorSummary($model); ?>
             <div class="col-lg-6">
 				<div class="sett_block_wrap clearfix">
@@ -73,7 +125,7 @@ $this->registerJs("
 								</td>
 								<td>
 									<?php if($page->type != 'main'):?>
-										<?php echo $form->field($page, '['.$page->id.']active',['template'=>'{input}'])->dropDownList(['0'=>'Off', '1'=>'On'],['class' => 'chosen-style']);?>
+										<?php echo $form->field($page, '['.$page->id.']active',['template'=>'{input}'])->dropDownList(['0'=>'Off', '1'=>'On'],['class' => ('chosen-style'.(($page->active!=1)?' Off':''))]);?>
 									<?php endif;?>
 								</td>
 								<td>
@@ -246,10 +298,6 @@ $this->registerJs("
 				</div>
             </div>
 		</div>
-    
-        <div class="form-group">
-            <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => 'btn-primary btn']) ?>
-        </div>
 
         <?php ActiveForm::end(); ?>
 

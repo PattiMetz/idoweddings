@@ -121,6 +121,8 @@ class AdminVenueController extends Controller
 
     public function actionSettings($id)
     {
+        $alert = $message = '';
+
         $model = VenueWebsite::find()->where(['venue_id' => $id])->one();
      
         $venue = Venue::findOne($id);
@@ -129,15 +131,25 @@ class AdminVenueController extends Controller
             $post = Yii::$app->request->post();
             $model->load($post);
             $model->font_settings = serialize($post['settings']);
-            $model->save();
-
-            foreach($post['VenuePage'] as $page_id=>$page) {
-                $obj = VenuePage::findOne($page_id);
-                $obj->active = $page['active'];
-                $obj->save();
-               
+            if ($model->save()) {
+                foreach($post['VenuePage'] as $page_id=>$page) {
+                    $obj = VenuePage::findOne($page_id);
+                    $obj->active = $page['active'];
+                    if(!$obj->save())
+                        $alert = 'Venue page error';
+                   
+                }
+                $message = 'Succesfully saved';
+            }else {
+                $alert = 'Error. Not saved';
             }
-            $alert = 'Succesfully saved';
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            $pjax_reload = '#main';
+            return compact(
+                'alert',
+                'message'
+            );
+            
         }
         if(!$model) {
             $model = new VenueWebsite();
@@ -163,7 +175,9 @@ class AdminVenueController extends Controller
                 'model' => $model,
                 'fonts' => $fonts,
                 'sizes' => $sizes,
-                'pages' => $pages
+                'pages' => $pages,
+                'alert' => $alert,
+                'message' => $message
             ]);
         
     }

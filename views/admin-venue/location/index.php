@@ -14,10 +14,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="venue-location-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?php echo Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Add Group of Locations',Url::to(['/admin/venue-location/group','venue_id'=>$venue_id]),  ['class' => 'btn btn-danger modal-ajax']) ?>
+        <?php echo Html::a('Add Group of Locations',Url::to(['/admin/venue-location/group','venue_id'=>$venue_id]),  ['class' => 'btn btn-danger modal-ajax']) ?>
     </p>
     <?php
         echo ListView::widget([

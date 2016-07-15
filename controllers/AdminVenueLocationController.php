@@ -99,7 +99,7 @@ class AdminVenueLocationController extends Controller
     {
         $alert = '';
         if($id > 0)
-            $model = VenueLocationGroup::find($id);
+            $model = VenueLocationGroup::findOne($id);
         else {
             $model = new VenueLocationGroup();
             $model->venue_id = $venue_id;
