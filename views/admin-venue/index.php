@@ -20,42 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->params['title'] = 'Venue list';
 $this->registerJsFile("/js/multiple-select.js",['depends'=>'yii\web\JqueryAsset']);
 $this->registerCssFile("/css/multiple-select.css");
-$this->registerJs("
 
-		$(document).on('ready pjax:end', function(e) {
-			get_menu($('.grid-view table tbody tr:first-child').attr('data-key'));
-			$('.grid-view table tbody tr:first-child').addClass('active');
-			$('.multiple').multipleSelect({});
-			$('.grid-view table tr').on('click',function(){
-				$('.grid-view table tr').removeClass('active');
-				$(this).addClass('active');
-				get_menu($(this).attr('data-key'));
-			})
-			$('.filter_field').on('change',function(){
-				$('.venue_filter').submit();
-			})
-		});
-		$('body').on('submit', 'form.event-filter', function(e) {
-
-			e.preventDefault();
-
-		});
-		function get_menu(id) {
-			if(id) {
-				$.ajax({
-					url:'".Url::to(["admin-venue/menu"])."',
-					method:'POST',
-					data:{'id':id},
-					success:function(data){
-						$('.venue_list').html(data);
-					}
-
-				})
-			}
-		}
-		
-
-");
 ?>
 <div class="venue-index">
 
@@ -214,3 +179,40 @@ $this->registerJs("
 		]); ?>
 	</div>
 </div>
+<?php
+$this->registerJs("
+
+		$(document).on('ready pjax:end', function(e) {
+			get_menu($('.grid-view table tbody tr:first-child').attr('data-key'));
+			$('.grid-view table tbody tr:first-child').addClass('active');
+			$('.multiple').multipleSelect({});
+			$('.grid-view table tr').on('click',function(){
+				$('.grid-view table tr').removeClass('active');
+				$(this).addClass('active');
+				get_menu($(this).attr('data-key'));
+			})
+			$('.filter_field').on('change',function(){
+				$('.venue_filter').submit();
+			})
+		});
+		$('body').on('submit', 'form.event-filter', function(e) {
+
+			e.preventDefault();
+
+		});
+		function get_menu(id) {
+			if(id) {
+				$.ajax({
+					url:'".Url::to(["admin-venue/menu"])."',
+					method:'POST',
+					data:{'id':id},
+					success:function(data){
+						$('.venue_list').html(data);
+					}
+
+				})
+			}
+		}
+		
+
+");

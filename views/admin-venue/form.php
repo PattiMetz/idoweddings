@@ -596,7 +596,7 @@ function add_phone(contact_id, key){
 				</div>
 			</div>
 		</div>
-		<?if($model->id):?> 
+		<?php if($model->id) {?> 
 			<div class="panel panel-default">
 			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse10">
 				<h4 class="panel-title">
@@ -624,7 +624,7 @@ function add_phone(contact_id, key){
 				</div>
 			</div>
 		</div>
-		<?endif;?>
+		<?php }?>
 	</div>
 	<div class="form-group required">
 		<label>Updated by </label> <?php echo $model->user?> <?php echo $model->updated_at?>

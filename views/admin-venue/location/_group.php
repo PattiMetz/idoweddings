@@ -17,7 +17,7 @@ use app\models\venue\VenueLocationGroup;
 	<?php
 		echo Html::a('Add location', [
 			Url::to(['/admin/venue-location/location', 'group_id' => $model->id])],
-			['class' => 'btn btn-danger']
+			['class' => 'btn btn-danger', 'data-pjax'=>0]
 		);
 	?>
 	<?php

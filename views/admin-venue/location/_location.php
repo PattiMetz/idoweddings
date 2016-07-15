@@ -22,8 +22,7 @@ $days = array('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
 				<?php
 					echo Html::a('<i class="glyphicon glyphicon-pencil"></i> Edit', 
 						 Url::to(['/admin/venue-location/location', 'id' => $model->id]),
-						['class' => 'btn btn-primary'
-					]);
+						['class' => 'btn btn-primary','data-pjax' => 0]);
 				?>
 				<?php
 					echo Html::button('<i class="glyphicon glyphicon-close"></i>Delete', [
