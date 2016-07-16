@@ -25,7 +25,7 @@ use yii\bootstrap\Alert;
         ]);
     ?>
 
-    <div class="clerafix">
+    <div class="sett_panel clerafix">
 
     	<?php echo Breadcrumbs::widget([
              'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
@@ -66,91 +66,100 @@ use yii\bootstrap\Alert;
 		]);
 
 		?>
-    <div class="list_wrap">    
-    	<p><span>Group of Locations</span><?php echo $model->group->name?></p>
-    	<div class="col-sm-12">
+    <div class="sett_block_wrap clearfix">
+    	<p><span>Group of Locations</span> <?php echo $model->group->name?></p>
+    	<div class="form-horizontal clearfix">
 	    	<?php echo $form->field($model, 'group_id',['template'=>'{input}'])->hiddenInput() ?>
 	    	<div class="col-sm-6">
 	    		<?php echo $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 	    	</div>
 	    	<div class="col-sm-6">
-	    		<?php echo $form->field($model, 'guest_capacity')->textInput(['maxlength' => true]) ?>
+	    		<?php echo $form->field($model, 'guest_capacity')->textInput(['maxlength' => true, 'class'=>'form-control small-input']) ?>
 	    	</div>
 	    </div>
 
     </div>
-    <?php if($model->times):?>
-    	<p><strong>Available Time slots</strong></p>
-		<div class="times" style="border:solid 1px #ccc;float:left;width:100%">
-
-			<?php foreach($model->times as $k=>$stime):?>
-				<div class="col-sm-12 time">
-					<div class="col-sm-3">
-						<?= $stime->time_from?>
-					</div>
-					<div class="col-sm-3">
-						<?= $stime->time_to?>
-					</div>
-					<div class="col-sm-4">
-						<?= $form->field($stime, 'days_array')->checkboxList($days,['disabled'=>'disabled']) ?>
-					</div>
-					<div class="col-sm-2">
-						<?= Html::Button('Edit', ['class' =>'btn btn-primary add_time_slot']) ?>
-						<?= Html::Button('Remove', ['class' =>'btn btn-primary add_time_slot']) ?>
-					</div>
-				</div>
-
-			<?php endforeach;?>
-
-		</div>
-
-	<?php endif;?>
-
-	<div class="col-sm-12 add_time">
-
-		<div class="col-sm-3">
-			<?= $form->field($time, 'time_from')->dropDownList($times, ['prompt'=>'time from']) ?>
-		</div>
-		<div class="col-sm-3">
-			<?= $form->field($time, 'time_to')->dropDownList($times, ['prompt'=>'time to']) ?>
-		</div>
-		<div class="col-sm-4">
-			<?= $form->field($time, 'days')->checkboxList($days) ?>
-		</div>
-		<div class="col-sm-2">
-			<?= Html::SubmitButton('Add time slot', ['class' =>'btn btn-primary add_time_slot']) ?>
-		</div>
-	</div>
-    
-    <?php echo $form->field($model, 'description')->widget(CKEditor::className(), [
+	
+	<?php echo $form->field($model, 'description')->widget(CKEditor::className(), [
         'options' => ['rows' => 6],
         'clientOptions' => [
 			'customConfig' => '/js/ckeditor/config.js',
         ]
     ]) ?>
+	
+	<div class="sett_block_wrap clearfix">
 
-   
+		<?php if($model->times):?>
+			<p>Available Time slots</p>
+			<div class="times" style="border:solid 1px #ccc;float:left;width:100%">
 
-    <?php if($model->id) {?>
-	    <div class="attach_block">
-			<span>Attachments:</span>
-			<ul id="files" class="attach_list clearfix">
-				 <?php if(isset($images) && count($images)>0) {?> 
-			        <ul class="docs">
-			            <?php foreach ($images as $image) {?>
-			            <li>
-			                <?=Html::img($upload_dir . "/thumb/".$image->id . '.' . end(explode('.', $image->image)))?>
-			                <?=Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-image", 'id'=>$image->id])],['class'=>'modal-ajax'])?>
-			            </li>
-			            <?php }?>
-			        </ul>
-			    <?php }?>
-			</ul>
-			<a class="btn btn-danger" href="#">Attach file</a>
-			<input type="file" id="files-select" name="files[]" size="20" multiple />
+				<?php foreach($model->times as $k=>$stime):?>
+					<div class="col-sm-12 time">
+						<div class="col-sm-3">
+							<?= $stime->time_from?>
+						</div>
+						<div class="col-sm-3">
+							<?= $stime->time_to?>
+						</div>
+						<div class="col-sm-4">
+							<?= $form->field($stime, 'days_array')->checkboxList($days,['disabled'=>'disabled']) ?>
+						</div>
+						<div class="col-sm-2">
+							<?= Html::Button('Edit', ['class' =>'btn btn-primary add_time_slot']) ?>
+							<?= Html::Button('Remove', ['class' =>'btn btn-primary add_time_slot']) ?>
+						</div>
+					</div>
 
+				<?php endforeach;?>
+
+			</div>
+
+		<?php endif;?>
+		
+	</div>
+
+	<div class="sett_block_wrap clearfix">
+		<p>Available Time slots</p>
+		<div class="col-sm-12 add_time">
+			<div class="col-sm-3">
+				<?= $form->field($time, 'time_from')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time from']) ?>
+			</div>
+			<div class="col-sm-3">
+				<?= $form->field($time, 'time_to')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time to']) ?>
+			</div>
+			<div class="col-sm-4">
+				<?= $form->field($time, 'days')->checkboxList($days) ?>
+			</div>
+			<div class="col-sm-2">
+				<?= Html::SubmitButton('Add time slot', ['class' =>'btn btn-danger add_time_slot']) ?>
+			</div>
 		</div>
-	<?php }?>
+	</div>
+ 
+	<div class="sett_block_wrap clearfix">
+		<p>Images</p>
+		<?php if($model->id) {?>
+			<div class="attach_block">
+				<span>Attachments:</span>
+				<ul id="files" class="attach_list clearfix">
+					 <?php if(isset($images) && count($images)>0) {?> 
+						<ul class="docs">
+							<?php foreach ($images as $image) {?>
+							<li>
+								<?=Html::img($upload_dir . "/thumb/".$image->id . '.' . end(explode('.', $image->image)))?>
+								<?=Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-image", 'id'=>$image->id])],['class'=>'modal-ajax'])?>
+							</li>
+							<?php }?>
+						</ul>
+					<?php }?>
+				</ul>
+				<a class="btn btn-danger" href="#">Attach file</a>
+				<input type="file" id="files-select" name="files[]" size="20" multiple />
+
+			</div>
+		<?php }?>
+	</div>	
+	
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>

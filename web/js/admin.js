@@ -326,6 +326,28 @@ $(function() {
 		});
 	});
 	
+	/* Top panel pseudo select */
+	$('.multiselect_box').click(function() {
+		$('.multiselect_box').find('.drop_bottom').hide();
+		$(this).find('.drop_bottom').show();
+	});
+	$(document).mouseup(function (e){
+		var elem = $(".drop_bottom");
+		var winWidth = $(window).width();
+		if (!elem.is(e.target)
+			&& elem.has(e.target).length === 0) {
+			elem.hide();
+		}
+	});
+	$('.multiselect_box label').change(function() {
+		if( $(this).hasClass('active') ) {
+			$(this).removeClass('active');
+		}
+		else {
+			$(this).addClass('active');
+		}
+	});
+	
 	$('.select_all').change(function(){
 		if($(this).is(':checked'))
 			$(this).parent().next().find('input[type=checkbox]').attr('checked', 'checked');

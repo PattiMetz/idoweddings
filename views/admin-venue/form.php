@@ -549,7 +549,7 @@ function add_phone(contact_id, key){
 							</li>
 						</ul>
 						<div class="clearfix">
-							<?php echo $form->field($model->tax, 'accommodation_note', ['options' => ['class' => 'form-group invisible']])->textInput(['class'=>'form-control'])->label('Note',['class'=>'control-label col-md-1']) ?>
+							<?php echo $form->field($model->tax, 'accommodation_note', ['options' => ['class' => 'form-group invisible']])->textInput(['class'=>'form-control'])->label('Note',['class'=>'control-label col-md-4']) ?>
 						</div>
 					</div>
 				</div>
@@ -566,8 +566,8 @@ function add_phone(contact_id, key){
 					<div class="col-md-10 col-md-offset-1 collapse_form clearfix">
 						
 						
-						<?php echo $form->field($model->tax, 'event_deposit')->textInput() ?>
-						<?php echo $form->field($model->tax, 'deposit_currency')->dropDownList($currency->list) ?>
+						<?php echo $form->field($model->tax, 'event_deposit')->textInput(['class'=>'form-control small_input']) ?>
+						<?php echo $form->field($model->tax, 'deposit_currency')->dropDownList($currency->list, ['class'  => 'form-control chosen-style']) ?>
 						<?php //Добавить проверку - показывать только Патти ?>
 						<?php echo $form->field($model->tax, 'note')->textarea(['rows' => 3]) ?>
 					</div>
@@ -598,29 +598,29 @@ function add_phone(contact_id, key){
 		</div>
 		<?php if($model->id) {?> 
 			<div class="panel panel-default">
-			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse10">
+			<div class="panel-heading collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse11">
 				<h4 class="panel-title">
 					<a class="text-success">Documents</a>
 				</h4>
 			</div>
-			<div id="collapse10" class="panel-collapse collapse">
+			<div id="collapse11" class="panel-collapse collapse">
 				<div class="panel-body">
 						
-						<div class="attach_block">
-							<span>Attachments:</span>
-							<ul id="files" class="attach_list clearfix">
-								<?php foreach ($model->docs as $file): ?>
-									<li id="file_<?php echo $file->id; ?>">
-										<i><?php echo Html::a($file->doc,["/uploads/venue/".$model->id."/".$file->id . '.' . end(explode('.', $file->doc))],['target'=>'_blank','data-pjax'=>0])?></i>
-										<button class="remove-file modal-ajax" type="button" data-id="16" title="Delete" value="<?php echo Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$file->id])?>"></button>
-										
-									</li>
-								<?php endforeach; ?>
-							</ul>
-							<a class="btn btn-danger" href="#">Attach file</a>
-							<input type="file" id="files-select" name="files[]" size="20" multiple />
+					<div class="attach_block">
+						<span>Attachments:</span>
+						<ul id="files" class="attach_list clearfix">
+							<!--?php foreach ($model->docs as $file): ?>
+								<li id="file_<php echo $file->id; ?>">
+									<i><!--?php echo Html::a($file->doc,["/uploads/venue/".$model->id."/".$file->id . '.' . end(explode('.', $file->doc))],['target'=>'_blank','data-pjax'=>0])?></i>
+									<button class="remove-file modal-ajax" type="button" data-id="16" title="Delete" value="<!--?php echo Url::to([Yii::$app->controller->id."/delete-doc", 'id'=>$file->id])?>"></button>
+									
+								</li>
+							<!?php endforeach; ?-->
+						</ul>
+						<a class="btn btn-danger" href="#">Attach file</a>
+						<input type="file" id="files-select" name="files[]" size="20" multiple />
 
-						</div>
+					</div>
 				</div>
 			</div>
 		</div>

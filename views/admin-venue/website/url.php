@@ -46,7 +46,7 @@ echo Alert::widget([
 <div class="form-group">
 	<input type="hidden" id="validate" name='validate'/>
 	<div class="col-sm-8">
-		<?php echo $form->field($model, 'url',['template'=>'http://{input}.idoweddings.com'])->textInput(['class'=>'']); ?>
+		<?php echo $form->field($model, 'url',['template'=>'http://{input}.idoweddings.com'])->textInput(['class'=>'form-control webaddress_input']); ?>
 	</div>
 	<div class="col-sm-3">
 		<?php echo Html::submitButton('Validate Address', ['class' => 'btn btn-primary','name'=>'validate', 'onclick'=>'$("#validate").val(1)']) ?>

@@ -112,6 +112,9 @@ label {
 textarea {
 	resize: none;
 }
+.small_input {
+	width: 65px;
+}
 .form-control {
 	border: 1px solid #ccc;
 	box-shadow: none;
@@ -315,6 +318,10 @@ table, th {
 }
 .breadcrumb a {
 	text-decoration: underline;
+	color: #868234;
+}
+.breadcrumb a:hover {
+	color: #2b542c;
 }
 .panel-group {
 	margin: 20px 0;
@@ -666,6 +673,10 @@ table, th {
 	color: #2e1106;
 	background: url(../images/select_bg.png) no-repeat top right 20px;
 }
+.sett_panel > button {
+	margin-top: -34px;
+	float: right;
+}
 .top_panel {
 	position: relative;
 	padding: 15px 0;
@@ -691,36 +702,30 @@ table, th {
 }
 .top_panel .filter {
 	padding: 0;
-	float: right;
 }
 .top_panel .filter .col-md-9 > div {
 	display: inline-block;
 	width: calc(100% - 115px);
 }
-/*.top_panel .filter select {
+.top_panel .filter .select_wrapper {
+	width: 185px;
     float: left;
-    width: 120px;
-    height: 26px;
-    border-radius: 5px;
-    border-color: #ccc;
-    line-height: 26px;
-    margin-right: 2px;
-    color: #000;
-}*/
+    margin-right: 4px;
+}
+.top_panel .filter .select_wrapper:last-child {
+	margin-right: 0;
+}
 .top_panel .filter select {
 	display: inline-block;
 	width: 185px;
 	color: #777777;
 	background: url(../images/select_bg.png) no-repeat top right 34px;
 }
-/*form[name=search] {
-	float: right;
-}*/
 
 /******** 5 - VENUES********/
 
-.venue-index > div:last-child {
-	text-align: center;
+.venue-index {
+	margin-top: 15px;
 }
 .venue-index > div.col-md-9 {
 	padding: 0;
@@ -826,14 +831,19 @@ table, th {
 .col-sm-9.phones {
 	padding: 0;
 }
-.col-sm-9.phones .col-sm-6:nth-child(2) {
+.col-sm-9.phones .col-sm-6 {
+	margin-bottom: 15px;
+}
+.col-sm-9.phones .col-sm-6:nth-child(even) {
 	padding: 0;
 }
 .add_phone,
 .add_contact {
 	min-width: 110px;
-	margin-top: 15px;
 	float: right;
+}
+.add_contact {
+	margin-right: 15px;
 }
 .checkBox_block {
 	height: 152px;
@@ -916,10 +926,13 @@ table, th {
 .prices_list .help-block {
 	clear: both;
 }
-.venue-website-form form .col-lg-6:nth-of-type(2) {
+.prices_list + div  .col-md-4 {
+	max-width: 114px;
+}
+.venue-website-form .col-lg-6:nth-of-type(2) {
 	padding-left: 0;
 }
-.venue-website-form form .col-lg-6:last-of-type {
+.venue-website-form .col-lg-6:last-of-type {
 	padding-right: 0;
 }
 .sett_block_wrap {
@@ -937,6 +950,21 @@ table, th {
 }
 .sett_block_wrap table tr td:first-child {
 	text-align: left;
+}
+.sett_block_wrap table tr:first-child td {
+	text-align: center;
+}
+.sett_block_wrap table a:hover {
+	text-decoration: none;
+	color: #fff;
+}
+.sett_block_wrap table .btn-cancel {
+	border-color: #ecc8b2;
+    background-color: #ffe3c7;
+}
+.sett_block_wrap table .btn-cancel:hover {
+	color: inherit;
+	box-shadow: inset 0 0 6px 1px #ecc8b2;
 }
 .sett_block_wrap table .form-group {
 	margin: 0 !important;
@@ -966,6 +994,10 @@ table, th {
 .sett_btns_box button.btn-cancel {
 	border-color: #ecc8b2;
 	background-color: #ffe3c7;
+	transition: all 0.3s ease;
+}
+.sett_btns_box button.btn-cancel:hover {
+	box-shadow: inset 0 0 6px 1px #ecc8b2;
 }
 .settings_table th {
 	font-size: 12px;
@@ -1064,6 +1096,9 @@ table, th {
 }
 .image_list img {
 	width: 100%;
+}
+.venue-location-form form > div:last-child {
+	text-align: center;
 }
 
 /******** 6 - KNOWLEDGE BASE********/
@@ -1682,7 +1717,8 @@ table, th {
     margin: 20px 0 5px;
     padding: 0 15px;
 }
-.panel-collapse .attach_block {
+.panel-collapse .attach_block,
+.sett_block_wrap .attach_block {
 	width: 100%;
 }
 .attach_block > span {
@@ -1742,6 +1778,11 @@ table, th {
 #cke_1_bottom,
 #cke_2_bottom {
 	display: none;
+}
+	/*==Modal Change venue url address==*/
+.webaddress_input {
+	display: inline-block;
+	width: 200px;
 }
 
 /******** 10 - Add sorting icons to gridview sort links ********/
@@ -1935,6 +1976,58 @@ a.desc:after {
 	background: #f6be8d;
 }
 
+.multiselect_box {
+	position: relative;
+	height: 34px;
+	margin-bottom: 5px;
+    padding: 6px 36px 6px 12px;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border: 1px solid #ccc;
+    color: #777777;
+	background: url(../images/multiselect_bg.png) no-repeat right 2px top;
+}
+.multiselect_box > span {
+	display: inline-block;
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.multiselect_box .drop_bottom {
+	display: none;
+	position: absolute;
+	left: 0;
+	min-width: 185px;
+	max-height: 250px;
+	padding: 5px 0;
+	border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border: 1px solid #ccc;
+	background-color: #fff;
+	-webkit-box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
+    -moz-box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
+    box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
+	overflow-y: auto;
+	z-index: 3;
+}
+.multiselect_box .drop_bottom label {
+	width: 100%;
+	margin-left: 0;
+	padding: 0 20px 0 25px;
+	line-height: 29px;
+	white-space: nowrap;
+}
+.multiselect_box .drop_bottom label:hover,
+.multiselect_box .drop_bottom label.active {
+	color: #fff;
+	background: #f6be8d;
+}
+.multiselect_box .drop_bottom label input {
+	margin: 8px 0 0 -20px;
+}
+
 /******** 13 - Spectrum plugin styles********/
 
 /*.settings_table select {
@@ -1946,6 +2039,10 @@ a.desc:after {
 	width: 54px !important;
 	border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
+	background: #fff;
+}
+.sp-replacer {
+	background: #fff;
 }
 .input-group .form-control.spectrum-input {
 	display: none;
@@ -2043,31 +2140,6 @@ a.desc:after {
 	width:100%;
 	float:left;
 }
-/*#venuetax-accommodation_commission_type .radio {
-	float:left;
-	padding-right:10px;
-	margin-top:0px;
-}
-#venuetax-accommodation_commission_type {
-	width:100%;
-	float:left;
-}
-
-.filter select, .filter input[type="text"] {
-    float: left;
-    width: 120px;
-    height: 26px;
-    border-radius: 5px;
-    border-color: #ccc;
-    line-height: 26px;
-    margin-right: 2px;
-    color: #000;
-}
-.filter input[type="text"].form-control {
-	height:34px;
-	margin-right:0px;
-	border-radius: 5px;
-}*/
 
 @media (max-width: 1355px) {
 	.container {
@@ -2085,6 +2157,11 @@ a.desc:after {
 	.top_panel .col-md-2 {
 		max-width: 100px;
 		padding: 0;
+	}
+	.top_panel .filter {
+		width: 100%;
+		padding: 15px 0 0 0;
+		clear: both;
 	}
 	/*==Venues==*/
 	.sett_block_wrap .dis_flex span {
@@ -2156,6 +2233,14 @@ a.desc:after {
 	.nav > li > a {
 		padding: 8px;
 	}
+	.top_panel .filter .col-md-9 {
+		width: 100%;
+		padding: 0 0 15px;
+	}
+	.top_panel .filter .col-md-3 {
+		max-width: 231px;
+		clear: both;
+	}
 	.footer {
 		text-align: left;
 	}
@@ -2201,8 +2286,8 @@ a.desc:after {
 		float: none;
 	}
 	/*===Venues=*/
-	.venue-website-form form .col-lg-6:nth-of-type(2),
-	.venue-website-form form .col-lg-6:last-of-type {
+	.venue-website-form .col-lg-6:nth-of-type(2),
+	.venue-website-form .col-lg-6:last-of-type {
 		padding: 0;
 	}
 	.sett_block_wrap .dis_flex {
@@ -2242,11 +2327,6 @@ a.desc:after {
 		width: 219px;
 		margin-left: -4px;
 	}
-	.top_panel .filter {
-		padding-top: 15px;
-		float: none;
-		clear: both;
-	}
 	.footer {
 		height: 80px;
 		padding-top: 20px;
@@ -2268,9 +2348,9 @@ a.desc:after {
 		float: none;
 		clear: both;
 	}
-	.update_top_block {
+	/*.update_top_block {
 		padding: 20px 0 0 0;
-	}
+	}*/
 	.update_top_block > div,
 	.update_top_block > div .col-md-8 {
 		padding: 0;
@@ -2285,12 +2365,14 @@ a.desc:after {
 		padding: 0;
 		vertical-align: text-bottom;
 	}
-	.col-sm-9.phones .col-sm-6:nth-child(2) {
+	.col-sm-9.phones .col-sm-6:nth-child(even) {
 		padding: 0 15px 0 0;
 	}
-	.add_phone,
+	.add_phone {
+		margin-right: 15px;
+	}
 	.add_contact {
-		margin: 15px 15px 0 0;
+		margin-right: 30px;
 	}
 	.tax_box + .col-md-6 {
 		padding: 0;
@@ -2306,6 +2388,14 @@ a.desc:after {
 	}
 	.radiolist .radio:last-child {
 		margin-right: 0;
+	}
+	.prices_list li:first-child > div:last-child label,
+	.prices_list li:first-child > div:last-child .col-md-8 {
+		padding: 0;
+	}
+	.prices_list + div  .col-md-4,
+	.prices_list + div  .col-md-8 {
+			padding: 0;
 	}
 	.commissions label.col-md-4,
 	.commissions .col-md-8 {
@@ -2423,6 +2513,13 @@ a.desc:after {
 	.header .main_title p:first-child {
 		margin-right: 0;
 	}
+	.top_panel .filter .col-md-9:after {
+		content: "";
+		height: 0;
+		clear: both;
+		display: block;
+		overflow: hidden;
+	}
 	.top_panel .filter .col-md-9 > div {
 		display: block;
 		width: 100%;
@@ -2446,9 +2543,13 @@ a.desc:after {
 	.inner_col_box2 >.clearfix > .col-md-6 {
 		padding: 0;
 	}
-	.col-sm-9.phones .col-sm-6:nth-child(2) {
+	.col-sm-9.phones .col-sm-6:nth-child(even) {
 		margin-top: 15px;
 		padding: 0 15px;
+	}
+	.add_phone,
+	.add_contact {
+		margin-right: 15px;
 	}
 	.tax_box .col-sm-6 {
 		padding: 0;
@@ -2489,9 +2590,6 @@ a.desc:after {
 	.settings_table td .chosen-container:first-of-type,
 	.settings_table td .chosen-container:Last-of-type {
 		margin-bottom: 7px;
-	}
-	.timeslot_list {
-		text-align: left;
 	}
 	.image_list li {
 		max-width: 100%;
@@ -2646,6 +2744,10 @@ a.desc:after {
 		width: 100%;
 		margin: 0 0 15px 0;
 	}
+	/*==Modal Change venue url address==*/
+	.webaddress_input {
+		width: 300px;
+	}
 	/*==Combo tree styles==*/
 	.input_wrapper .chosen-container,
 	.input_wrapper .textbox.combo {
@@ -2703,11 +2805,17 @@ a.desc:after {
 		padding-left: 15px;
 	}
 	.sett_panel {
-		border: none;
 		padding-bottom: 0;
+		border: none;
+		text-align: center;
 	}
 	.sett_panel .chosen-container {
 		margin-left: -4px;
+	}
+	.sett_panel > button {
+		width: 256px;
+		margin-top: 0;
+		float: none;
 	}
 	.choose_base {
 		display: block;
@@ -2746,6 +2854,17 @@ a.desc:after {
 		margin: 10px auto;
 		float: none;
 	}
+	.top_panel .filter,
+	.top_panel .filter .col-md-9 {
+		padding: 0;
+	}
+	.top_panel .filter .col-md-3 {
+		max-width: 100%;
+	}
+	.top_panel .filter .select_wrapper {
+		width: 256px;
+		margin-right: 0;
+	}
 	.top_panel .filter select {
 		width: 100%;
 		text-align: left;
@@ -2772,6 +2891,15 @@ a.desc:after {
 	}
 	.sett_btns_box {
 		float: none;
+	}
+	.sett_block_wrap table tr:first-child td a {
+		display: block;
+		width: 256px;
+		margin: 0 auto 8px;
+	}
+	.sett_btns_box a,
+	.sett_btns_box button {
+		width: 256px;
 	}
 	.settings_table td .chosen-container:Last-of-type {
 		margin-bottom: 0;
@@ -2821,6 +2949,10 @@ a.desc:after {
 	}
 	.list li:last-child {
 		margin-bottom: 23px;
+	}
+	/*==Modal Change venue url address==*/
+	.webaddress_input {
+		width: 230px;
 	}
 	/*==plugins for select==*/
 	.chosen-container-single .chosen-single {

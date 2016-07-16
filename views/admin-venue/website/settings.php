@@ -60,13 +60,14 @@ $this->registerJs("
     ]);
 
     ?>
-<div class="clerafix">
+	<div class="sett_panel clerafix">
 
     	<?php echo Breadcrumbs::widget([
              'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
              'homeLink' => false
           ]) ?>
-        <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => 'btn-primary btn']) ?>  
+        <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Save Settings', ['class' => 'btn-primary btn']) ?>  
+		
     </div>
     <?php
     	echo Alert::widget([
@@ -114,6 +115,7 @@ $this->registerJs("
 						<tr>
 							<td colspan="3">
 								<?php echo Html::a('Add page', Url::to([Yii::$app->controller->id.'/page-update','venue_id'=>$model->venue_id]),['class' => 'btn btn-danger modal-ajax']) ?>
+								<a class="btn btn-cancel"><i class="glyphicon glyphicon-eye-open"></i> Go to Website Editor</a>
 							</td>
 						</tr>
 					   				
