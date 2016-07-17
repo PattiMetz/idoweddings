@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\ActiveForm;
+use yii\bootstrap\ActiveForm;
 use dosamigos\ckeditor\CKEditor;
 use yii\widgets\breadcrumbs;
 use yii\bootstrap\Alert;
@@ -20,8 +20,17 @@ use yii\bootstrap\Alert;
 		$this->params['breadcrumbs'][] = $this->title;
 
     	$form = ActiveForm::begin([
-            'options' => ['enctype' => 'multipart/form-data'],
-           
+            'options' => ['enctype' => 'multipart/form-data','class' => 'ajax-form'],
+            'layout' => 'horizontal',
+	
+			'fieldConfig' => [
+				'horizontalCssClasses' => [
+					'label' => 'col-sm-4',
+					'wrapper' => 'col-sm-8',
+					'error' => '',
+					'hint' => '',
+				]
+			],
         ]);
     ?>
 
@@ -80,7 +89,7 @@ use yii\bootstrap\Alert;
 
     </div>
 	
-	<?php echo $form->field($model, 'description')->widget(CKEditor::className(), [
+	<?php echo $form->field($model, 'description', ['template'=>'{input}'])->widget(CKEditor::className(), [
         'options' => ['rows' => 6],
         'clientOptions' => [
 			'customConfig' => '/js/ckeditor/config.js',
@@ -89,24 +98,41 @@ use yii\bootstrap\Alert;
 	
 	<div class="sett_block_wrap clearfix">
 
-		<?php if($model->times):?>
+		<?php if($model->times){?>
 			<p>Available Time slots</p>
 			<div class="times" style="border:solid 1px #ccc;float:left;width:100%">
 
 				<?php foreach($model->times as $k=>$stime):?>
 					<div class="col-sm-12 time">
 						<div class="col-sm-3">
-							<?= $stime->time_from?>
+							<?php echo $stime->time_from?>
 						</div>
 						<div class="col-sm-3">
-							<?= $stime->time_to?>
+							<?php echo $stime->time_to?>
 						</div>
 						<div class="col-sm-4">
-							<?= $form->field($stime, 'days_array')->checkboxList($days,['disabled'=>'disabled']) ?>
+							<ul class="timeslot_list list-inline">
+							<?php echo $form->field($stime, 'days_array',['template'=>'{input}'])->checkboxList($days,[
+								'tag'=>'li',
+								'separator'=>'</li><li>',
+								'item' =>
+					                function ($index, $label, $name, $checked, $value) {
+					                    return Html::checkbox($name, $checked, [
+								                        'value' => $value,
+								                        'disabled'=>'disabled',
+								                        'label' => '<label for="' . $label . '">' . $label . '</label>',
+								                        'labelOptions' => [
+								                            'class' => 'checkbox-inline',
+								                        ],
+								                        //'id' => $label,
+								                    ]);
+					                }]) ?>
+							</ul>
+							
 						</div>
 						<div class="col-sm-2">
-							<?= Html::Button('Edit', ['class' =>'btn btn-primary add_time_slot']) ?>
-							<?= Html::Button('Remove', ['class' =>'btn btn-primary add_time_slot']) ?>
+							<?php echo Html::Button('Edit', ['class' =>'btn btn-primary add_time_slot']) ?>
+							<?php echo Html::Button('Remove', ['class' =>'btn btn-primary add_time_slot']) ?>
 						</div>
 					</div>
 
@@ -114,7 +140,11 @@ use yii\bootstrap\Alert;
 
 			</div>
 
-		<?php endif;?>
+		<?php } else {?>
+			<div class="no_timeslots">
+				AVAILABLE TIMESLOTS NOT BE ENTERED
+			</div>
+		<?php }?>
 		
 	</div>
 
@@ -122,16 +152,30 @@ use yii\bootstrap\Alert;
 		<p>Available Time slots</p>
 		<div class="col-sm-12 add_time">
 			<div class="col-sm-3">
-				<?= $form->field($time, 'time_from')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time from']) ?>
+				<?php echo $form->field($time, 'time_from')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time from']) ?>
 			</div>
 			<div class="col-sm-3">
-				<?= $form->field($time, 'time_to')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time to']) ?>
+				<?php echo $form->field($time, 'time_to')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time to']) ?>
 			</div>
 			<div class="col-sm-4">
-				<?= $form->field($time, 'days')->checkboxList($days) ?>
+				<?php echo $form->field($stime, 'days',['template'=>'{input}'])->checkboxList($days,[
+				'tag'=>'li',
+				'separator'=>'</li><li>',
+				'item' =>
+	                function ($index, $label, $name, $checked, $value) {
+	                    return Html::checkbox($name, $checked, [
+				                        'value' => $value,
+				                        'disabled'=>'disabled',
+				                        'label' => '<label for="' . $label . '">' . $label . '</label>',
+				                        'labelOptions' => [
+				                            'class' => 'checkbox-inline',
+				                        ],
+				                        //'id' => $label,
+				                    ]);
+	                }]) ?>
 			</div>
 			<div class="col-sm-2">
-				<?= Html::SubmitButton('Add time slot', ['class' =>'btn btn-danger add_time_slot']) ?>
+				<?php echo Html::SubmitButton('Add time slot', ['class' =>'btn btn-danger add_time_slot']) ?>
 			</div>
 		</div>
 	</div>
@@ -146,8 +190,8 @@ use yii\bootstrap\Alert;
 						<ul class="docs">
 							<?php foreach ($images as $image) {?>
 							<li>
-								<?=Html::img($upload_dir . "/thumb/".$image->id . '.' . end(explode('.', $image->image)))?>
-								<?=Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-image", 'id'=>$image->id])],['class'=>'modal-ajax'])?>
+								<?php echo Html::img($upload_dir . "/thumb/".$image->id . '.' . end(explode('.', $image->image)))?>
+								<?php echo Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-image", 'id'=>$image->id])],['class'=>'modal-ajax'])?>
 							</li>
 							<?php }?>
 						</ul>
@@ -161,7 +205,7 @@ use yii\bootstrap\Alert;
 	</div>	
 	
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

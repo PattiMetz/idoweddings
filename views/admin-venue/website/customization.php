@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'layout' => 'horizontal',
         'options' => ['enctype' => 'multipart/form-data'],
         'options' => [
-            'class' => 'clearfix'
+            'class' => 'clearfix ajax-form cust_form'
         ],
         'fieldConfig' => [
             'horizontalCssClasses' => [
@@ -37,10 +37,16 @@ $this->params['breadcrumbs'][] = $this->title;
          'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
       ]) ?>
 	<div class="form-group">
-        <?= Html::submitButton('Update', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Update', ['class' => 'btn btn-success cust_submit']) ?>
     </div>
 </div>
 <?php echo $form->errorSummary($settings); ?>
+<?php echo $form->field($settings, 'slogan', ['template' => '{input}'])->hiddenInput();?>
+<?php echo $form->field($settings, 'venue_name', ['template' => '{input}'])->hiddenInput();?>
+<?php echo $form->field($settings, 'h1', ['template'=>'{input}'])->hiddenInput();?>
+<?php echo $form->field($settings, 'h2', ['template'=>'{input}'])->hiddenInput();?>
+<?php echo $form->field($settings, 'text1', ['template'=>'{input}'])->hiddenInput();?>
+<?php echo $form->field($settings, 'text2', ['template'=>'{input}'])->hiddenInput();?>
 <div class="col-sm-12">
 	<div class="col-sm-2">
 		<?php echo Html::dropDownList('page', $page->id, $pages,['class'  => 'form-control chosen-style','id'=>'page']);?>
@@ -94,7 +100,8 @@ $this->params['breadcrumbs'][] = $this->title;
 		</div>
 	</div>
 	<div class="col-sm-10">
-		<iframe width="100%" height="800px" src="/template.html"></iframe>
+
+		<iframe id="contentBlock" width="100%" height="800px" src="/template.html"></iframe>
 	</div>
 </div>
 <?php ActiveForm::end(); ?>
