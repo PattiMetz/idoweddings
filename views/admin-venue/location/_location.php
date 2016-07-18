@@ -17,19 +17,24 @@ $days = array('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
 	<div id="collapse<?php echo $model->id;?>" class="panel-collapse collapse">
 		<div class="panel-body">
 			<div class="inner_collapse_sett_panel clearfix">
-				<p>Guest capacity <span><?php echo $model->guest_capacity?></span></p>
-			
-				<?php
-					echo Html::a('<i class="glyphicon glyphicon-pencil"></i> Edit', 
-						 Url::to(['/admin/venue-location/location', 'id' => $model->id]),
-						['class' => 'btn btn-primary','data-pjax' => 0]);
-				?>
-				<?php
-					echo Html::button('<i class="glyphicon glyphicon-close"></i>Delete', [
-						'value' => Url::to(['/admin/venue-location/location-delete', 'id' => $model->id]),
-						'class' => 'btn btn-primary  modal-ajax'
-					]);
-				?>
+				<div class="clearfix">
+					<p>Guest capacity <span><?php echo $model->guest_capacity?></span></p>
+				
+					<div class="pull-right">
+						<?php
+							echo Html::a('<i class="glyphicon glyphicon-pencil"></i> Edit', 
+								 Url::to(['/admin/venue-location/location', 'id' => $model->id]),
+								['class' => 'btn btn-primary','data-pjax' => 0]);
+						?>
+						<?php
+							echo Html::button('<i class="glyphicon glyphicon-close"></i>Delete', [
+								'value' => Url::to(['/admin/venue-location/location-delete', 'id' => $model->id]),
+								'class' => 'btn btn-primary  modal-ajax'
+							]);
+						?>
+					</div>
+				</div>	
+					
 			</div>
 			<div class="col-md-6">
 				<p>Description</p>

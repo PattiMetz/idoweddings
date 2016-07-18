@@ -76,7 +76,7 @@ use yii\bootstrap\Alert;
 
 		?>
     <div class="sett_block_wrap clearfix">
-    	<p><span>Group of Locations</span> <?php echo $model->group->name?></p>
+    	<p><span class="text-dark">Group of Locations</span> <?php echo $model->group->name?></p>
     	<div class="form-horizontal clearfix">
 	    	<?php echo $form->field($model, 'group_id',['template'=>'{input}'])->hiddenInput() ?>
 	    	<div class="col-sm-6">
@@ -89,12 +89,15 @@ use yii\bootstrap\Alert;
 
     </div>
 	
-	<?php echo $form->field($model, 'description', ['template'=>'{input}'])->widget(CKEditor::className(), [
-        'options' => ['rows' => 6],
-        'clientOptions' => [
-			'customConfig' => '/js/ckeditor/config.js',
-        ]
-    ]) ?>
+	<div class="texteditor_wrap">
+		<p>Description</p>
+		<?php echo $form->field($model, 'description', ['template'=>'{input}'])->widget(CKEditor::className(), [
+			'options' => ['rows' => 6],
+			'clientOptions' => [
+				'customConfig' => '/js/ckeditor/config.js',
+			]
+		]) ?>
+	</div>
 	
 	<div class="sett_block_wrap clearfix">
 
@@ -103,14 +106,14 @@ use yii\bootstrap\Alert;
 			<div class="times" style="border:solid 1px #ccc;float:left;width:100%">
 
 				<?php foreach($model->times as $k=>$stime):?>
-					<div class="col-sm-12 time">
-						<div class="col-sm-3">
+					<div class="custom_timeslot_wrapper time clearfix">
+						<div class="col-md-1 col-sm-2 col-xs-6">
 							<?php echo $stime->time_from?>
 						</div>
-						<div class="col-sm-3">
+						<div class="col-md-1 col-sm-2 col-xs-6">
 							<?php echo $stime->time_to?>
 						</div>
-						<div class="col-sm-4">
+						<div class="col-md-6 col-sm-8 col-xs-12">
 							<ul class="timeslot_list list-inline">
 							<?php echo $form->field($stime, 'days_array',['template'=>'{input}'])->checkboxList($days,[
 								'tag'=>'li',
@@ -130,9 +133,11 @@ use yii\bootstrap\Alert;
 							</ul>
 							
 						</div>
-						<div class="col-sm-2">
-							<?php echo Html::Button('Edit', ['class' =>'btn btn-primary add_time_slot']) ?>
-							<?php echo Html::Button('Remove', ['class' =>'btn btn-primary add_time_slot']) ?>
+						<div class="col-md-4 col-sm-12">
+							<div class="pull-right">
+								<?php echo Html::Button('Edit', ['class' =>'btn btn-primary add_time_slot']) ?>
+								<?php echo Html::Button('Remove', ['class' =>'btn btn-primary add_time_slot']) ?>
+							</div>
 						</div>
 					</div>
 
@@ -150,29 +155,31 @@ use yii\bootstrap\Alert;
 
 	<div class="sett_block_wrap clearfix">
 		<p>Available Time slots</p>
-		<div class="col-sm-12 add_time">
-			<div class="col-sm-3">
-				<?php echo $form->field($time, 'time_from')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time from']) ?>
+		<div class="add_timeslot_wrapper add_time clearfix">
+			<div class="col-sm-3 col-xs-6">
+				<?php echo $form->field($time, 'time_from')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time from'])->label('From',['class'=>'control-label col-sm-4']) ?>
 			</div>
-			<div class="col-sm-3">
-				<?php echo $form->field($time, 'time_to')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time to']) ?>
+			<div class="col-sm-3 col-xs-6">
+				<?php echo $form->field($time, 'time_to')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time to'])->label('To',['class'=>'control-label col-sm-4']) ?>
 			</div>
 			<div class="col-sm-4">
-				<?php echo $form->field($stime, 'days',['template'=>'{input}'])->checkboxList($days,[
-				'tag'=>'li',
-				'separator'=>'</li><li>',
-				'item' =>
-	                function ($index, $label, $name, $checked, $value) {
-	                    return Html::checkbox($name, $checked, [
-				                        'value' => $value,
-				                        'disabled'=>'disabled',
-				                        'label' => '<label for="' . $label . '">' . $label . '</label>',
-				                        'labelOptions' => [
-				                            'class' => 'checkbox-inline',
-				                        ],
-				                        //'id' => $label,
-				                    ]);
-	                }]) ?>
+				<ul class="timeslot_list list-inline">
+					<?php echo $form->field($stime, 'days',['template'=>'{input}'])->checkboxList($days,[
+					'tag'=>'li',
+					'separator'=>'</li><li>',
+					'item' =>
+						function ($index, $label, $name, $checked, $value) {
+							return Html::checkbox($name, $checked, [
+											'value' => $value,
+											'disabled'=>'disabled',
+											'label' => '<label for="' . $label . '">' . $label . '</label>',
+											'labelOptions' => [
+												'class' => 'checkbox-inline',
+											],
+											//'id' => $label,
+										]);
+						}]) ?>
+				</ul>
 			</div>
 			<div class="col-sm-2">
 				<?php echo Html::SubmitButton('Add time slot', ['class' =>'btn btn-danger add_time_slot']) ?>

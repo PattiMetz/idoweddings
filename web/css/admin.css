@@ -229,6 +229,9 @@ table, th {
 .text-success {
 	color: #868234;
 }
+.text-dark {
+	color: #2e1106;
+}
 .line_norm {
 	line-height: normal !important;
 }
@@ -744,11 +747,18 @@ table, th {
 	text-align: center;
 }
 .list_wrap p,
-.sett_block_wrap > p {
+.sett_block_wrap > p,
+.texteditor_wrap > p {
 	margin: 0;
 	padding: 8px 0;
 	color: #fff;
 	background: #e39564;
+}
+.texteditor_wrap > p {
+	border-bottom: none;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	text-align: center;
 }
 .list_wrap ul {
 	padding: 0 20px;
@@ -1034,16 +1044,17 @@ table, th {
 	margin-bottom: 3px;
 }
 .venue-location-index .sett_block_wrap {
-	margin: 20px 0 0 0;
+	margin: 20px 0 0;
 	padding: 12px;
 	text-align: left;
 }
 .venue-location-index .sett_block_wrap:last-child {
 	margin: 20px 0;
 }
-.venue-location-index .sett_block_wrap > span {
+.venue_location_top_settings  span {
 	display: inline-block;
-    width: 71%;
+	width: calc(100% - 315px);
+	padding: 6px 0 0;
 	font-size: 16px;
 	color: #de6830;
 }
@@ -1055,7 +1066,7 @@ table, th {
 }
 .inner_collapse_sett_panel p {
 	display: inline-block;
-	width: 84%;
+	padding: 6px 0 0;
 }
 .inner_collapse_sett_panel p span {
 	color: #de6830;
@@ -1080,7 +1091,11 @@ table, th {
 	background: url(../images/timeslot_heart.png) no-repeat left center;
 }
 .timeslot_list {
-	margin-top: 7px;
+	margin-top: 5px;
+}
+.timeslot_list.list-inline li {
+	display: inline-block;
+	padding: 0 5px;
 }
 .image_list {
 	margin-top: 12px;
@@ -1100,7 +1115,43 @@ table, th {
 .venue-location-form form > div:last-child {
 	text-align: center;
 }
-
+.custom_timeslot_wrapper:first-of-type,
+.add_timeslot_wrapper {
+	padding-top: 15px;
+}
+.custom_timeslot_wrapper {
+	padding: 8px 0;
+}
+.custom_timeslot_wrapper .col-md-1 {
+	padding-top: 7px;
+}
+.custom_timeslot_wrapper .timeslot_list {
+	margin: 0 !important;
+}
+.add_timeslot_wrapper .col-sm-3 {
+	max-width: 190px;
+}
+.add_timeslot_wrapper .col-sm-3 label {
+    text-align: left;
+}
+.add_timeslot_wrapper .col-sm-3 .col-sm-8  {
+	width: 100px;
+	padding: 0;
+}
+.add_timeslot_wrapper > .col-sm-4 {
+	width: 380px;
+	padding: 0;
+	text-align: left;
+}
+.add_timeslot_wrapper .col-sm-2 {
+	width: 115px;
+	margin-right: 15px;
+    padding: 0;
+	float: right;
+}
+.add_timeslot_wrapper .timeslot_list label {
+	padding-top: 0;
+}
 /******** 6 - KNOWLEDGE BASE********/
 
 .knbase_box {
@@ -1720,6 +1771,7 @@ table, th {
 .panel-collapse .attach_block,
 .sett_block_wrap .attach_block {
 	width: 100%;
+	text-align: left;
 }
 .attach_block > span {
 	vertical-align: top;
@@ -1981,10 +2033,11 @@ a.desc:after {
 	height: 34px;
 	margin-bottom: 5px;
     padding: 6px 36px 6px 12px;
+	border: 1px solid #ccc;
     border-radius: 4px;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
-    border: 1px solid #ccc;
+	text-align: left;
     color: #777777;
 	background: url(../images/multiselect_bg.png) no-repeat right 2px top;
 }
@@ -2194,12 +2247,6 @@ a.desc:after {
 		display: block;
 		margin: 7px auto 0;
 	}
-	.venue-location-index .sett_block_wrap > span {
-		width: 66%;
-	}
-	.inner_collapse_sett_panel p {
-		width: 81%;
-	}
 	.image_list li {
 		max-width: 141px;
 	}
@@ -2305,17 +2352,21 @@ a.desc:after {
 	.settings_table td .chosen-container:first-of-type {
 		margin-bottom: 0;
 	}
-	.venue-location-index .sett_block_wrap > span {
-		width: 61%;
-	}
-	.inner_collapse_sett_panel p {
-		width: 78%;
-	}
 	.image_list li {
 		max-width: 120px;
 	}
-	.timeslot_list.list-inline li {
+	.timeslot_list.list-inline li label.checkbox-inline {
+		padding-left: 15px;
+	}
+	.timeslot_list.list-inline li input[type=checkbox] {
+		margin-left: -15px;
+	}
+	.add_timeslot_wrapper .col-sm-3 {
+		max-width: 160px;
 		padding: 0;
+	}
+	.add_timeslot_wrapper > .col-sm-4 {
+		width: 360px;
 	}
 }
 @media (max-width: 992px) {
@@ -2405,12 +2456,6 @@ a.desc:after {
 	.commissions label.col-md-4 {
 		min-width: 155px;
 	}
-	.venue-location-index .sett_block_wrap > span {
-		width: calc(100% - 308px);
-	}
-	.inner_collapse_sett_panel p {
-		width: calc(100% - 164px);
-	}
 	.inner_collapse_sett_panel + .col-md-6 {
 		margin-bottom: 20px;
 	}
@@ -2423,6 +2468,13 @@ a.desc:after {
 	}
 	.timeslot_list.list-inline li {
 		padding: 0 5px;
+	}
+	.add_timeslot_wrapper > .col-sm-4 {
+		width: 380px;
+		padding: 0 15px;
+	}
+	.add_timeslot_wrapper .col-sm-2 {
+		margin: -40px 15px 0 0;
 	}
 	/*==Knowledgebase==*/
 	.doc_table td:last-child  a,
@@ -2595,6 +2647,18 @@ a.desc:after {
 		max-width: 100%;
 		max-height: inherit;
 		margin-bottom: 15px;
+	}
+	.venue_location_top_settings  span {
+		width: 100%;
+		padding: 0 0 6px;
+	}
+	.add_timeslot_wrapper .col-sm-3 {
+		max-width: inherit;
+		/*max-width: 50%;
+		width: 50%;*/
+	}
+	.add_timeslot_wrapper .col-sm-3 .col-sm-8 {
+		display: inline-block;
 	}
 	/*==Knowledgebase==*/
 	.knbase_box,
@@ -2916,17 +2980,20 @@ a.desc:after {
 	.navigation_pos li:nth-child(3) {
 		margin-right: 0;
 	}
-	.venue-location-index .sett_block_wrap > span,
-	.inner_collapse_sett_panel p {
+	.venue_location_top_settings .pull-right {
+		width: 300px;
+		margin: 0 auto;
+		float: none !important;
+	}
+	.timeslot_list {
+		text-align: left;
+	}
+	.add_timeslot_wrapper > .col-sm-4 {
 		width: 100%;
-		margin-bottom: 12px;
+		clear: both;
 	}
-	.venue-location-index .sett_block_wrap a {
-		display: block;
-		margin-bottom: 5px;
-	}
-	.venue-location-index .sett_block_wrap button {
-		width: 49%;
+	.add_timeslot_wrapper .col-sm-2 {
+		margin: 0 15px 15px 0;
 	}
 	/*==Knowledgebase==*/
 	.top_panel > a:first-child,
@@ -2963,6 +3030,42 @@ a.desc:after {
 	}
 	.ms-drop {
 		text-align: left;
+	}
+	.multiselect_box .drop_bottom {
+		width: 255px;
+	}
+	.multiselect_box .drop_bottom label {
+		white-space: normal;
+	}
+}
+
+@media (max-width: 400px) {
+	.venue_location_top_settings .pull-right {
+		width: 256px;
+	}
+	.venue_location_top_settings .pull-right a {
+		width: 100%;
+		margin-bottom: 5px;
+	}
+	.venue_location_top_settings .pull-right button,
+	.inner_collapse_sett_panel .pull-right a,
+	.inner_collapse_sett_panel .pull-right button,
+	.custom_timeslot_wrapper .pull-right button {
+		width: 49%;
+	}
+	.inner_collapse_sett_panel p {
+		width: 100%;
+		padding: 0 0 6px;
+	}
+	.inner_collapse_sett_panel .pull-right,
+	.custom_timeslot_wrapper .pull-right {
+		width: 100%;
+	}
+	.add_timeslot_wrapper > .col-sm-4 {
+		text-align: left;
+	}
+	.add_timeslot_wrapper .col-sm-3:first-child  label {
+		padding-left: 0;
 	}
 }
 
