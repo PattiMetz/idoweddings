@@ -13,10 +13,12 @@ $(function() {
 	
 	$(document).on('ready pjax:end', function() {
 		$('select.chosen-style').chosen({disable_search_threshold: 10});
+		$('.custom_checkbox').styler({});
 	});
 
 	$( document ).ajaxComplete(function() {
 		$('select.chosen-style').chosen({disable_search_threshold: 10});
+		$('.custom_checkbox').styler({});
 	});
 	
 	$('body').on('click', '.modal-ajax', function(e) {
@@ -325,9 +327,6 @@ $(function() {
 			$(this).parent('tr').find('.arrows').hide();
 		});
 	});
-	
-	/*Styler plugin*/
-	jQuery('.custom_checkbox').styler ({});
 	
 	/* Top panel pseudo select */
 	$('.multiselect_box').click(function() {
