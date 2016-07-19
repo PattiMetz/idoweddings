@@ -326,6 +326,9 @@ $(function() {
 		});
 	});
 	
+	/*Styler plugin*/
+	jQuery('.custom_checkbox').styler ({});
+	
 	/* Top panel pseudo select */
 	$('.multiselect_box').click(function() {
 		$('.multiselect_box').find('.drop_bottom').hide();

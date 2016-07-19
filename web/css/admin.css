@@ -11,9 +11,10 @@
 10 - Sorting styles
 11 - Chosen plugin styles
 12 - Multiple-select plugin styles
-13 - Spectrum plugin styles
-14 - Combo tree styles
-15 - Other
+13 - Formstyler plugin
+14 - Spectrum plugin styles
+15 - Combo tree styles
+16 - Other
 */
 
 /******** 1 - Main styles********/
@@ -2081,7 +2082,31 @@ a.desc:after {
 	margin: 8px 0 0 -20px;
 }
 
-/******** 13 - Spectrum plugin styles********/
+/******** 13 - Formstyler plugin********/
+
+.custom_checkbox {
+	display: inline-block;
+	width: 60px;
+	height: 34px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background: url(../images/checkbox_off.png) no-repeat;
+	cursor: pointer;
+}
+.custom_checkbox.checked {
+	background: url(../images/checkbox_on.png) no-repeat;
+}
+.custom_checkbox.disabled {
+	background: url(../images/checkbox_off_dis.png) no-repeat;
+	cursor: default;
+}
+.custom_checkbox.on.disabled {
+	background: url(../images/checkbox_on_dis.png) no-repeat;
+	cursor: default;
+}
+
+/******** 14 - Spectrum plugin styles********/
 
 /*.settings_table select {
 	float:left;
@@ -2101,7 +2126,7 @@ a.desc:after {
 	display: none;
 }
 
-/********14 - Combo tree styles********/
+/********15 - Combo tree styles********/
 
 .textbox.combo {
 	display: block;
@@ -2174,7 +2199,7 @@ a.desc:after {
     background: url('images/tree_icons_2.png') no-repeat -224px 0;
 }
 
-/******** 15 - Other********/
+/******** 16 - Other********/
 
 .tabs li {
 	float:left;

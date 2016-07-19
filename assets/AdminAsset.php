@@ -20,6 +20,7 @@ class AdminAsset extends AssetBundle
     ];
     public $js = [
 	'js/jquery.nicescroll.min.js',
+	'js/jquery.formstyler.min.js',
 	'js/jquery.easyui.min.js',
 	'js/chosen.jquery.min.js',
 	'js/admin.js',
