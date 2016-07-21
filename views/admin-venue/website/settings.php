@@ -147,6 +147,7 @@ $this->registerJs("
 				</div>
             </div>    
             <div class="col-lg-6">
+
 				<div class="sett_block_wrap clearfix">
 					<p>Main Fonts and colors</p>
 					<?php $settings = $model->settings;?>

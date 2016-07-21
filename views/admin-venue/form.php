@@ -100,7 +100,6 @@ function add_phone(contact_id, key){
             ],
         ]); ?>
     <?php
-
 		echo Alert::widget([
 			'options' => [
 				'class' => 'alert-danger',
@@ -194,7 +193,7 @@ function add_phone(contact_id, key){
 						<?php echo Html::dropDownList('region_id', $region_id, $region->getList(),
 							[
 								'class'  => 'form-control chosen-style',
-								'prompt' => 'Region', 
+								'prompt' => 'Choose from regions', 
 								'onchange'=>'
 									var id = $(this).val();
 
@@ -207,7 +206,7 @@ function add_phone(contact_id, key){
 										$("#destination_id").html( data );
 										$("#destination_id").chosen({disable_search_threshold: 10});
 										$("#venue-location_id").chosen("destroy");
-										$("#venue-location_id").html("");
+										$("#venue-location_id").html("<option value=\'\'>Choose from locations</option>");
 										$("#venue-location_id").chosen({disable_search_threshold: 10});
 									}
 								})'
@@ -222,7 +221,7 @@ function add_phone(contact_id, key){
 							[
 								'id'=>'destination_id',
 								'class'  => 'form-control chosen-style',
-								'prompt' => 'Destination', 
+								'prompt' => 'Choose from destinations', 
 								'onchange'=>'
 									var id = $(this).val();
 									$.ajax({
@@ -240,7 +239,7 @@ function add_phone(contact_id, key){
 					</div>
 				</div>
 
-				<?php echo $form->field($model, 'location_id')->dropDownList($location_list,['class'  => 'form-control chosen-style', 'prompt' => 'Location']) ?>
+				<?php echo $form->field($model, 'location_id')->dropDownList($location_list,['class'  => 'form-control chosen-style', 'prompt' => 'Choose from locations']) ?>
 			
 				<?php echo $form->field($model, 'comment')->textarea(['rows' => 3]) ?>
 

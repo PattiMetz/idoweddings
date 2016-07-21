@@ -166,8 +166,8 @@ class AdminVenueController extends Controller
         }
         $fonts = Yii::$app->params['fonts'];
         $sizes = array();
-        for($i=10;$i<40;$i++) {
-            $sizes[] = $i;
+        for($i=10;$i<80;$i++) {
+            $sizes[$i] = $i;
             $i++;
         }
 

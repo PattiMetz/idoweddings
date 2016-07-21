@@ -158,7 +158,7 @@ use yii\bootstrap\Alert;
 				<?php echo $form->field($time, 'time_to')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time to']) ?>
 			</div>
 			<div class="col-sm-4">
-				<?php echo $form->field($stime, 'days',['template'=>'{input}'])->checkboxList($days,[
+				<?php echo $form->field($time, 'days',['template'=>'{input}'])->checkboxList($days,[
 				'tag'=>'li',
 				'separator'=>'</li><li>',
 				'item' =>

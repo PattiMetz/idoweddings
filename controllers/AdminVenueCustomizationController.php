@@ -25,53 +25,110 @@ class AdminVenueCustomizationController extends \yii\web\Controller
 
     public function actionIndex($id, $page_id = '')
     {
+        $alert = $message = '';
         $venue = Venue::findOne($id);
+
         $pages = ArrayHelper::map($venue->activepages, 'id', 'name');
+        //echo '<pre>';print_r($venue->activepages);
         $location_groups = array();
        //getting current page (default - main page)
+
+        
         if(!$page_id)
             $page = $venue->mainpage;
         else {
             $page = VenuePage::findOne($page_id);
           
         }
-        
-        $image  = new VenuePageImage();
+
         $settings = $page->venuepagesetting;
 
-        if ($page->type == 'locations') {
-            $location_groups = $venue->locationgroups;
-        }
+        /*if ($page->type == 'locations') {
+            $location_groups = ArrayHelper::map($venue->locationgroups, 'id', 'name');
+        }*/
 
         $post = Yii::$app->request->post();
         if ($post) {
             if ($settings->load($post)){
                 $settings->save();
             }
-            if ($files = UploadedFile::getInstances($image, 'file')) {
-                foreach ($files as $file) {
-                    @mkdir('uploads/venue/'.$venue->id.'/website/');
-                    @mkdir('uploads/venue/'.$venue->id.'/website/'.$page->type.'/');
-                    @mkdir('uploads/venue/'.$venue->id.'/website/'.$page->type.'/thumb');
-                    $baseName = str_replace(' ', '_', $file->basename);
-                    $file->saveAs('uploads/venue/'.$venue->id.'/website/'.$page->type.'/' . $baseName . '.' . $file->extension);
-                    $upload = new VenuePageImage();
-                    $upload->page_id = $page->id;
-                    $upload->image = $baseName. '.' . $file->extension;
-                    $upload->save();
-                    Image::thumbnail('uploads/venue/'.$venue->id.'/website/'.$page->type.'/' . $baseName . '.' . $file->extension, 240, 105)
-                    ->save(Yii::getAlias('uploads/venue/'.$venue->id.'/website/'.$page->type.'/thumb/' . $baseName . '.' . $file->extension), ['quality' => 80]);
-                }
-            } 
         }     
         return $this->render('/admin-venue/website/customization',[
             'pages'           => $pages,
             'page'            => $page,
             'venue'           => $venue,
             'images'          => $page->images,
-            'image'           => $image,
-            'location_groups' => $location_groups,
-            'settings'        => $settings
+           // 'location_groups' => $location_groups,
+            'settings'        => $settings,
+            'alert'           => $alert,
+            'message'         => $message
+        ]);
+    }
+
+    function actionUpdateSetting($page_id){
+        $page = VenuePage::findOne($page_id);
+        $post = Yii::$app->request->post();
+        if ($post) {
+            $page->venuepagesetting->default_slideshow = $post['default_slideshow'];
+            $page->venuepagesetting->save();
+        }  
+    }
+
+    function actionFilesUpload($page_id) {
+
+        $alert = '';
+        $errors = [];
+        $list = [];
+        $files = UploadedFile::getInstancesByName('files');
+        if (Yii::$app->request->isPost) {
+            if (!count($files)) {
+                if ($_SERVER['CONTENT_LENGTH']) {
+                    $alert = 'Content-Length exceeds the limit';
+                }
+
+            } else {
+
+                foreach ($files as $file) {
+                    $model = new VenuePageImage();
+                    $model->page_id = $page_id;
+                    $model->image = $file->name;
+                    $model->file = $file;
+                 
+                    $transaction = Yii::$app->db->beginTransaction();
+                    if ($model->save() && $model->fileSaved) {
+                            $list[$model->id] = $model->id.'.'.$file->extension;
+                        $transaction->commit();
+                    } else {
+                       
+                        $errors = $model->getErrors();
+                        
+                        $transaction->rollBack();
+                    }
+        
+                }
+
+            }
+
+            Yii::$app->response->format = Response::FORMAT_JSON;
+
+            return compact(
+                'alert',
+                'errors',
+                'list'
+            );
+
+        }
+
+    }
+
+    public function actionPreviewTemplate($page_id, $top_type = '') {
+        
+        $model = VenuePage::findOne($page_id);
+        /*if($top_type!='')
+            $model->venuepagesetting->top_type = $top_type;*/
+        $venue = Venue::findOne($model->venue_id);
+        return $this->renderAjax('/admin-venue/website/template', [
+            'model' => $model,
         ]);
     }
 

@@ -13,6 +13,7 @@ $(function() {
 	
 	$(document).on('ready pjax:end', function() {
 		$('select.chosen-style').chosen({disable_search_threshold: 10});
+		
 	});
 
 	$( document ).ajaxComplete(function() {
@@ -324,21 +325,9 @@ $(function() {
 		}, function() {
 			$(this).parent('tr').find('.arrows').hide();
 		});
+
 	});
 	
-	/* Top panel pseudo select */
-	$('.multiselect_box').click(function() {
-		$('.multiselect_box').find('.drop_bottom').hide();
-		$(this).find('.drop_bottom').show();
-	});
-	$(document).mouseup(function (e){
-		var elem = $(".drop_bottom");
-		var winWidth = $(window).width();
-		if (!elem.is(e.target)
-			&& elem.has(e.target).length === 0) {
-			elem.hide();
-		}
-	});
 	$('.multiselect_box label').change(function() {
 		if( $(this).hasClass('active') ) {
 			$(this).removeClass('active');

@@ -57,21 +57,21 @@ $days = array('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
 							<div class="text-center">
 								<ul class="timeslot_list list-inline">
 									<?php echo Html::checkboxList('days_array',$stime->days_array, $days,[
-										'tag'=>'li',
-										'separator'=>'</li><li>',
-										'item' =>
-							                function ($index, $label, $name, $checked, $value) {
-							                    return Html::checkbox($name, $checked, [
-										                        'value' => $value,
-										                        'disabled'=>'disabled',
-										                        'label' => '<label for="' . $label . '">' . $label . '</label>',
-										                        'labelOptions' => [
-										                            'class' => 'checkbox-inline',
-										                        ],
-										                        //'id' => $label,
-										                    ]);
-							                }]) ?>
-									</ul>
+									'tag'=>'li',
+									'separator'=>'</li><li>',
+									'item' =>
+						                function ($index, $label, $name, $checked, $value) {
+						                    return Html::checkbox($name, $checked, [
+									                        'value' => $value,
+									                        'disabled'=>'disabled',
+									                        'label' => '<label for="' . $label . '">' . $label . '</label>',
+									                        'labelOptions' => [
+									                            'class' => 'checkbox-inline',
+									                        ],
+									                        //'id' => $label,
+									                    ]);
+						                }]) ?>
+								</ul>
 							</div>	
 						<?php }
 					}?>

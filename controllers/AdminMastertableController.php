@@ -265,7 +265,7 @@ class AdminMastertableController extends Controller {
 		$destination = new Destination();
 		$data = $destination->getList($region_id);
 		$html = '';
-        $html .= "<option value=''>Destination</option>";
+        $html .= "<option value=''>Choose from destinations</option>";
 		if($data) {
 			foreach($data as $k=>$v) {
 				$html .= "<option value='".$k."'>".$v."</option>";
@@ -281,7 +281,7 @@ class AdminMastertableController extends Controller {
         $location = new Location();
         $data = $location->getList($destination_id);
         $html = '';
-        $html .= "<option value=''>Location</option>";
+        $html .= "<option value=''>Choose from locations</option>";
         if($data) {
             foreach($data as $k=>$v) {
                 $html .= "<option value='".$k."'>".$v."</option>";
