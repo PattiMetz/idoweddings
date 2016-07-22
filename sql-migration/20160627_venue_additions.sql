@@ -159,7 +159,7 @@ INSERT INTO `venue_tax` (`venue_id`, `tax`, `service_rate`, `our_service_rate`, 
 (206, 0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, '0'),
 (207, 0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, '0'),
 (208, 0, 0, 0, 0, '', 1, 0, 0, 0, 0, 0, 0, '0'),
-(209, 0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, '0'),
+(209, 0, 0, 0, 0, '', 0, 0, 0, 0, 0, 0, 0, '0');
 
 -- --------------------------------------------------------
 
@@ -177,6 +177,13 @@ CREATE TABLE IF NOT EXISTS `venue_website` (
   `navigation_pos` int(11) NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
+--
+-- Дамп данных таблицы `venue_website`
+--
+
+INSERT INTO `venue_website` (`id`, `venue_id`, `url`, `font_settings`, `logo_type`, `logo`, `navigation_pos`) VALUES
+(1, 96, 'sunscape_the_beach', 'a:7:{s:5:"title";a:3:{s:4:"font";s:1:"0";s:4:"size";s:1:"4";s:5:"color";s:7:"#fce5cd";}s:8:"subtitle";a:3:{s:4:"font";s:0:"";s:4:"size";s:0:"";s:5:"color";s:7:"#f6b26b";}s:7:"content";a:3:{s:4:"font";s:0:"";s:4:"size";s:0:"";s:5:"color";s:7:"#ff0000";}s:4:"menu";a:3:{s:4:"font";s:0:"";s:4:"size";s:0:"";s:5:"color";s:0:"";}s:7:"submenu";a:3:{s:4:"font";s:0:"";s:4:"size";s:0:"";s:5:"color";s:0:"";}s:6:"button";a:4:{s:4:"font";s:0:"";s:4:"size";s:0:"";s:5:"color";s:0:"";s:10:"background";s:0:"";}s:4:"name";a:3:{s:4:"font";s:0:"";s:4:"size";s:0:"";s:5:"color";s:0:"";}}', 1, '', 1),
+(2, 210, 'newvenue', '', 0, '', 0);
 
 --
 -- Индексы сохранённых таблиц
