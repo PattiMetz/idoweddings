@@ -59,9 +59,6 @@ CREATE TABLE IF NOT EXISTS `venue_location_group` (
 -- Дамп данных таблицы `venue_location_group`
 --
 
-INSERT INTO `venue_location_group` (`id`, `venue_id`, `name`, `one_event`) VALUES
-(1, 210, 'group', '0'),
-(3, 210, 'group2', '1');
 
 -- --------------------------------------------------------
 
