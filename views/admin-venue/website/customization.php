@@ -85,76 +85,83 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php echo $form->field($settings, 'text2', ['template'=>'{input}'])->hiddenInput();?>
 <div class="col-sm-12">
 	<div class="col-sm-2">
-		<?php echo Html::dropDownList('page', $page->id, $pages,['class'  => 'form-control chosen-style','id'=>'page']);?>
-		<div class="list_wrap">
-			<p>Venue Sunscape the Beach Customization </p>
-			<?php echo $form->field($settings,'top_type',['template'=>'{input}'])->radioList(['image'=>'image','slideshow'=>'slideshow','video'=>'video','none'=>'none'],['id'=>'top']);?>
-		</div>
-
-		<div class="image_block top_block">
-			<?php if(isset($images) && count($images)>0) {?> 
-				<ul class="images">
-					<?php foreach ($images as $simage) {?>
-					<li>
-						<?php echo Html::img(Yii::getAlias('@web')."/uploads/venue/".$venue->id."/website/".$page->type."/thumb/".$simage->id.'.'.end(explode('.', $simage->image)))?>
-						
-						<?php echo Html::button('Choose image from Media Gallery', ['class'=>'btn btn-primary']);?>
-					</li>
-					<?php break;?>
-					<?php }?>
-				</ul>
-			<?php } else {?>
-				<img src="/images/noimage.png"/>
-			<?php }?>
-		</div>
-
-		<div class="slideshow_block top_block">
-			<div><?php echo Html::button('Add slide', ['class'=>'add_slide']);?></div>
-			<ul class="images">
-			<?php $k = 1;?>	
-			<?php if(isset($images) && count($images)>0) {?> 
-					<?php foreach ($images as $simage) {?>
-					<li>
-						<span>Slide <?php echo $k++?></span><?php echo Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-image", 'id'=>$simage->id])],['class'=>'modal-ajax'])?>
-						<?php echo Html::img(Yii::getAlias('@web')."/uploads/venue/".$venue->id."/website/".$page->type."/thumb/".$simage->id.'.'.end(explode('.', $simage->image)))?>
-						<?php echo Html::button('Choose image from Media Gallery', ['class'=>'btn btn-primary']);?>
-					</li>
-					<?php }?>
-				
-			<?php }?>
-			<?php //Default slideshow images
-				$c = explode(',', $settings->default_slideshow);
-				if(count($c) > 0) {
-					foreach($c as $i) {?>
-					<li data-id="<?php echo $i?>">
-						<span>Slide <?php echo $k++?></span><?php echo Html::a('delete','#', ['class' => 'delete-default'])?>
-						<?php echo Html::img(Yii::getAlias('@web')."/images/venue/default/thumb/venue_top".$i.".jpg")?>
-						<?php echo Html::button('Choose image from Media Gallery', ['class'=>'btn btn-primary']);?>
-					</li>
-				<?php }
-			}?>
-			<!--h3>Upload Files.</h3-->
-			</ul>
-		</div>
-
-		<?php /*** Временный блок для загрузки файлов. Уберется, когда будет готова media gallery****/?>
-		<div class="upload_block top_block">
-			<span>Recommended image size: <span>Height: <?php echo Yii::$app->params['slide']['height']?>px;</span> <span>Width: <?php echo Yii::$app->params['slide']['width']?>px;</span>
-			<div class="attach_block" style="width:250px;float:left">
-				<a class="btn btn-danger" href="#">Attach file</a>
-				<input type="file" id="files-select" name="files[]" size="20" multiple />
+		<div class="customization">
+			<?php echo Html::dropDownList('page', $page->id, $pages,['class'  => 'form-control chosen-style','id'=>'page']);?>
+			<div class="list_wrap">
+				<p>Top background </p>
+				<?php echo $form->field($settings,'top_type',['template'=>'{input}'])->radioList(['image'=>'image','slideshow'=>'slideshow','video'=>'video','none'=>'none'],['id'=>'top']);?>
 			</div>
-		</div>
 
-		<div class="video_block top_block">
-			<?php echo $form->field($settings, 'video')->textInput();?>
-		</div>
-		<div class="locations">
-			<?php foreach($venue->locationgroups as $group) {
-				echo Html::checkbox('location_group', ['label' => $group->name]);
-				echo $form->field($page, 'locations_array', ['template'=>"{input}{hint}\n\t{error}"])->checkBoxList(ArrayHelper::map($group->locations, 'id', 'name'));
-			}?>
-			
+			<div class="image_block top_block">
+				<?php if(isset($images) && count($images)>0) {?> 
+					<ul class="images">
+						<?php foreach ($images as $simage) {?>
+						<li>
+							<?php echo Html::img(Yii::getAlias('@web')."/uploads/venue/".$venue->id."/website/".$page->type."/thumb/".$simage->id.'.'.end(explode('.', $simage->image)))?>
+							
+							<?php echo Html::button('Choose image from Media Gallery', ['class'=>'btn btn-primary']);?>
+						</li>
+						<?php break;?>
+						<?php }?>
+					</ul>
+				<?php } else {?>
+					<img src="/images/noimage.png"/>
+				<?php }?>
+			</div>
+
+			<div class="slideshow_block top_block">
+				<div><?php echo Html::button('Add slide', ['class'=>'add_slide']);?></div>
+				<ul class="images">
+				<?php $k = 1;?>	
+				<?php if(isset($images) && count($images)>0) {?> 
+						<?php foreach ($images as $simage) {?>
+						<li>
+							<span>Slide <?php echo $k++?></span><?php echo Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-image", 'id'=>$simage->id])],['class'=>'modal-ajax'])?>
+							<?php echo Html::img(Yii::getAlias('@web')."/uploads/venue/".$venue->id."/website/".$page->type."/thumb/".$simage->id.'.'.end(explode('.', $simage->image)))?>
+							<?php echo Html::button('Choose image from Media Gallery', ['class'=>'btn btn-primary']);?>
+						</li>
+						<?php }?>
+					
+				<?php }?>
+				<?php //Default slideshow images
+					$c = explode(',', $settings->default_slideshow);
+					if(count($c) > 0) {
+						foreach($c as $i) {?>
+						<li data-id="<?php echo $i?>">
+							<span>Slide <?php echo $k++?></span><?php echo Html::a('delete','#', ['class' => 'delete-default'])?>
+							<?php echo Html::img(Yii::getAlias('@web')."/images/venue/default/thumb/venue_top".$i.".jpg")?>
+							<?php echo Html::button('Choose image from Media Gallery', ['class'=>'btn btn-primary']);?>
+						</li>
+					<?php }
+				}?>
+				<!--h3>Upload Files.</h3-->
+				</ul>
+			</div>
+
+			<?php /*** Временный блок для загрузки файлов. Уберется, когда будет готова media gallery****/?>
+			<div class="upload_block top_block">
+				<span>Recommended image size: <span>Height: <?php echo Yii::$app->params['slide']['height']?>px;</span> <span>Width: <?php echo Yii::$app->params['slide']['width']?>px;</span>
+				<div class="attach_block" style="width:250px;float:left">
+					<a class="btn btn-danger" href="#">Attach file</a>
+					<input type="file" id="files-select" name="files[]" size="20" multiple />
+				</div>
+			</div>
+
+			<div class="video_block top_block">
+				<?php echo $form->field($settings, 'video')->textInput();?>
+			</div>
+			<?php if($page->type == 'locations') {?>
+				<div class="locations">
+					<div class="list_wrap">
+						<p>Display locations </p>
+						<?php foreach($venue->locationgroups as $group) {
+							$locations = ArrayHelper::map($group->locations, 'id', 'name');
+							echo Html::checkbox('location_group', (array_intersect($page->locations_array, ArrayHelper::map($group->locations, 'id', 'id'))?true:false), ['label' => $group->name,'class'=>'select_all']);
+							echo $form->field($page, 'locations_array',['template'=>"{input}{hint}\n\t{error}"])->checkBoxList($locations, ['unselect' => null, 'class' => 'locations']);
+						}?>
+					</div>
+				</div>
+			<?php }?>
 		</div>
 	</div>
 	<div class="col-sm-10">
@@ -169,6 +176,15 @@ $upload_url = Url::to(['admin-venue-customization/files-upload', 'page_id' => $p
 $delete_url = Url::to(['admin-venue-customization/files-delete']);
 
 $js = <<<EOT
+	$(document).on('ready pjax:end', function() {
+		$('.locations input[type=checkbox]').change(function(){
+			if($(this).closest('.locations').find('input[type=checkbox]:checked').length == 0)
+				$(this).closest('.locations').parent().prev().find('input[type=checkbox]').prop('checked', false);
+			else
+				$(this).closest('.locations').parent().prev().find('input[type=checkbox]').prop('checked', true);
+		})
+	});
+
 	var xhr;
 
 	$('#files-select').on('change', function() {

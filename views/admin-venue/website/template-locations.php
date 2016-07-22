@@ -59,7 +59,7 @@ use yii\helpers\Url;
 				color:<?php echo $model->venue->website->settings['button']['background']?>;
 				border:3px solid <?php echo $model->venue->website->settings['button']['background']?>;
 			}
-			.animate_btn i:before{
+			.animate_btn .glyphicon:before{
 				color:<?php echo $model->venue->website->settings['button']['background']?>;
 			}
 			.animate_btn:hover{
@@ -92,40 +92,7 @@ use yii\helpers\Url;
 	<body class="venue_page<?php if($model->venuepagesetting->top_type == 'none') {echo " type_3";}?>">
 		<div class="main_wrapper">
 			<header>
-				<div class="header_sm">
-					<nav class="navbar_sm">
-						<div class="mob_btn"></div>
-						<ul class="gen_menu">
-							<li class="sublist">
-								<a href="#">Locations</a>
-								<ul class="sub_menu">
-									<li class="secsublist">
-										<a href="#">Wedding Locations</a>
-										<ul class="secsub_menu">
-											<li><a href="venue_location.html">Beach</a></li>
-											<li><a href="venue_location.html">Gazebo</a></li>
-											<li><a href="venue_location.html">Garden</a></li>
-										</ul>
-									</li>
-									<li><a href="#">Reception Locations</a></li>
-								</ul>
-							</li>
-							<li><a href="#">Availability</a></li>
-							<li><a href="#">Wedding packages</a></li>
-							<li><a href="#">Wedding items</a></li>
-							<li><a href="#">Food & Beverages</a></li>
-							<li class="sublist">
-								<a href="#">Gallery</a>
-								<ul class="sub_menu">
-									<li><a href="#">Wedding Themes</a></li>
-									<li><a href="#">Cake Gallery</a></li>
-									<li><a href="#">Flower Gallery</a></li>
-								</ul>
-							</li>
-							<li><a href="#">FAQ's</a></li>
-						</ul>
-					</nav>
-				</div>
+				<?php echo $this->render('menu', ['pages' => $venue->pages]);?>
 			</header>
 			<section class="topimg_block">
 				<?php if($model->venuepagesetting->top_type != 'none') {?>
@@ -147,7 +114,7 @@ use yii\helpers\Url;
 									<a href="#" class="animate_btn">
 										<i class="glyphicon glyphicon-heart"></i>
 										<div class="text_editor">
-											<span contenteditable id="button">Let's Say "I Do" Here</span>
+											<i class="edit_btn"></i><span contenteditable="" id="button">Let's Say "I Do" Here</span>
 										</div>
 									</a>
 							</div>
@@ -203,37 +170,75 @@ use yii\helpers\Url;
 				<?php }?>		
 			</section>
 			<section class="content_block">
+				<div class="menu_panel bg_col">
+					<?php $groups = $model->getGroups();?>
+					<ul class="list-inline default_list">
+						<?php foreach($groups as $group) {?>
+							
+							<?php $active_group = isset($active_group)?$active_group:$group;?>
+							<li><a class="ellipse <?php if($group->id == $active_group->id){?> active<?php }?>" data-id="<?php echo $group->id;?>"><?php echo $group->name?></a></li>
+						<?php }?>
+					</ul>
+				</div>
+				<div class="submenu_panel">
+					<?php foreach($groups as $group) {?>
+						<ul class="list-inline default_list group_<?php echo $group->id;?> group_location" <?php if($group->id != $active_group->id){?>style="display:none"<?php }?>>
+							<?php foreach($group->locations as $k => $location) {?>
+								<li><a href="#block_<?php echo $location->id?>" id="link_to1" class="ellipse <?php if($k==0){?>active<?php }?> aa"><?php echo $location->name?></a></li>
+								<?php $active_location = isset($active_location)?$active_location:$location;?>
+							<?php }?>
+						</ul>
+					<?php }?>
+				</div>
 				<div class="container">
 					<div class="row">
-						<div class="clearfix">
-							<div class="col-md-12">
-								<div class="text_editor">
-									<a class="edit_btn"></a>
-									<h1 contenteditable id="h1"><?php echo $model->venuepagesetting->h1?></h1>
+						<?php foreach($groups as $group) {?>
+							<?php foreach($group->locations as $location){?>
+								<div id="block_<?php echo $location->id?>" class="loc_box <?php if($location->id == $active_location->id) {?>active<?php }?>">
+									<div class="col-md-12 inner_wrap clearfix">
+										<?php if($location->images) {?>
+											<div class="col-md-6">
+												<div class="carousel_wrapper">
+													<div id="carousel-example-generic2" class="carousel slide content-carousel" data-ride="carousel" data-interval="5000">
+														<div class="carousel-inner" role="listbox">
+															<?php $upload_dir = "/uploads/venue/".$active_group->venue_id."/location";?>
+															<?php foreach($location->images as $k=>$image) {?>
+																<div class="item <?php if($k==0){?>active<?php }?>">
+																	<img src="<?php echo $upload_dir.'/'.$image->id.'.'.end(explode('.', $image->image))?>" alt="img1">
+																	<div class="carousel-caption"></div>
+																</div>
+															<?php }?>
+														</div>
+														<a class="left carousel-control" href="#carousel-example-generic2" role="button" data-slide="prev">
+															<div class="glyphicon glyphicon-chevron-left" aria-hidden="true"></div>
+															<span class="sr-only">Previous</span>
+														</a>
+														<a class="right carousel-control" href="#carousel-example-generic2" role="button" data-slide="next">
+															<div class="glyphicon glyphicon-chevron-right" aria-hidden="true"></div>
+															<span class="sr-only">Next</span>
+														</a>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-6">
+										<?php } else {?>
+											<div class="col-md-8 col-md-offset-2 inner_wrap clearfix">
+										<?php }?>
+										
+											<h2><?php echo $location->name?></h2>
+											<h3>Guest capacity - <?php echo $active_location->guest_capacity?></h3>
+											<div class="block_margin35"></div>
+											<?php echo $location->description?>
+										</div>
+									</div>
 								</div>
-								<div class="block_margin10"></div>
-								<div class="text_editor">
-									<a class="edit_btn"></a>
-									<h2 contenteditable id="h2"><?php echo $model->venuepagesetting->h2?></h2>
-								</div>
-								<div class="block_margin10"></div>
-							</div>
-						</div>
-						<div class="content_left clearfix">
-							<div class="col-md-6">
-								<div class="text_editor">
-									<a class="edit_btn"></a>
-									<p contenteditable id="text1"><?php echo $model->venuepagesetting->text1?>
-									</p>
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="text_editor">
-									<a class="edit_btn"></a>
-									<p contenteditable id="text2"><?php echo $model->venuepagesetting->text2?>
-									</p>
-								</div>
-							</div>
+								
+								
+							<?php }?>
+						<?php }?>
+						<div class="col-md-12">
+							<p><a href="#">View availability calendar for this location</a></p>
+							<div class="block_margin10"></div>
 						</div>
 					</div>
 				</div>

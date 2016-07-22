@@ -9,29 +9,33 @@ use app\models\venue\VenueLocationGroup;
 ?>
 
 <div class="sett_block_wrap">
-	<span><?php echo ucfirst($model->name)?>
-		<?php if($model->one_event){?>
-			<div class="btn" style="float:right;background-color:#ece1df;color:#ae8082;border-radius:5px;border:solid 1px #e2d4d4;margin-top:-5px">Only one event per time slot</div>
-		<?php }?>
-	</span>
-	<?php
-		echo Html::a('Add location', [
-			Url::to(['/admin/venue-location/location', 'group_id' => $model->id])],
-			['class' => 'btn btn-danger', 'data-pjax'=>0]
-		);
-	?>
-	<?php
-		echo Html::button('<i class="glyphicon glyphicon-pencil"></i> Rename', [
-			'value' => Url::to(['/admin/venue-location/group', 'id' => $model->id]),
-			'class' => 'btn btn-primary modal-ajax'
-		]);
-	?>
-	<?php
-		echo Html::button('<i class="glyphicon glyphicon-close"></i> Delete', [
-			'value' => Url::to(['/admin/venue-location/group-delete', 'id' => $model->id]),
-			'class' => 'btn btn-primary  modal-ajax'
-		]);
-	?>
+	<div class="venue_location_top_settings clearfix">
+		<span><?php echo ucfirst($model->name)?>
+			<?php if($model->one_event){?>
+				<div class="btn" style="float:right;background-color:#ece1df;color:#ae8082;border-radius:5px;border:solid 1px #e2d4d4;margin-top:-5px">Only one event per time slot</div>
+			<?php }?>
+		</span>
+		<div class="pull-right">
+			<?php
+				echo Html::a('Add location', [
+					Url::to(['/admin/venue-location/location', 'group_id' => $model->id])],
+					['class' => 'btn btn-danger', 'data-pjax'=>0]
+				);
+			?>
+			<?php
+				echo Html::button('<i class="glyphicon glyphicon-pencil"></i> Rename', [
+					'value' => Url::to(['/admin/venue-location/group', 'id' => $model->id]),
+					'class' => 'btn btn-primary modal-ajax'
+				]);
+			?>
+			<?php
+				echo Html::button('<i class="glyphicon glyphicon-close"></i> Delete', [
+					'value' => Url::to(['/admin/venue-location/group-delete', 'id' => $model->id]),
+					'class' => 'btn btn-primary  modal-ajax'
+				]);
+			?>
+		</div>
+	</div>
 	
 	<div class="panel-group" id="accordion">
 		

@@ -24,7 +24,7 @@ $('.add_contact').click(function(){
     $('.add_contact_form').each(function(){
     	if($(this).css('display')=='none') {
     		$(this).show();
-    		exit();
+    		exit;
     	}
     })
     //$(this).hide();
@@ -362,7 +362,7 @@ function add_phone(contact_id, key){
 											<?php echo Html::dropDownList('VenueContact['.$key.'][phones][0][type]', '', ['General', 'Mobile', 'Fax', 'What\'s App'], ['class'  => 'form-control chosen-style']);?>
 										</div>
 										<div class="col-sm-6">		 
-											<?php echo Html::textInput('VenueContact['.$key.'][phones][0][phone]', '', ['class'  => 'form-control chosen-style']);?>
+											<?php echo Html::textInput('VenueContact['.$key.'][phones][0][phone]', '', ['class'  => 'form-control']);?>
 										</div>
 									</div>
 

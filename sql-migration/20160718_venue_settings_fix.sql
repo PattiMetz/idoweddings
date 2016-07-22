@@ -1,0 +1,1 @@
+ALTER TABLE `venue_page_setting` ADD `default_slideshow` VARCHAR(10) NULL ;

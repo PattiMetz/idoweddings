@@ -40,9 +40,7 @@ class AdminKnowledgebasesController extends Controller {
 //				],
 				'rules' => [
 					[
-						'actions' => ['index', 'update', 'delete', 'entries', 'categories-update', 'categories-delete', 'categories-tree', 'articles-update', 'articles-delete', 'entries-reorder', 'entries-files-upload', 'entries-files-download'],
 						'allow' => true,
-						'roles' => ['@'],
 					],
 				],
 			],
