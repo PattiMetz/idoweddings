@@ -38,10 +38,6 @@ CREATE TABLE IF NOT EXISTS `venue_location` (
 -- Дамп данных таблицы `venue_location`
 --
 
-INSERT INTO `venue_location` (`id`, `group_id`, `name`, `guest_capacity`, `description`) VALUES
-(2, 1, 'Location1', 100, 'description'),
-(3, 3, 'Name', 100, 'test description');
-
 -- --------------------------------------------------------
 
 --
@@ -76,9 +72,6 @@ CREATE TABLE IF NOT EXISTS `venue_location_image` (
 -- Дамп данных таблицы `venue_location_image`
 --
 
-INSERT INTO `venue_location_image` (`location_id`, `image`, `id`) VALUES
-(3, 'paris.jpg', 9);
-
 -- --------------------------------------------------------
 
 --
@@ -96,11 +89,6 @@ CREATE TABLE IF NOT EXISTS `venue_location_time` (
 -- Дамп данных таблицы `venue_location_time`
 --
 
-INSERT INTO `venue_location_time` (`location_id`, `time_from`, `time_to`, `days`) VALUES
-(2, '10', '13', 'a:5:{i:0;s:1:"0";i:1;s:1:"1";i:2;s:1:"2";i:3;s:1:"3";i:4;s:1:"4";}'),
-(3, '10 AM', '1', 'a:5:{i:0;s:1:"0";i:1;s:1:"1";i:2;s:1:"2";i:3;s:1:"3";i:4;s:1:"4";}'),
-(3, '9 AM', '11', 'a:3:{i:0;s:1:"0";i:1;s:1:"5";i:2;s:1:"6";}'),
-(3, '3 PM', '5 PM', 'a:2:{i:0;s:1:"5";i:1;s:1:"6";}');
 
 --
 -- Индексы сохранённых таблиц
