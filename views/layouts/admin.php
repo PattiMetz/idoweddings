@@ -113,7 +113,9 @@ Modal::end();
 			<li class="item_15"><a href="#">Our Profile</a></li>
 			<li class="item_16"><a href="#">Our Packages</a></li>
 			<li class="item_17"><a href="#">Our Items</a></li>
-			<li class="item_18 <?php echo (Yii::$app->controller->id == 'admin-user-manager') ? 'active' : ''; ?>"><a href="<?php echo Url::to(['admin-user-manager/index']); ?>">User Manager</a></li>
+			<?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->hasPrivilegeByName('usermanager')): ?>
+				<li class="item_18 <?php echo (Yii::$app->controller->id == 'admin-user-manager') ? 'active' : ''; ?>"><a href="<?php echo Url::to(['admin-user-manager/index']); ?>">User Manager</a></li>
+			<?php endif; ?>
 			<li class="item_19 <?php echo (Yii::$app->controller->id == 'admin-mastertable') ? 'active' : ''; ?>"><a href="<?php echo Url::to(['admin-mastertable/index']); ?>">Mastertable</a></li>
 		</ul>
 	</div>
@@ -124,15 +126,23 @@ Modal::end();
 					<div class="col-md-12 clearfix">
 						<div class="col-md-6 col-sm-6 col-xs-12 clearfix">
 							<div class="admin_info">
-								<span>WOMI</span>
-								<span>Admin</span>
-								<span id="pos_name">Patti Metzger</span>
+								<?php if (Yii::$app->user->isGuest): ?>
+									<span>Guest</span>
+								<?php else: ?>
+									<span>&lt;COMPANY&gt;</span>
+									<span>&lt;ROLE&gt;</span>
+									<span id="pos_name"><?php echo Html::encode(Yii::$app->user->identity->display_name); ?></span>
+								<?php endif; ?>
 							</div>
 							<nav class="navbar clearfix">
 								<ul class="nav">
 									<li><a href="#">Support</a></li>
-									<li><a href="#">My account</a></li>
-									<li><a href="#">Log Out</a></li>
+									<?php if (Yii::$app->user->isGuest): ?>
+										<li><a href="<?php echo Url::to(Yii::$app->user->loginUrl); ?>">Login</a></li>
+									<?php else: ?>
+										<li><a href="#">My account</a></li>
+										<li><a href="<?php echo Url::to(['admin/logout']); ?>" data-method="post">Log Out</a></li>
+									<?php endif; ?>
 								</ul>
 								<a class="mob_btn clicked"></a>
 							</nav>

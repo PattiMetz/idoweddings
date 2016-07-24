@@ -17,6 +17,7 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+            'loginUrl' => ['admin/login'],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -38,6 +39,9 @@ $config = [
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
+        'session' => [
+            'class' => 'yii\web\DbSession',
+        ],
         'urlManager' => [
             'baseUrl' => '',
             'enablePrettyUrl' => true,
