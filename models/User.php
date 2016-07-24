@@ -207,4 +207,9 @@ class User extends ActiveRecord implements IdentityInterface {
 	return in_array($name, $this->getPrivilegesNames());
     }
 
+    public function getOrganization()
+    {
+	return $this->hasOne(Organization::className(), ['id' => 'organization_id']);
+    }
+
 }
