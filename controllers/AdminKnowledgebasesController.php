@@ -162,7 +162,7 @@ class AdminKnowledgebasesController extends Controller {
 
 					$alert = 'Knowledge base not deleted';
 
-					$transaction = rollback();
+					$transaction->rollback();
 
 					break;
 
