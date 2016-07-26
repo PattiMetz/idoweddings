@@ -110,7 +110,7 @@ Modal::end();
 			<li class="item_12"><a href="#">Agencies</a></li>
 			<li class="item_13 <?php echo (Yii::$app->controller->id == 'admin-knowledgebases') ? 'active' : ''; ?>"><a href="<?php echo Url::to(['admin-knowledgebases/index']); ?>">Knowledge Base</a></li>
 			<li class="item_14"><a href="#">Reports</a></li>
-			<li class="item_15"><a href="#">Our Profile</a></li>
+			<li class="item_15"><a href="<?= Url::to(['admin-maincompany/update']) ?>">Our Profile</a></li>
 			<li class="item_16"><a href="#">Our Packages</a></li>
 			<li class="item_17"><a href="#">Our Items</a></li>
 			<?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->hasPrivilegeByName('usermanager')): ?>

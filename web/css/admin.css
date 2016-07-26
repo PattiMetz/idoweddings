@@ -1705,6 +1705,18 @@ table, th {
 	border-left: none;
 	box-shadow: none;
 }*/
+
+/*our profile main company*/
+.main-company-form {
+	padding-top: 20px;
+}
+.main-company-form .title, .main-company-form .num_users{
+	padding-left: 10%;
+}
+.main-company-form .num_users{
+	margin: 14px 0;
+}
+
 .editor_block {
 	padding: 15px;
 	border-top: 1px solid #e5e5e5;
