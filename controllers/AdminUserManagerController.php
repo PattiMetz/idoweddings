@@ -257,8 +257,13 @@ class AdminUserManagerController extends Controller {
 
 		}
 
+		$dataProvider = new ArrayDataProvider([
+			'allModels' => $model->privilegesTreeInfo['flat_tree']
+		]);
+
 		return $this->renderAjax('role-update', compact(
-			'model'
+			'model',
+			'dataProvider'
 		));
 
 	}
@@ -304,8 +309,8 @@ class AdminUserManagerController extends Controller {
 		]);
 
 		return $this->renderAjax('role-view', compact(
-			'dataProvider',
 			'model',
+			'dataProvider',
 			'organizationTypes'
 		));
 

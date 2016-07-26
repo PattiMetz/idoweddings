@@ -2,6 +2,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
+use yii\grid\GridView;
 ?>
 <?php
 
@@ -41,27 +42,10 @@ echo Alert::widget([
 
 <?php echo $form->field($model, 'display_name')->textInput(); ?>
 
-<?php #var_dump($model->privilege_ids); ?>
-
-<?php #echo $form->field($model, 'privilege_ids')->dropDownList(range(1, 5), ['multiple' => 'multiple']); ?>
-
-<!--tr class="child_line">
-	<td>Add edit delete knowledge base</td>
-	<td>
-		<div class="form-inline clearfix">
-			<div class="input-group">
-				<span class="input-group-addon dis"></span>	
-				<div class="input-group-btn">
-					<button type="button" class="btn btn-default sel_btn">Off</button>
-				</div>
-			</div>
-		</div>
-	</td>
-</tr-->
 
 <?php echo $form->field($model, 'privilege_ids')->begin(); ?>
 
-<div id="tab_wrap">
+<!--div id="tab_wrap">
 	<div class="table-responsive">
 		<table class="table table-bordered table-condensed scrolling_table">
 			<thead>
@@ -118,6 +102,53 @@ echo Alert::widget([
 			</tbody>
 		</table>
 	</div>
+</div-->
+
+<p>Privileges</p>
+
+<div class="table-responsive">
+
+<?php
+	echo GridView::widget([
+		'dataProvider' => $dataProvider,
+		'layout' => "{items}",
+		'tableOptions' => [
+			'class' => 'table table-bordered table-condensed'
+		],
+		'rowOptions' => function($model) {
+			if ($model->parent_id) {
+				return ['class' => 'child_line'];
+			}
+		},
+		'columns' => [
+			[
+				'label' => 'Name',
+				'attribute' => 'display_name'
+			],
+			[
+				'label' => 'Enabled',
+				'format' => 'raw',
+				'value' => function ($data) use ($model) {
+					$options = [
+						'value' => $data->id,
+						'id' => 'privilege_ids-' . $data->id,
+						'class' => 'custom_checkbox'
+					];
+					if ($data['parent_id']) {
+						if (!in_array($data['parent_id'], $model->privilege_ids)) {
+							$options['disabled'] = 'disabled';
+						}
+					} elseif (!empty($model->privilegesTreeInfo['child_ids'][$data->id])) {
+						$options['class'].= ' custom-parent-privilege';
+						$options['data-child-ids'] = json_encode($model->privilegesTreeInfo['child_ids'][$data->id]);
+					}
+					return Html::checkbox('privilege_ids[]', in_array($data->id, $model->privilege_ids), $options);
+				}
+			],
+		],
+	]);
+?>
+
 </div>
 
 <?php echo Html::error($model, 'privilege_ids', ['class' => 'help-block']); ?>
