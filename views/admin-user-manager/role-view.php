@@ -14,6 +14,11 @@ use yii\grid\GridView;
 		'tableOptions' => [
 			'class' => 'table table-bordered table-condensed'
 		],
+		'rowOptions' => function($model) {
+			if ($model->parent_id) {
+				return ['class' => 'child_line'];
+			}
+		},
 		'columns' => [
 			[
 				'label' => 'Name',
