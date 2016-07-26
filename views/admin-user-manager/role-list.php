@@ -2,21 +2,43 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\GridView;
+use yii\bootstrap\Alert;
 ?>
 
 <?php echo $this->render('_tabs'); ?>
 
+<?php
 
-<?php foreach ($dataProviders as $companyTypeId => $dataProvider): ?>
+echo Alert::widget([
+	'options' => [
+		'class' => 'alert-danger',
+		'style' => 'display: none'
+	],
+	'body' => '',
+	'closeButton' => false
+]);
 
-	<h4>Roles and privileges for <?php echo Html::encode($companyTypes[$companyTypeId]); ?></h4>
+?>
+
+<div class="top_panel clearfix">
+	<div class="col-md-2 col-sm-2">
+		<?php echo Html::button('Add Role', ['value' => Url::to(['admin-user-manager/role-update']), 'class' => 'btn btn-danger modal-ajax']); ?>
+	</div>
+</div>
+
+<div class="roles_block col-md-6 col-sm-12">
+
+<?php foreach ($dataProviders as $organizationTypeId => $dataProvider): ?>
+
+	<p>Roles for <span><?php echo ($organizationTypeId == Yii::$app->user->identity->organization->type_id) ? Html::encode(Yii::$app->user->identity->organization->name) : Html::encode($organizationTypes[$organizationTypeId]); ?></span></p>
+
 	<div class="table-responsive">
 	<?php
 		echo GridView::widget([
 			'dataProvider' => $dataProvider,
 			'layout' => "{items}",
 			'tableOptions' => [
-				'class' => 'table table-bordered'
+				'class' => 'table table-bordered table-condensed'
 			],
 			'columns' => [
 				'display_name',
@@ -27,7 +49,7 @@ use yii\grid\GridView;
 					'urlCreator' => function ($action, $model, $key, $index) {
 						switch ($action) {
 							case 'update':
-								$url = Url::to(['admin-user-manager/update-role', 'id' => $model->id]);
+								$url = Url::to(['admin-user-manager/role-update', 'id' => $model->id]);
 								break;
 							case 'delete':
 								$url = Url::to(['admin-user-manager/role-delete', 'id' => $model->id]);
@@ -48,6 +70,12 @@ use yii\grid\GridView;
 								'class' => 'btn btn-primary modal-ajax',
 							]);
 						}
+					],
+					'visibleButtons' => [
+						'update' => function($model) {
+							return $model->organization_id && $model->organization_id == Yii::$app->user->identity->organization_id;
+						},
+						'delete' => 1
 					]
 				]
 			],
@@ -56,3 +84,9 @@ use yii\grid\GridView;
 	</div>
 
 <?php endforeach; ?>
+
+</div>
+
+<div class="privileges_block col-md-6 col-sm-12">
+
+</div>
