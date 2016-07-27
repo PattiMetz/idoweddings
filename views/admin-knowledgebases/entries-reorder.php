@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\bootstrap\ActiveForm;
@@ -7,18 +7,9 @@ use yii\bootstrap\Alert;
 <?php
 
 $form = ActiveForm::begin([
-//	'layout' => 'horizontal',
 	'options' => [
 		'class' => 'ajax-form knowledgebase-entry-reorder-form'
-	],
-/*	'fieldConfig' => [
-		'horizontalCssClasses' => [
-			'label' => 'col-sm-4',
-			'wrapper' => 'col-sm-8',
-			'error' => '',
-			'hint' => '',
-		]
-	],*/
+	]
 ]);
 
 ?>
@@ -32,10 +23,10 @@ $form = ActiveForm::begin([
 echo Alert::widget([
 	'options' => [
 		'class' => 'alert-danger',
-		'style' => (1) ? 'display: none' : ''
+		'style' => 'display: none'
 	],
 	'body' => '',
-	'closeButton' => false,
+	'closeButton' => false
 ]);
 
 ?>
