@@ -14,7 +14,7 @@ $form = ActiveForm::begin([
 	'fieldConfig' => [
 		'horizontalCssClasses' => [
 			'label' => 'col-sm-4',
-			'wrapper' => 'col-sm-8',
+			'wrapper' => 'col-sm-6',
 			'error' => '',
 			'hint' => '',
 		]
@@ -104,16 +104,16 @@ echo Alert::widget([
 	</div>
 </div-->
 
-<p>Privileges</p>
+<p class="role_text">Privileges for the Role</p>
 
-<div class="table-responsive">
+<div class="role_scrolling_table_wrap table-responsive">
 
 <?php
 	echo GridView::widget([
 		'dataProvider' => $dataProvider,
 		'layout' => "{items}",
 		'tableOptions' => [
-			'class' => 'table table-bordered table-condensed'
+			'class' => 'table table-bordered table-condensed scrolling_table'
 		],
 		'rowOptions' => function($model) {
 			if ($model->parent_id) {

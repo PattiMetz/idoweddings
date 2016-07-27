@@ -5,16 +5,17 @@
 4 - Top panel styles
 5 - Venues item
 6 - Knowledgebase item
-7 - Mastertable item
-8 - Footer styles
-9 - Modal styles
-10 - Sorting styles
-11 - Chosen plugin styles
-12 - Multiple-select plugin styles
-13 - Formstyler plugin
-14 - Spectrum plugin styles
-15 - Combo tree styles
-16 - Other
+7 - User Manager item
+8 - Mastertable item
+9 - Footer styles
+10 - Modal styles
+11 - Sorting styles
+12 - Chosen plugin styles
+13 - Multiple-select plugin styles
+14 - Formstyler plugin
+15 - Spectrum plugin styles
+16 - Combo tree styles
+17 - Other
 */
 
 /******** 1 - Main styles********/
@@ -145,6 +146,13 @@ textarea {
 table, th {
 	text-align: center;
 }
+.table > tbody > tr.active > td {
+	background-color: #ffe3c7;
+}
+.table > tbody > tr.child_line td:first-child {
+	padding-left: 60px;
+    font-family: 'open_sans_lightregular';
+}
 .table > thead > tr > th,
 .table > tbody > tr > td {
 	vertical-align: middle;
@@ -153,8 +161,33 @@ table, th {
 	text-decoration: underline;
 	color: #e39564;
 }
-.nicescroll-rails[id$="hr"]{
-	display: none;
+.scrolling_table {
+	border-top: 2px solid #ddd;
+}
+.scrolling_table tbody {
+	display: block;
+    width: 100%;
+    height: 183px;
+    overflow: auto;
+}
+.scrolling_table tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+	border-collapse: initial;
+}
+.scrolling_table tbody tr:first-child td {
+	border-top: none;
+}
+.scrolling_table > tbody > tr.child_line td:first-child {
+	padding-left: 30px;
+}
+.scrolling_table td:first-child {
+	width: 51.6%;
+	text-align: left;
+}
+.scrolling_table .custom_checkbox {
+	vertical-align: middle;
 }
 .clearfix:after {
     content: "";
@@ -375,6 +408,9 @@ table, th {
     font-size: 24px;
     color: #9e9a49;
 	vertical-align: middle;
+}
+.nicescroll-rails[id$="hr"]{
+	display: none;
 }
 
 /******** 2 - Left panel styles********/
@@ -1153,6 +1189,7 @@ table, th {
 .add_timeslot_wrapper .timeslot_list label {
 	padding-top: 0;
 }
+
 /******** 6 - KNOWLEDGE BASE********/
 
 .knbase_box {
@@ -1378,7 +1415,32 @@ table, th {
 	white-space: nowrap;
 }
 
-/******** 7 - MASTERTABLE********/
+/******** 7 - USER MANAGER********/
+
+.roles_block {
+    padding-left: 0;
+}
+.privileges_block {
+	padding-right: 0;
+}
+.roles_block > p,
+.privileges_block > p {
+	margin-bottom: 5px;
+}
+.roles_block > p span,
+.privileges_block > p span {
+    color: #de6830;
+}
+.roles_block .table td:first-child {
+	width: 50%;
+}
+.roles_block .table td:first-child,
+.privileges_block .table td:first-child {
+	text-align: left;
+	padding-left: 30px;
+}
+
+/******** 8 - MASTERTABLE********/
 
 .list li {
 	display: inline-block;
@@ -1495,7 +1557,7 @@ table, th {
 	background: url(../images/master/icon_13.png) no-repeat center center #ffe3c7;
 }
 
-/******** 8 - Footer styles********/
+/******** 9 - Footer styles********/
 
 .footer {
 	position: relative;
@@ -1516,7 +1578,7 @@ table, th {
 }
 
 
-/******** 9 - Popups********/
+/******** 10 - Popups********/
 
 .modal {
 	text-align: center;
@@ -1596,7 +1658,16 @@ table, th {
 .alert {
 	margin: 0 15px 20px;
 }
-
+	/*==Modal Add/Edit Role==*/
+.role_scrolling_table_wrap {
+	width: 568px;
+	margin: 0 auto;
+}
+p.role_text {
+	margin: 0 15px 5px;
+	text-align: left;
+	font-weight: bold;
+}
 	/*==modal Permissions==*/
 .permiss_form > div {
 	width: 50%;
@@ -1850,7 +1921,7 @@ table, th {
 	width: 200px;
 }
 
-/******** 10 - Add sorting icons to gridview sort links ********/
+/******** 11 - Add sorting icons to gridview sort links ********/
 
 a.asc:after, a.desc:after {
     position: relative;
@@ -1901,7 +1972,7 @@ a.desc:after {
     margin: 0 0 15px 0;
 }
 
-/******** 11 - Chosen plugin styles********/
+/******** 12 - Chosen plugin styles********/
 
 .chosen-container {
 	display: inline-block;
@@ -1996,7 +2067,7 @@ a.desc:after {
 	opacity: 1 !important;
 }
 
-/******** 12 - Multiple-select plugin styles********/
+/******** 13 - Multiple-select plugin styles********/
 
 .top_panel .filter .ms-parent {
 	margin-bottom: 5px;
@@ -2094,7 +2165,7 @@ a.desc:after {
 	margin: 8px 0 0 -20px;
 }
 
-/******** 13 - Formstyler plugin********/
+/******** 14 - Formstyler plugin********/
 
 .custom_checkbox {
 	display: inline-block;
@@ -2118,7 +2189,7 @@ a.desc:after {
 	cursor: default;
 }
 
-/******** 14 - Spectrum plugin styles********/
+/******** 15 - Spectrum plugin styles********/
 
 /*.settings_table select {
 	float:left;
@@ -2138,7 +2209,7 @@ a.desc:after {
 	display: none;
 }
 
-/********15 - Combo tree styles********/
+/********16 - Combo tree styles********/
 
 .textbox.combo {
 	display: block;
@@ -2211,7 +2282,7 @@ a.desc:after {
     background: url('images/tree_icons_2.png') no-repeat -224px 0;
 }
 
-/******** 16 - Other********/
+/******** 17 - Other********/
 
 .tabs li {
 	float:left;
@@ -2532,6 +2603,11 @@ a.desc:after {
 	.contain:last-child {
 		margin-bottom: 0;
 	}
+	/*==User Manager==*/
+	.roles_block,
+	.privileges_block {
+		padding: 0;
+	}
 	/*==Mastertable==*/
 	.list li {
 		width: 32%;
@@ -2845,6 +2921,13 @@ a.desc:after {
 		width: 100%;
 		margin: 0 0 15px 0;
 	}
+	/*==Modal Add/Edit Role==*/
+	.role_scrolling_table_wrap {
+		width: calc(100% - 30px);
+	}
+	.scrolling_table td {
+		white-space: normal;
+	}
 	/*==Modal Change venue url address==*/
 	.webaddress_input {
 		width: 300px;
@@ -2861,6 +2944,9 @@ a.desc:after {
 	}
 }
 @media (max-width: 560px) {
+	.table > tbody > tr.child_line td:first-child {
+		padding-left: 30px;
+	}
 	.container {
 		padding: 0 6px;
 	}
@@ -2873,6 +2959,7 @@ a.desc:after {
 		width: 100%;
 	}
 	.header {
+		min-height: 70px;
 		height: 70px;
 	}
 	.header .col-md-2.col-sm-3.col-xs-6,
@@ -3043,6 +3130,11 @@ a.desc:after {
 		left: initial;
 		right: 23%;
 	}*/
+	/*==User Manager==*/
+	.roles_block .table td:first-child,
+	.privileges_block .table td:first-child {
+		padding-left: 5px;
+	}
 	/*==Mastertable==*/
 	.list li {
 		width: 100%;
@@ -3057,6 +3149,11 @@ a.desc:after {
 	/*==Modal Change venue url address==*/
 	.webaddress_input {
 		width: 230px;
+	}
+	/*==Modal Add/Edit Role==*/
+	.scrolling_table th:first-child,
+	.scrolling_table td:first-child {
+		width: 225px;
 	}
 	/*==plugins for select==*/
 	.chosen-container-single .chosen-single {
@@ -3077,6 +3174,7 @@ a.desc:after {
 }
 
 @media (max-width: 400px) {
+	/*==Venues==*/
 	.venue_location_top_settings .pull-right {
 		width: 256px;
 	}
@@ -3103,6 +3201,11 @@ a.desc:after {
 	}
 	.add_timeslot_wrapper .col-sm-3:first-child  label {
 		padding-left: 0;
+	}
+	/*==Modal Add/Edit Role==*/
+	.scrolling_table th:first-child,
+	.scrolling_table td:first-child {
+		width: 160px;
 	}
 }
 

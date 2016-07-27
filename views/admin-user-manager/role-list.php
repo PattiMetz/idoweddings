@@ -26,7 +26,7 @@ echo Alert::widget([
 	</div>
 </div>
 
-<div class="roles_block col-md-6 col-sm-12">
+<div class="roles_block col-md-6">
 
 <?php foreach ($dataProviders as $organizationTypeId => $dataProvider): ?>
 
@@ -87,6 +87,6 @@ echo Alert::widget([
 
 </div>
 
-<div class="privileges_block col-md-6 col-sm-12">
+<div class="privileges_block col-md-6">
 
 </div>
