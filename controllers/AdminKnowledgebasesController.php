@@ -71,7 +71,7 @@ class AdminKnowledgebasesController extends Controller {
 
 	public function actionUpdate($id = 0) {
 
-		$alert = '';
+		$this->view->title = ($id) ? 'Edit Knowledge Base' : 'Add Knowledge Base';
 
 		if ($id) {
 
@@ -81,7 +81,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			if (!$model) {
 
-				$alert = 'Knowledge base not found';
+				throw new \yii\web\NotFoundHttpException('Knowledge base not found');
 
 			}
 
@@ -92,6 +92,8 @@ class AdminKnowledgebasesController extends Controller {
 		}
 
 		if ($model->load(Yii::$app->request->post())) {
+
+			$alert = '';
 
 			$errors = ActiveForm::validate($model);
 
@@ -122,15 +124,14 @@ class AdminKnowledgebasesController extends Controller {
 		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('update', [
-			'model' => $model,
-			'alert' => $alert
+			'model' => $model
 		]);
 
 	}
 
 	function actionDelete($id) {
 
-		$alert = '';
+		$this->view->title = 'Delete Knowledge Base';
 
 		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE')
 			->execute();
@@ -139,21 +140,15 @@ class AdminKnowledgebasesController extends Controller {
 
 		if (!$model) {
 
-			$alert = 'Knowledge base not found.';
+			throw new \yii\web\NotFoundHttpException('Knowledge base not found');
 
 		}
 
 		if (Yii::$app->request->isPost) {
 
-			$errors = [];
+			$alert = '';
 
 			do {
-
-				if (!$model) {
-
-					break;
-
-				}
 
 				$transaction = Yii::$app->db->beginTransaction();
 
@@ -246,7 +241,6 @@ class AdminKnowledgebasesController extends Controller {
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
 			return compact(
-				'errors',
 				'alert',
 				'pjax_reload'
 			);
@@ -256,8 +250,7 @@ class AdminKnowledgebasesController extends Controller {
 		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('delete', [
-			'model' => $model,
-			'alert' => $alert
+			'model' => $model
 		]);
 
 	}
@@ -504,6 +497,8 @@ class AdminKnowledgebasesController extends Controller {
 
 			do {
 
+				$alert = '';
+
 				$errors = ActiveForm::validate($model);
 
 				if (count($errors)) {
@@ -513,8 +508,6 @@ class AdminKnowledgebasesController extends Controller {
 				}
 
 				$transaction = Yii::$app->db->beginTransaction();
-
-				$alert = '';
 
 				if (!$model->save(false)) {
 
@@ -735,11 +728,9 @@ class AdminKnowledgebasesController extends Controller {
 
 			do {
 
-				$errors = [];
+				$alert = '';
 
 				$transaction = Yii::$app->db->beginTransaction();
-
-				$alert = '';
 
 				if (!$model->delete()) {
 
@@ -871,7 +862,6 @@ class AdminKnowledgebasesController extends Controller {
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
 			return compact(
-				'errors',
 				'alert',
 				'pjax_reload'
 			);
@@ -1059,6 +1049,8 @@ class AdminKnowledgebasesController extends Controller {
 
 				$new_ids = array_intersect($new_ids, array_keys($files));
 
+				$alert = '';
+
 				$errors = ActiveForm::validate($model);
 
 				if (count($errors)) {
@@ -1068,8 +1060,6 @@ class AdminKnowledgebasesController extends Controller {
 				}
 
 				$transaction = Yii::$app->db->beginTransaction();
-
-				$alert = '';
 
 				if (!$model->save(false)) {
 
@@ -1356,7 +1346,6 @@ class AdminKnowledgebasesController extends Controller {
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
 			return compact(
-				'errors',
 				'alert',
 				'pjax_reload'
 			);
@@ -1412,6 +1401,8 @@ class AdminKnowledgebasesController extends Controller {
 
 				$model->load(Yii::$app->request->post());
 
+				$alert = '';
+
 				$errors = ActiveForm::validate($model);
 
 				if (count($errors)) {
@@ -1421,8 +1412,6 @@ class AdminKnowledgebasesController extends Controller {
 				}
 
 				$transaction = Yii::$app->db->beginTransaction();
-
-				$alert = '';
 
 
 				// Change entry order
