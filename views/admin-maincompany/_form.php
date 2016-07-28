@@ -45,12 +45,22 @@ use yii\bootstrap\ActiveForm;
         <div class="col-md-12 title">
             <h4>Contact details</h4>
         </div>
-        <?= $form->field($contact, 'name')->textInput() ?>
-        <?= $form->field($contact, 'email')->textInput() ?>
-        <?= $form->field($contact, 'skype')->textInput() ?>
-        <?//= $form->field($phone, 'phone')->textInput() ?>
-        <div class="form-group"><?= Html::button('Add phone', ['class' => 'btn btn-success pull-right']) ?></div>
-        <div class="form-group"><?= Html::button('Add contact', ['class' => 'btn btn-success pull-right']) ?></div>
+        <div class="cont_wrap"  data-comp_id="<?= $model->id ?>" data-action="<?= \yii\helpers\Url::to(['admin-maincompany/contacts']) ?>">
+            <?php foreach ($contacts as $contact){ ?>
+                <div id="c_<?= $contact->id?>" class="contact-group" data-cid="<?= $contact->id?>">
+                    <?= $form->field($contact, 'name')->textInput(['data-name' => 'name']) ?>
+                    <?= $form->field($contact, 'email')->textInput(['data-name' => 'email']) ?>
+                    <?= $form->field($contact, 'skype')->textInput(['data-name' => 'skype']) ?>
+                    <?//= $form->field($phone, 'phone')->textInput(['data-name' => 'phone']) ?>
+                    <div class="form-group"><?= Html::button('Add phone', ['class' => 'add_phone btn btn-success pull-right']) ?></div>
+                    <div class="form-group">
+                        <?= Html::button('Delete contact', ['class' => 'del_contact btn btn-warning pull-right']) ?>
+                    </div>
+                </div>
+                <br>
+            <?php } ?>
+        </div>
+        <div class="form-group"><?= Html::button('Add contact', ['class' => 'add_contact btn btn-success pull-right']) ?></div>
     </div>
 
     <div class="col-md-12 text-center">

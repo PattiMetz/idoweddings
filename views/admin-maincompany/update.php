@@ -1,12 +1,14 @@
 <?php
 
-use yii\helpers\Html;
+use app\assets\OwnCompanyAsset;
+
+OwnCompanyAsset::register($this);
 
 /* @var $this yii\web\View */
 /* @var $model app\models\MainCompany */
 /* @var $address app\models\MainCompanyAddress */
 /* @var $phone app\models\MainCompanyPhone */
-/* @var $contact app\models\MainCompanyContact */
+/* @var $contacts app\models\MainCompanyContact */
 
 $this->title = 'Our Profile';
 //$this->params['breadcrumbs'][] = ['label' => 'Main Companies', 'url' => ['index']];
@@ -26,7 +28,7 @@ $this->params['breadcrumbs'][] = 'Our Profile';
         <?= $this->render('_form', [
             'model' => $model,
             'address' => $address,
-            'contact' => $contact,
+            'contacts' => $contacts,
             'phone' => $phone,
             'country' => $country
         ]) ?>

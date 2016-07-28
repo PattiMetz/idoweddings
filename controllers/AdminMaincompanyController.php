@@ -47,19 +47,18 @@ class AdminMaincompanyController extends Controller
         if($model === null){
             $model = new MainCompany();
             $address = new MainCompanyAddress();
-            $contact = new MainCompanyContact();
+            $contacts = null;
             //$phone = new MainCompanyPhone();
         } else {
             $address = $model->mainCompanyAddresses;
-            $contact = MainCompanyContact::find()->where(['company_id' => $model->id])->one();//todo +all
+            $contacts = MainCompanyContact::find()->where(['company_id' => $model->id])->all();//todo +all
             //$phone = MainCompanyPhone::find()->where(['contact_id' => $contact->id])->one();//todo +all
         }
 
         if ($model->load(Yii::$app->request->post()) &&
-            $address->load(Yii::$app->request->post()) &&
-            $contact->load(Yii::$app->request->post()))
+            $address->load(Yii::$app->request->post()))
         {
-            $isValid = $model->validate() && $address->validate() && $contact->validate();
+            $isValid = $model->validate() && $address->validate();
 
             if ($isValid) {
                 $model->user_id = $userId;
@@ -68,9 +67,7 @@ class AdminMaincompanyController extends Controller
 
                 if($mid){
                     $address->company_id = $mid;
-                    $contact->company_id = $mid;
                     $address->save(false);
-                    $contact->save(false);
                 }
                 else {
                     throw new NotFoundHttpException("MainCompany wasn't saved");
@@ -83,10 +80,66 @@ class AdminMaincompanyController extends Controller
         return $this->render('update', [
             'model' => $model,
             'address' => $address,
-            'contact' => $contact,
+            'contacts' => $contacts,
             'phone' => null,//$phone,//todo
             'country' => new Country()
         ]);
+    }
+
+    /**
+     * @param null $id
+     * @throws \Exception
+     * Ajax Contacts actions (update fields, add,delete additional contact forms)
+     */
+    public function actionContacts($id = null){
+        $status = false;
+        $msg = $cid = '';
+        $post = Yii::$app->request->post();
+
+        if(Yii::$app->request->isDelete){
+            if(!empty($post['comp_id'])) {
+                $count = MainCompanyContact::find()->where(['company_id' => $post['comp_id']])->count();
+                if($count > 1)
+                    $status = MainCompanyContact::findOne($id)->delete();
+                else
+                    $msg = 'You can not delete the last contact';
+            }
+        }
+        elseif(Yii::$app->request->isPut){
+            $model = new MainCompanyContact();
+
+            if(!empty($post['comp_id'])) {
+                $model->company_id = (int)$post['comp_id'];
+                $status = $model->save();
+                if (!$status) {
+                    $msg = json_encode($model->getFirstErrors());
+                } else {
+                    $cid = $model->getPrimaryKey();
+                }
+            }
+        }
+        elseif(Yii::$app->request->isPost){
+
+            if(!empty($post['field'])){
+                $field = $post['field'];
+                $value = $post['value'];
+                $model = MainCompanyContact::find()->where(['id' => $id])->one();
+
+                if($model){
+                    $model->$field = $value;
+                    $status = $model->save();
+                    if (!$status){
+                        $msg = json_encode($model->getFirstErrors());
+                    }
+                }
+            }
+        }
+
+        echo json_encode(array(
+            'status' => $status ? 'success' : 'error',
+            'msg' => $msg,
+            'cid' => $cid
+        ));
     }
 
     /**
