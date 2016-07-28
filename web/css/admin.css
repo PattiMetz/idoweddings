@@ -1436,6 +1436,13 @@ table, th {
 	text-align: left;
 	padding-left: 30px;
 }
+.roles_block .table td,
+.privileges_block .table td {
+	height: 45px;
+}
+.privileges_block .table td .jq-checkbox {
+	margin-bottom: -6px;
+}
 
 /******** 9 - MASTERTABLE********/
 
