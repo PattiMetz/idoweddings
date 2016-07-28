@@ -13,6 +13,7 @@ use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use app\components\AccessRule;
 use app\models\search\UserSearch;
+use app\models\User;
 use app\models\Role;
 use app\models\Privilege;
 
@@ -64,6 +65,140 @@ class AdminUserManagerController extends Controller {
 			'searchModel' => $searchModel,
 			'dataProvider' => $dataProvider
 		]);
+
+	}
+
+	public function actionUserUpdate($id) {
+
+		$this->view->title = ($id) ? 'Edit User' : 'Add User';
+
+		if ($id) {
+
+			$model = User::findOne($id);
+
+			if (!$model) {           
+
+				throw new \yii\web\NotFoundHttpException('User not found');
+
+			}
+
+			$model->privilege_ids = $model->getPrivileges()->select('id')->column();
+
+		} else {
+
+			$model = new User;
+
+			$model->organization_id = Yii::$app->user->identity->organization_id;
+
+			$model->privilege_ids = [];
+
+		}
+
+		$model->privilegesTreeInfo = (new Privilege)->getTreeInfo();
+
+		if (Yii::$app->request->isPost) {
+		
+			$post = Yii::$app->request->post();
+			
+			if (empty($post['privilege_ids'])) {
+
+				$post['privilege_ids'] = [];
+
+			}
+
+			$model->load($post);
+
+			do {
+
+				$errors = ActiveForm::validate($model);
+
+				if (count($errors)) {
+
+					break;
+
+				}
+
+				$transaction = Yii::$app->db->beginTransaction();
+
+				$alert = '';
+
+				if (!$model->save()) {
+
+					$alert = 'User not saved';
+
+					$transaction = rollback();
+
+					break;
+
+				}
+
+
+				// Unlink all privileges
+
+				try {
+
+					$model->unlinkAll('privileges', true);
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to unlink privileges';
+
+					$transaction = rollback();
+
+					break;
+
+				}
+
+
+				// Link privileges
+
+				try {
+
+					foreach ($model->privilege_ids as $privilege_id) {
+
+						$privilege = $model->privilegesTreeInfo['flat_tree'][$privilege_id];
+
+						$model->link('privileges', $privilege);
+
+					}
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to link privileges';
+
+					$transaction = rollback();
+
+					break;
+
+				}
+
+
+				$transaction->commit();
+
+				break;
+
+			} while(0);
+
+			$pjax_reload = '#main';
+
+			Yii::$app->response->format = Response::FORMAT_JSON;
+
+			return compact(
+				'alert',
+				'errors',
+				'pjax_reload'
+			);
+
+		}
+
+		$privilegesDataProvider = new ArrayDataProvider([
+			'allModels' => $model->privilegesTreeInfo['flat_tree']
+		]);
+
+		return $this->renderAjax('user-update', compact(
+			'model',
+			'privilegesDataProvider'
+		));
 
 	}
 
@@ -218,13 +353,9 @@ class AdminUserManagerController extends Controller {
 
 					foreach ($model->privilege_ids as $privilege_id) {
 
-						if (isset($model->privilegesTreeInfo['flat_tree'][$privilege_id])) {
+						$privilege = $model->privilegesTreeInfo['flat_tree'][$privilege_id];
 
-							$privilege = $model->privilegesTreeInfo['flat_tree'][$privilege_id];
-
-							$model->link('privileges', $privilege);
-
-						}
+						$model->link('privileges', $privilege);
 
 					}
 
@@ -257,13 +388,13 @@ class AdminUserManagerController extends Controller {
 
 		}
 
-		$dataProvider = new ArrayDataProvider([
+		$privilegesDataProvider = new ArrayDataProvider([
 			'allModels' => $model->privilegesTreeInfo['flat_tree']
 		]);
 
 		return $this->renderAjax('role-update', compact(
 			'model',
-			'dataProvider'
+			'privilegesDataProvider'
 		));
 
 	}
@@ -337,6 +468,12 @@ class AdminUserManagerController extends Controller {
 		if ($model->organization_id != Yii::$app->user->identity->organization_id) {
 
 			throw new \yii\web\ForbiddenHttpException('You are not allowed to edit this role');
+
+		}
+
+		if (count($model->users)) {
+
+			throw new \yii\web\ForbiddenHttpException('You can\'t delete this role because of connected users');
 
 		}
 

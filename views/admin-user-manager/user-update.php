@@ -14,7 +14,7 @@ $form = ActiveForm::begin([
 	'fieldConfig' => [
 		'horizontalCssClasses' => [
 			'label' => 'col-sm-4',
-			'wrapper' => 'col-sm-6',
+			'wrapper' => 'col-sm-8',
 			'error' => '',
 			'hint' => '',
 		]
@@ -35,7 +35,7 @@ echo Alert::widget([
 		'style' => 'display: none'
 	],
 	'body' => '',
-	'closeButton' => false,                                 
+	'closeButton' => false
 ]);
 
 ?>

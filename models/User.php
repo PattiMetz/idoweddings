@@ -16,8 +16,10 @@ use yii\web\IdentityInterface;
  * @property string $auth_key
  * @property string $password_hash
  * @property string $password_reset_token
- * @property string $name
+ * @property string $display_name
  * @property string $email
+ * @property integer $organization_id
+ * @property integer $role_id
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
@@ -25,6 +27,10 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface {
 
     public $privilegesNames;
+
+    public $privilegesTreeInfo;
+
+    public $privilege_ids;
 
     /**
      * @inheritdoc
@@ -50,7 +56,31 @@ class User extends ActiveRecord implements IdentityInterface {
     public function rules()
     {
         return [
+		['display_name', 'required'],
+		['privilege_ids', 'each', 'rule' => ['integer']],
+		['privilege_ids', 'filter', 'filter' => 'array_unique'],
+		/*TODO: Maybe to show an error instead of removing invalid privileges? */
+		['privilege_ids', 'filter', 'filter' => [$this, 'checkPrivileges']]
         ];
+    }
+
+    public function formName() {
+	return '';
+    }
+
+    public function attributeLabels() {
+	return [
+		'display_name' => 'Name'
+	];
+    }
+
+    public function checkPrivileges($value) {
+	foreach (array_keys($value) as $key) {
+		if (!isset($this->privilegesTreeInfo['flat_tree'][$value[$key]])) {
+			unset($value[$key]);
+		}
+	}
+	return $value;
     }
 
     /**
@@ -186,7 +216,7 @@ class User extends ActiveRecord implements IdentityInterface {
     public function getPrivileges()
     {
 	return $this->hasMany(Privilege::className(), ['id' => 'privilege_id'])
-		->viaTable('user_privilege', ['user_id' => 'id']);
+		->viaTable('{{%user_privilege}}', ['user_id' => 'id']);
     }
 
     public function getPrivilegesNames()

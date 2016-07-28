@@ -72,11 +72,15 @@ echo Alert::widget([
 						}
 					],
 					'visibleButtons' => [
+						/*TODO: How to optimize? */
 						'update' => function($model) {
 							return $model->organization_id && $model->organization_id == Yii::$app->user->identity->organization_id;
 						},
-						'delete' => 1
-					]
+						'delete' => function($model) {
+							return $model->organization_id && $model->organization_id == Yii::$app->user->identity->organization_id;
+						}
+					],
+					'visible' => $organizationTypeId == Yii::$app->user->identity->organization->type_id
 				]
 			],
 		]);
