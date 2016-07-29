@@ -59,7 +59,6 @@ class AdminKnowledgebasesController extends Controller {
 				'attributes' => ['name']
 			],
 			'pagination' => [
-				'defaultPageSize' => 6,
 				'pageSize' => 6
 			]
 		]);
@@ -72,7 +71,7 @@ class AdminKnowledgebasesController extends Controller {
 
 	public function actionUpdate($id = 0) {
 
-		$alert = '';
+		$this->view->title = ($id) ? 'Edit Knowledge Base' : 'Add Knowledge Base';
 
 		if ($id) {
 
@@ -82,7 +81,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			if (!$model) {
 
-				$alert = 'Knowledge base not found';
+				throw new \yii\web\NotFoundHttpException('Knowledge base not found');
 
 			}
 
@@ -93,6 +92,8 @@ class AdminKnowledgebasesController extends Controller {
 		}
 
 		if ($model->load(Yii::$app->request->post())) {
+
+			$alert = '';
 
 			$errors = ActiveForm::validate($model);
 
@@ -123,15 +124,14 @@ class AdminKnowledgebasesController extends Controller {
 		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('update', [
-			'model' => $model,
-			'alert' => $alert
+			'model' => $model
 		]);
 
 	}
 
 	function actionDelete($id) {
 
-		$alert = '';
+		$this->view->title = 'Delete Knowledge Base';
 
 		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE')
 			->execute();
@@ -140,21 +140,15 @@ class AdminKnowledgebasesController extends Controller {
 
 		if (!$model) {
 
-			$alert = 'Knowledge base not found.';
+			throw new \yii\web\NotFoundHttpException('Knowledge base not found');
 
 		}
 
 		if (Yii::$app->request->isPost) {
 
-			$errors = [];
+			$alert = '';
 
 			do {
-
-				if (!$model) {
-
-					break;
-
-				}
 
 				$transaction = Yii::$app->db->beginTransaction();
 
@@ -162,7 +156,7 @@ class AdminKnowledgebasesController extends Controller {
 
 					$alert = 'Knowledge base not deleted';
 
-					$transaction = rollback();
+					$transaction->rollback();
 
 					break;
 
@@ -247,7 +241,6 @@ class AdminKnowledgebasesController extends Controller {
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
 			return compact(
-				'errors',
 				'alert',
 				'pjax_reload'
 			);
@@ -257,8 +250,7 @@ class AdminKnowledgebasesController extends Controller {
 		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('delete', [
-			'model' => $model,
-			'alert' => $alert
+			'model' => $model
 		]);
 
 	}
@@ -267,12 +259,6 @@ class AdminKnowledgebasesController extends Controller {
 
 		// Default page title
 		$this->view->title = 'Entries';
-
-		// Alert message
-		$alert = '';
-
-		// Data provider
-		$dataProvider = false;
 
 		// Current path
 		$current_path = [];
@@ -283,131 +269,117 @@ class AdminKnowledgebasesController extends Controller {
 		// Get all knowledgebases for SELECT options
 		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
 
-		do {
-
-			// Sanitize knowledgebase ID
-			$knowledgebase_id = intval($knowledgebase_id);
+		// Sanitize knowledgebase ID
+		$knowledgebase_id = intval($knowledgebase_id);
 
 
-			// Knowledgebase not found
+		// Knowledgebase not found
 
-			if (!isset($knowledgebases[$knowledgebase_id])) {
+		if (!isset($knowledgebases[$knowledgebase_id])) {
 
-				$knowledgebase_id = 0;
+			throw new \yii\web\NotFoundHttpException('Knowledge base not found');
 
-				$alert = 'Knowledge base not found';
-
-				break;
-
-			}
+		}
 
 
-			// Set page title
-			$this->view->title = $knowledgebases[$knowledgebase_id];
+		// Set page title
+		$this->view->title = $knowledgebases[$knowledgebase_id];
 
-			// Sanitize category ID
-			$category_id = intval($category_id);
-
-
-			if ($category_id) {
+		// Sanitize category ID
+		$category_id = intval($category_id);
 
 
-				// Get current category
-
-				$current_category = KnowledgebaseEntry::find()->where([
-					'knowledgebase_id' => $knowledgebase_id,
-					'id' => $category_id,
-					'is_category' => 1
-				])->asArray()->one();
+		if ($category_id) {
 
 
-				// Category not found
+			// Get current category
 
-				if (!$current_category) {
-
-					$alert = 'Category not found';
-
-					break;
-
-				}
-
-
-				// Cache category data
-				$categories[$category_id] = $current_category;
-
-
-				// Get current path
-				$current_path = array_filter(explode('|', $current_category['tree_path']));
-
-
-				// Get parent categories
-
-				$parent_categories = KnowledgebaseEntry::find()->where([
-					'id' => $current_path,
-					'is_category' => 1
-				])->asArray()->all();
-
-
-				// Cache categories data
-
-				foreach ($parent_categories as $parent_category) {
-
-					$categories[$parent_category['id']] = $parent_category;
-
-				}
-
-
-				// Append category_id itself to the current path
-				$current_path[] = $category_id;
-
-			}
-
-			$filter = [
+			$current_category = KnowledgebaseEntry::find()->where([
 				'knowledgebase_id' => $knowledgebase_id,
-				'category_id' => $category_id
-			];
+				'id' => $category_id,
+				'is_category' => 1
+			])->asArray()->one();
 
-			$dataProvider = new ActiveDataProvider([
-				'query' => KnowledgebaseEntry::find()->where($filter)->indexBy('id'), // entries
-				'sort' => [
-					'defaultOrder' => ['order' => SORT_ASC],
-					'attributes' => [
-						'order' => [
-							'asc' => [
-								'is_category' => SORT_DESC,
-								'order' => SORT_ASC
-							],
-							'desc' => [
-								'is_category' => SORT_DESC,
-								'order' => SORT_DESC
-							]
+
+			// Category not found
+
+			if (!$current_category) {
+
+				throw new \yii\web\NotFoundHttpException('Category not found');
+
+			}
+
+
+			// Cache category data
+			$categories[$category_id] = $current_category;
+
+
+			// Get current path
+			$current_path = array_filter(explode('|', $current_category['tree_path']));
+
+
+			// Get parent categories
+
+			$parent_categories = KnowledgebaseEntry::find()->where([
+				'id' => $current_path,
+				'is_category' => 1
+			])->asArray()->all();
+
+
+			// Cache categories data
+
+			foreach ($parent_categories as $parent_category) {
+
+				$categories[$parent_category['id']] = $parent_category;
+
+			}
+
+
+			// Append category_id itself to the current path
+			$current_path[] = $category_id;
+
+		}
+
+		$filter = [
+			'knowledgebase_id' => $knowledgebase_id,
+			'category_id' => $category_id
+		];
+
+		$dataProvider = new ActiveDataProvider([
+			'query' => KnowledgebaseEntry::find()->where($filter)->indexBy('id'),
+			'sort' => [
+				'defaultOrder' => ['order' => SORT_ASC],
+				'attributes' => [
+					'order' => [
+						'asc' => [
+							'is_category' => SORT_DESC,
+							'order' => SORT_ASC
 						],
-						'title' => [
-							'asc' => [
-								'is_category' => SORT_DESC,
-								'title' => SORT_ASC
-							],
-							'desc' => [
-								'is_category' => SORT_DESC,
-								'title' => SORT_DESC
-							]
+						'desc' => [
+							'is_category' => SORT_DESC,
+							'order' => SORT_DESC
+						]
+					],
+					'title' => [
+						'asc' => [
+							'is_category' => SORT_DESC,
+							'title' => SORT_ASC
+						],
+						'desc' => [
+							'is_category' => SORT_DESC,
+							'title' => SORT_DESC
 						]
 					]
-				],
-				'pagination' => [
-					'defaultPageSize' => 3,
-					'pageSize' => 3
 				]
-			]);
-
-			break;
-
-		} while(0);
+			],
+			'pagination' => [
+				'pageSize' => 3
+			]
+		]);
 
 		$this->view->params['js'] = $this->_entries_js();
 
 		return $this->render('entries', [
-			'alert' => $alert,
 			'dataProvider' => $dataProvider,
 			'current_knowledgebase_id' => $knowledgebase_id,
 			'current_category_id' => $category_id,
@@ -422,128 +394,110 @@ class AdminKnowledgebasesController extends Controller {
 
 		$this->view->title = ($id) ? 'Edit Category' : 'Add Category';
 
-		$alert = '';
-
 		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE')->execute();
 
 		// Get all knowledgebases for SELECT options
 		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
 
-		do {
+		if ($id) {
 
-			if ($id) {
+			$model = KnowledgebaseEntry::find()->where([
+				'id' => $id,
+				'is_category' => 1
+			])->one();
 
-				$model = KnowledgebaseEntry::find()->where([
-					'id' => $id,
-					'is_category' => 1
-				])->one();
+			if (!$model) {
 
-				if (!$model) {
+				throw new \yii\web\NotFoundHttpException('Category not found');
 
-					$alert = 'Category not found';
+			}
 
-					break;
+			$model->_old_knowledgebase_id = $model->knowledgebase_id;
 
-				}
+			$model->_old_category_id = $model->category_id;
 
-				$model->_old_knowledgebase_id = $model->knowledgebase_id;
+			$model->_old_tree_path = $model->tree_path;
 
-				$model->_old_category_id = $model->category_id;
+		} else {
 
-				$model->_old_tree_path = $model->tree_path;
+			$model = new KnowledgebaseEntry;
+
+			$knowledgebase_id = Yii::$app->request->get('knowledgebase_id');
+
+			if (isset($knowledgebase_id)) {
+
+				$model->knowledgebase_id = intval($knowledgebase_id);
 
 			} else {
 
-				$model = new KnowledgebaseEntry;
+				$model->knowledgebase_id = 0;
 
-				$knowledgebase_id = Yii::$app->request->get('knowledgebase_id');
+			}
 
-				if (isset($knowledgebase_id)) {
+			$category_id = Yii::$app->request->get('category_id');
 
-					$model->knowledgebase_id = intval($knowledgebase_id);
+			if (isset($category_id)) {
 
-				} else {
+				$model->category_id = intval($category_id);
 
-					$model->knowledgebase_id = 0;
+			} else {
 
-				}
+				$model->category_id = 0;
 
-				$category_id = Yii::$app->request->get('category_id');
+			}
 
-				if (isset($category_id)) {
+			$model->is_category = 1;
 
-					$model->category_id = intval($category_id);
+			$model->status = '';
 
-				} else {
+			$model->_old_knowledgebase_id = 0;
+
+			$model->_old_category_id = 0;
+
+			$model->_old_tree_path = '';
+
+		}
+
+		$model->knowledgebases = $knowledgebases;
+
+		if (Yii::$app->request->isGet) {
+
+			if ($model->knowledgebase_id && !isset($model->knowledgebases[$model->knowledgebase_id])) {
+
+				$model->knowledgebase_id = 0;
+
+			}
+
+			if ($model->knowledgebase_id) {
+
+
+				// Get categories tree
+
+				$categories_tree_info = $this->_get_categories_tree($model->knowledgebase_id, $model->category_id, $model->id);
+
+				extract($categories_tree_info, EXTR_PREFIX_ALL, 'categories');
+
+				$model->categories_tree_json = json_encode($categories_tree);
+
+
+				// Skip category_id if there is no such ID in the tree
+
+				if ($model->category_id && !in_array($model->category_id, $categories_plain_ids)) {
 
 					$model->category_id = 0;
 
 				}
 
-				$model->is_category = 1;
-
-				$model->status = '';
-
-				$model->_old_knowledgebase_id = 0;
-
-				$model->_old_category_id = 0;
-
-				$model->_old_tree_path = '';
 
 			}
 
-			$model->knowledgebases = $knowledgebases;
+		}
 
-			if (Yii::$app->request->isGet) {
-
-				if ($model->knowledgebase_id && !isset($model->knowledgebases[$model->knowledgebase_id])) {
-
-					$model->knowledgebase_id = 0;
-
-				}
-
-				if ($model->knowledgebase_id) {
-
-
-					// Get categories tree
-
-					$categories_tree_info = $this->_get_categories_tree($model->knowledgebase_id, $model->category_id, $model->id);
-
-					extract($categories_tree_info, EXTR_PREFIX_ALL, 'categories');
-
-					$model->categories_tree_json = json_encode($categories_tree);
-
-
-					// Skip category_id if there is no such ID in the tree
-
-					if ($model->category_id && !in_array($model->category_id, $categories_plain_ids)) {
-
-						$model->category_id = 0;
-
-					}
-
-
-				}
-
-			}
-
-			break;
-
-		} while(0);
-
-		if (Yii::$app->request->isPost) {
+		if ($model->load(Yii::$app->request->post())) {
 
 			do {
 
-				if (!$model) {
-
-					break;
-
-				}
-
-				$post = Yii::$app->request->post();
-
-				$model->load($post);
+				$alert = '';
 
 				$errors = ActiveForm::validate($model);
 
@@ -747,15 +701,14 @@ class AdminKnowledgebasesController extends Controller {
 		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('categories-update', [
-			'model' => $model,
-			'alert' => $alert
+			'model' => $model
 		]);
 
 	}
 
 	function actionCategoriesDelete($id) {
 
-		$alert = '';
+		$this->view->title = 'Delete Category';
 
 		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE')
 			->execute();
@@ -767,7 +720,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		if (!$model) {
 
-			$alert = 'Category not found';
+			throw new \yii\web\NotFoundHttpException('Category not found');
 
 		}
 
@@ -775,13 +728,7 @@ class AdminKnowledgebasesController extends Controller {
 
 			do {
 
-				if (!$model) {
-
-					break;
-
-				}
-
-				$errors = [];
+				$alert = '';
 
 				$transaction = Yii::$app->db->beginTransaction();
 
@@ -915,7 +862,6 @@ class AdminKnowledgebasesController extends Controller {
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
 			return compact(
-				'errors',
 				'alert',
 				'pjax_reload'
 			);
@@ -925,8 +871,7 @@ class AdminKnowledgebasesController extends Controller {
 		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('categories-delete', [
-			'model' => $model,
-			'alert' => $alert
+			'model' => $model
 		]);
 
 	}
@@ -960,138 +905,122 @@ class AdminKnowledgebasesController extends Controller {
 
 		$this->view->title = ($id) ? 'Edit Article' : 'Add Article';
 
-		$alert = '';
-
 		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE')
 			->execute();
 
 		// Get all knowledgebases for SELECT options
 		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
 
-		do {
+		if ($id) {
 
-			if ($id) {
+			$model = KnowledgebaseEntry::find()->where([
+				'id' => $id,
+				'is_category' => 0
+			])->one();
 
-				$model = KnowledgebaseEntry::find()->where([
-					'id' => $id,
-					'is_category' => 0
-				])->one();
+			if (!$model) {
 
-				if (!$model) {
+				throw new \yii\web\NotFoundHttpException('Article not found');
 
-					$alert = 'Article not found';
+			}
 
-					break;
+			$files = KnowledgebaseEntryFile::find()->where([
+				'knowledgebase_entry_id' => $model->id
+			])->indexBy('id')->all();
 
-				}
+			$model->files = $files;
 
-				$files = KnowledgebaseEntryFile::find()->where([
-					'knowledgebase_entry_id' => $model->id
-				])->indexBy('id')->all();
+			$model->file_ids = array_keys($model->files);
 
-				$model->files = $files;
+			$model->_old_knowledgebase_id = $model->knowledgebase_id;
 
-				$model->file_ids = array_keys($model->files);
+			$model->_old_category_id = $model->category_id;
 
-				$model->_old_knowledgebase_id = $model->knowledgebase_id;
+		} else {
 
-				$model->_old_category_id = $model->category_id;
+			$model = new KnowledgebaseEntry;
+
+			$knowledgebase_id = Yii::$app->request->get('knowledgebase_id');
+
+			if (isset($knowledgebase_id)) {
+
+				$model->knowledgebase_id = intval($knowledgebase_id);
 
 			} else {
 
-				$model = new KnowledgebaseEntry;
+				$model->knowledgebase_id = 0;
 
-				$knowledgebase_id = Yii::$app->request->get('knowledgebase_id');
+			}
 
-				if (isset($knowledgebase_id)) {
+			$category_id = Yii::$app->request->get('category_id');
 
-					$model->knowledgebase_id = intval($knowledgebase_id);
+			if (isset($category_id)) {
 
-				} else {
+				$model->category_id = intval($category_id);
 
-					$model->knowledgebase_id = 0;
+			} else {
 
-				}
+				$model->category_id = 0;
 
-				$category_id = Yii::$app->request->get('category_id');
+			}
 
-				if (isset($category_id)) {
+			$model->is_category = 0;
 
-					$model->category_id = intval($category_id);
+			$model->status = 'draft';
 
-				} else {
+			$model->files = [];
+
+			$model->file_ids = [];
+
+			$model->_old_knowledgebase_id = 0;
+
+			$model->_old_category_id = 0;
+
+		}
+
+		$model->statuses = [
+			'published' => 'Published',
+			'draft' => 'Draft'
+		];
+
+		$model->knowledgebases = $knowledgebases;
+
+		if (Yii::$app->request->isGet) {
+
+			if ($model->knowledgebase_id && !isset($model->knowledgebases[$model->knowledgebase_id])) {
+
+				$model->knowledgebase_id = 0;
+
+			}
+
+			if ($model->knowledgebase_id) {
+
+
+				// Get categories tree
+
+				$categories_tree_info = $this->_get_categories_tree($model->knowledgebase_id, $model->category_id);
+
+				extract($categories_tree_info, EXTR_PREFIX_ALL, 'categories');
+
+				$model->categories_tree_json = json_encode($categories_tree);
+
+
+				// Skip category_id if there is no such ID in the tree
+
+				if ($model->category_id && !in_array($model->category_id, $categories_plain_ids)) {
 
 					$model->category_id = 0;
 
 				}
 
-				$model->is_category = 0;
-
-				$model->status = 'draft';
-
-				$model->files = [];
-
-				$model->file_ids = [];
-
-				$model->_old_knowledgebase_id = 0;
-
-				$model->_old_category_id = 0;
 
 			}
 
-			$model->statuses = [
-				'published' => 'Published',
-				'draft' => 'Draft'
-			];
-
-			$model->knowledgebases = $knowledgebases;
-
-			if (Yii::$app->request->isGet) {
-
-				if ($model->knowledgebase_id && !isset($model->knowledgebases[$model->knowledgebase_id])) {
-
-					$model->knowledgebase_id = 0;
-
-				}
-
-				if ($model->knowledgebase_id) {
-
-
-					// Get categories tree
-
-					$categories_tree_info = $this->_get_categories_tree($model->knowledgebase_id, $model->category_id);
-
-					extract($categories_tree_info, EXTR_PREFIX_ALL, 'categories');
-
-					$model->categories_tree_json = json_encode($categories_tree);
-
-
-					// Skip category_id if there is no such ID in the tree
-
-					if ($model->category_id && !in_array($model->category_id, $categories_plain_ids)) {
-
-						$model->category_id = 0;
-
-					}
-
-
-				}
-
-			}
-
-			break;
-
-		} while(0);
+		}
 
 		if (Yii::$app->request->isPost) {
 
 			do {
-
-				if (!$model) {
-
-					break;
-
-				}
 
 				$post = Yii::$app->request->post();
 
@@ -1119,6 +1048,8 @@ class AdminKnowledgebasesController extends Controller {
 				])->indexBy('id')->all();
 
 				$new_ids = array_intersect($new_ids, array_keys($files));
+
+				$alert = '';
 
 				$errors = ActiveForm::validate($model);
 
@@ -1301,8 +1232,7 @@ class AdminKnowledgebasesController extends Controller {
 		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('articles-update', [
-			'model' => $model,
-			'alert' => $alert
+			'model' => $model
 		]);
 
 	}
@@ -1310,8 +1240,6 @@ class AdminKnowledgebasesController extends Controller {
 	function actionArticlesDelete($id) {
 
 		$this->view->title = 'Delete Article';
-
-		$alert = '';
 
 		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase}} WRITE, {{%knowledgebase_entry}} WRITE, {{%knowledgebase_entry_file}} WRITE')
 			->execute();
@@ -1323,7 +1251,7 @@ class AdminKnowledgebasesController extends Controller {
 
 		if (!$model) {
 
-			$alert = 'Article not found';
+			throw new \yii\web\NotFoundHttpException('Article not found');
 
 		}
 
@@ -1331,13 +1259,9 @@ class AdminKnowledgebasesController extends Controller {
 
 			do {
 
-				if (!$model) {
-
-					break;
-
-				}
-
 				$transaction = Yii::$app->db->beginTransaction();
+
+				$alert = '';
 
 				if (!$model->delete()) {
 
@@ -1422,7 +1346,6 @@ class AdminKnowledgebasesController extends Controller {
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
 			return compact(
-				'errors',
 				'alert',
 				'pjax_reload'
 			);
@@ -1432,8 +1355,7 @@ class AdminKnowledgebasesController extends Controller {
 		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('articles-delete', [
-			'model' => $model,
-			'alert' => $alert
+			'model' => $model
 		]);
 
 	}
@@ -1442,58 +1364,44 @@ class AdminKnowledgebasesController extends Controller {
 
 		$this->view->title = 'Change Order';
 
-		$alert = '';
-
 		Yii::$app->db->createCommand('LOCK TABLES {{%knowledgebase_entry}} WRITE')->execute();
 
-		do {
+		$entry = KnowledgebaseEntry::findOne($id);
 
-			$entry = KnowledgebaseEntry::findOne($id);
+		if (!$entry) {
 
-			if (!$entry) {
+			throw new \yii\web\NotFoundHttpException('Entry not found');
 
-				$alert = 'Entry not found';
+		}
 
-				break;
+		$model = new KnowledgebaseEntryReorderForm();
 
-			}
+		$model->move_types = [
+			'top'		=>	'Move to the top',
+			'up'		=>	'Up',
+			'position'	=>	'Move to the position',
+			'down'		=>	'Down',
+			'bottom'	=>	'Move to the end'
+		];
 
-			$model = new KnowledgebaseEntryReorderForm();
+		$model->move_types_visible = $model->move_types;
 
-			$model->move_types = [
-				'top'		=>	'Move to the top',
-				'up'		=>	'Up',
-				'position'	=>	'Move to the position',
-				'down'		=>	'Down',
-				'bottom'	=>	'Move to the end'
-			];
+		unset(
+			$model->move_types_visible['up'],
+			$model->move_types_visible['down']
+		);
 
-			$model->move_types_visible = $model->move_types;
+		$model->move_type = 'top';
 
-			unset(
-				$model->move_types_visible['up'],
-				$model->move_types_visible['down']
-			);
-
-			$model->move_type = 'top';
-
-			$model->position = 0;
-
-			break;
-
-		} while(0);
+		$model->position = 0;
 
 		if (Yii::$app->request->isPost) {
 
 			do {
 
-				if (!$entry) {
-
-					break;
-
-				}
-
 				$model->load(Yii::$app->request->post());
+
+				$alert = '';
 
 				$errors = ActiveForm::validate($model);
 
@@ -1563,8 +1471,7 @@ class AdminKnowledgebasesController extends Controller {
 		Yii::$app->db->createCommand('UNLOCK TABLES')->execute();
 
 		return $this->renderAjax('entries-reorder', [
-			'model' => $model,
-			'alert' => $alert
+			'model' => $model
 		]);
 
 	}

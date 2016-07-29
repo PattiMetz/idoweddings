@@ -6,18 +6,9 @@ use yii\bootstrap\Alert;
 <?php
 
 $form = ActiveForm::begin([
-	'layout' => 'horizontal',
 	'options' => [
 		'class' => 'ajax-form'
-	],
-	'fieldConfig' => [
-		'horizontalCssClasses' => [
-			'label' => 'col-sm-4',
-			'wrapper' => 'col-sm-8',
-			'error' => '',
-			'hint' => '',
-		]
-	],
+	]
 ]);
 
 ?>
@@ -39,10 +30,10 @@ echo Alert::widget([
 
 ?>
 
-<?php echo $form->field($model, 'name')->textInput(); ?>
+<p>You are in one step from deleting the Role - <?php echo Html::encode($model->display_name)?>.</p>
 
 <div class="pseudo_foo">
-	<?php echo Html::submitButton('Save', ['class' => 'btn btn-primary']) ?>
+	<?php echo Html::submitButton('Delete', ['class' => 'btn btn-primary']) ?>
 	<?php echo Html::Button('Cancel', ['class' => 'btn btn-default btn-cancel']) ?>
 </div>
 

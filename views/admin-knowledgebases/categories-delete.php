@@ -14,7 +14,7 @@ $form = ActiveForm::begin([
 ?>
 
 <div class="pseudo_head">
-	<h4 class="modal-title">Delete Category</h4>
+	<h4 class="modal-title"><?php echo Html::encode($this->title); ?></h4>
 </div>
 
 <?php
@@ -22,10 +22,10 @@ $form = ActiveForm::begin([
 echo Alert::widget([
 	'options' => [
 		'class' => 'alert-danger',
-		'style' => ($alert == '') ? 'display: none' : ''
+		'style' => 'display: none'
 	],
-	'body' => $alert,
-	'closeButton' => false,
+	'body' => '',
+	'closeButton' => false
 ]);
 
 ?>

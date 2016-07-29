@@ -4,15 +4,18 @@ namespace app\controllers;
 
 use Yii;
 use yii\web\Controller;
+use yii\bootstrap\ActiveForm;
 use yii\web\Response;
-use app\models\search\UserSearch;
-use app\models\Role;
-use app\models\Privilege;
 use yii\db\Query;
+use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use app\components\AccessRule;
+use app\models\search\UserSearch;
+use app\models\User;
+use app\models\Role;
+use app\models\Privilege;
 
 class AdminUserManagerController extends Controller {
 
@@ -31,13 +34,18 @@ class AdminUserManagerController extends Controller {
 		return [
 			'access' => [
 				'class' => AccessControl::className(),
-//				'ruleConfig' => [
-//					'class' => AccessRule::className(),
-//				],
+				'ruleConfig' => [
+					'class' => AccessRule::className(),
+				],
 				'rules' => [
 					[
+						'actions' => ['role-list', 'role-view', 'role-update', 'role-delete'],
+						'allow' => false,
+						'roles' => ['!usermanager:roles'],
+					],
+					[
 						'allow' => true,
-//						'roles' => ['usermanager'],
+						'roles' => ['usermanager']
 					],
 				],
 			],
@@ -60,57 +68,17 @@ class AdminUserManagerController extends Controller {
 
 	}
 
-	public function actionRoles() {
+	public function actionUserUpdate($id) {
 
-#var_dump(Yii::$app->user->identity->privilegesNames);
-
-#var_dump(Yii::$app->user->identity->hasPrivilegeByName('usermanager'));
-
-#var_dump(Yii::$app->user->identity->getPrivilegesNames());
-
-		$this->view->title = 'Roles';
-
-		$companyTypes = ArrayHelper::map((new Query)->from('company_type')->all(), 'id', 'name');
-
-		$dataProviders = [];
-
-		foreach (array_keys($companyTypes) as $companyTypeId) {
-
-			$dataProviders[$companyTypeId] = new ArrayDataProvider([
-				'allModels' => []
-			]);
-
-		}
-
-		$templateRoles = Role::find()->where([
-			'company_id' => 0,
-			'company_type_id' => array_keys($companyTypes)
-		])->all();
-
-		foreach ($templateRoles as $role) {
-
-			$dataProviders[$role->company_type_id]->allModels[] = $role;
-
-		}
-
-		return $this->render('roles', compact(
-			'companyTypes',
-			'dataProviders'
-		));
-
-	}
-
-	function actionUpdateRole($id) {
-
-		$this->view->title = 'Update Role';
+		$this->view->title = ($id) ? 'Edit User' : 'Add User';
 
 		if ($id) {
 
-			$model = Role::findOne($id);
+			$model = User::findOne($id);
 
 			if (!$model) {           
 
-				throw new \yii\web\NotFoundHttpException('Role not found');
+				throw new \yii\web\NotFoundHttpException('User not found');
 
 			}
 
@@ -118,7 +86,9 @@ class AdminUserManagerController extends Controller {
 
 		} else {
 
-			$model = new Role;
+			$model = new User;
+
+			$model->organization_id = Yii::$app->user->identity->organization_id;
 
 			$model->privilege_ids = [];
 
@@ -138,44 +108,506 @@ class AdminUserManagerController extends Controller {
 
 			$model->load($post);
 
-			if ($model->save()) {
+			do {
+
+				$errors = ActiveForm::validate($model);
+
+				if (count($errors)) {
+
+					break;
+
+				}
+
+				$transaction = Yii::$app->db->beginTransaction();
+
+				$alert = '';
+
+				if (!$model->save()) {
+
+					$alert = 'User not saved';
+
+					$transaction = rollback();
+
+					break;
+
+				}
+
 
 				// Unlink all privileges
-				$model->unlinkAll('privileges', true);
 
-				foreach ($model->privilege_ids as $privilege_id) {
+				try {
 
-					if (isset($model->privilegesTreeInfo['flat_tree'][$privilege_id])) {
+					$model->unlinkAll('privileges', true);
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to unlink privileges';
+
+					$transaction = rollback();
+
+					break;
+
+				}
+
+
+				// Link privileges
+
+				try {
+
+					foreach ($model->privilege_ids as $privilege_id) {
 
 						$privilege = $model->privilegesTreeInfo['flat_tree'][$privilege_id];
 
-						// Link privilege
 						$model->link('privileges', $privilege);
 
 					}
 
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to link privileges';
+
+					$transaction = rollback();
+
+					break;
+
 				}
 
-			} else {
 
-				$errors = $model->getErrors();
+				$transaction->commit();
 
-			}
+				break;
+
+			} while(0);
 
 			$pjax_reload = '#main';
 
 			Yii::$app->response->format = Response::FORMAT_JSON;
 
 			return compact(
+				'alert',
 				'errors',
 				'pjax_reload'
 			);
 
 		}
 
-		return $this->renderAjax('update-role', compact(
+		$privilegesDataProvider = new ArrayDataProvider([
+			'allModels' => $model->privilegesTreeInfo['flat_tree']
+		]);
+
+		return $this->renderAjax('user-update', compact(
+			'model',
+			'privilegesDataProvider'
+		));
+
+	}
+
+	public function actionRoleList() {
+
+		$this->view->title = 'Roles';
+
+		$organizationTypes = ArrayHelper::map((new Query)->from('organization_type')->all(), 'id', 'name');
+
+		if (Yii::$app->user->identity->organization->type_id != 1) {
+
+			$organizationTypes = array_intersect_key($organizationTypes, array_flip([Yii::$app->user->identity->organization->type_id]));
+
+		}
+
+		$dataProviders = [];
+
+		foreach (array_keys($organizationTypes) as $organizationTypeId) {
+
+			$dataProviders[$organizationTypeId] = new ArrayDataProvider([
+				'allModels' => [],
+				'key' => 'id'
+			]);
+
+		}
+
+		$roles = Role::find()
+			->where([
+				'organization_id' => 0,
+				'organization_type_id' => array_keys($organizationTypes)
+			])
+			->orWhere(['organization_id' => Yii::$app->user->identity->organization_id])
+			->orderBy([new \yii\db\Expression('! organization_id DESC, id')])
+			->all();
+
+		foreach ($roles as $role) {
+
+			$organization_type_id = ($role->organization_type_id) ? $role->organization_type_id : Yii::$app->user->identity->organization->type_id;
+
+			$dataProviders[$organization_type_id]->allModels[] = $role;
+
+		}
+
+		$this->view->params['js'] = $this->_roles_js();
+
+		return $this->render('role-list', compact(
+			'organizationTypes',
+			'dataProviders'
+		));
+
+	}
+
+	function actionRoleUpdate($id = 0) {
+
+		$this->view->title = ($id) ? 'Edit Role' : 'Add Role';
+
+		if ($id) {
+
+			$model = Role::findOne($id);
+
+			if (!$model) {           
+
+				throw new \yii\web\NotFoundHttpException('Role not found');
+
+			}
+
+			if (!$model->organization_id) {
+
+				throw new \yii\web\ForbiddenHttpException('This role is protected');
+
+			}
+
+			if ($model->organization_id != Yii::$app->user->identity->organization_id) {
+
+				throw new \yii\web\ForbiddenHttpException('You are not allowed to edit this role');
+
+			}
+
+			$model->privilege_ids = $model->getPrivileges()->select('id')->column();
+
+		} else {
+
+			$model = new Role;
+
+			$model->organization_type_id = 0;
+
+			$model->organization_id = Yii::$app->user->identity->organization_id;
+
+			$model->privilege_ids = [];
+
+		}
+
+		$model->privilegesTreeInfo = (new Privilege)->getTreeInfo();
+
+		if (Yii::$app->request->isPost) {
+		
+			$post = Yii::$app->request->post();
+			
+			if (empty($post['privilege_ids'])) {
+
+				$post['privilege_ids'] = [];
+
+			}
+
+			$model->load($post);
+
+			do {
+
+				$errors = ActiveForm::validate($model);
+
+				if (count($errors)) {
+
+					break;
+
+				}
+
+				$transaction = Yii::$app->db->beginTransaction();
+
+				$alert = '';
+
+				if (!$model->save()) {
+
+					$alert = 'Role not saved';
+
+					$transaction = rollback();
+
+					break;
+
+				}
+
+
+				// Unlink all privileges
+
+				try {
+
+					$model->unlinkAll('privileges', true);
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to unlink privileges';
+
+					$transaction = rollback();
+
+					break;
+
+				}
+
+
+				// Link privileges
+
+				try {
+
+					foreach ($model->privilege_ids as $privilege_id) {
+
+						$privilege = $model->privilegesTreeInfo['flat_tree'][$privilege_id];
+
+						$model->link('privileges', $privilege);
+
+					}
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to link privileges';
+
+					$transaction = rollback();
+
+					break;
+
+				}
+
+
+				$transaction->commit();
+
+				break;
+
+			} while(0);
+
+			$pjax_reload = '#main';
+
+			Yii::$app->response->format = Response::FORMAT_JSON;
+
+			return compact(
+				'alert',
+				'errors',
+				'pjax_reload'
+			);
+
+		}
+
+		$privilegesDataProvider = new ArrayDataProvider([
+			'allModels' => $model->privilegesTreeInfo['flat_tree']
+		]);
+
+		return $this->renderAjax('role-update', compact(
+			'model',
+			'privilegesDataProvider'
+		));
+
+	}
+
+	public function actionRoleView($id) {
+
+		$organizationTypes = ArrayHelper::map((new Query)->from('organization_type')->all(), 'id', 'name');
+
+		if (Yii::$app->user->identity->organization->type_id != 1) {
+
+			$organizationTypes = array_intersect_key($organizationTypes, array_flip([Yii::$app->user->identity->organization->type_id]));
+
+		}
+
+		$model = Role::findOne($id);
+
+		if (!$model) {
+
+			throw new \yii\web\NotFoundHttpException('Role not found');
+
+		}
+
+		if ($model->organization_id) {
+
+			if ($model->organization_id != Yii::$app->user->identity->organization_id) {
+
+				throw new \yii\web\ForbiddenHttpException('You are not allowed to view this role');
+
+			}
+
+		} elseif (!isset($organizationTypes[$model->organization_type_id])) {
+
+			throw new \yii\web\ForbiddenHttpException('You are not allowed to view this role');
+
+		}
+
+		$model->privilege_ids = $model->getPrivileges()->select('id')->column();
+
+		$model->privilegesTreeInfo = (new Privilege)->getTreeInfo();
+
+		$dataProvider = new ArrayDataProvider([
+			'allModels' => $model->privilegesTreeInfo['flat_tree']
+		]);
+
+		return $this->renderAjax('role-view', compact(
+			'model',
+			'dataProvider',
+			'organizationTypes'
+		));
+
+	}
+
+	public function actionRoleDelete($id) {
+
+		$this->view->title = 'Delete Role';
+
+		$model = Role::findOne($id);
+
+		if (!$model) {
+
+			throw new \yii\web\NotFoundHttpException('Role not found');
+
+		}
+
+		if (!$model->organization_id) {
+
+			throw new \yii\web\ForbiddenHttpException('This role is protected');
+
+		}
+
+		if ($model->organization_id != Yii::$app->user->identity->organization_id) {
+
+			throw new \yii\web\ForbiddenHttpException('You are not allowed to edit this role');
+
+		}
+
+		if (count($model->users)) {
+
+			throw new \yii\web\ForbiddenHttpException('You can\'t delete this role because of connected users');
+
+		}
+
+		if (Yii::$app->request->isPost) {
+
+			do {
+
+				$transaction = Yii::$app->db->beginTransaction();
+
+				$alert = '';
+
+				if (!$model->delete()) {
+
+					$alert = 'Role not deleted';
+
+					$transaction->rollback();
+
+					break;
+
+				}
+
+
+				// Unlink privileges
+
+				try {
+
+					$model->unlinkAll('privileges', true);
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to unlink privileges';
+
+					$transaction->rollback();
+
+					break;
+
+				}
+
+
+				$transaction->commit();
+
+				break;
+
+			} while(0);
+
+			$pjax_reload = '#main';
+
+			Yii::$app->response->format = Response::FORMAT_JSON;
+
+			return compact(
+				'alert',
+				'pjax_reload'
+			);
+			
+		}
+
+		return $this->renderAjax('role-delete', compact(
 			'model'
 		));
+
+	}
+
+	private function _roles_js() {
+
+		$role_view_url = Url::to(['admin-user-manager/role-view']);
+
+		$js = <<<JS
+
+			var el = $('.roles_block table:first tbody tr:first-child');
+
+			el.addClass('active');
+
+			getRole(el.attr('data-key'));
+
+			$('.roles_block tbody tr').on('click', function() {
+
+				$('.roles_block tbody tr').removeClass('active');
+
+				$(this).addClass('active');
+
+				getRole($(this).attr('data-key'));
+
+			});
+
+			function getRole(id) {
+
+				$('#main .alert-danger').hide();
+
+				$('#main .alert-success').hide();
+
+				$('#preloader').show();
+
+				$.ajax({
+					url: '{$role_view_url}',
+					type: 'GET',
+					data: {
+						id: id
+					},
+					timeout: ajaxTimeout,
+					complete: function() {
+
+						$('#preloader').hide();
+
+					},
+					error: function(jqXHR) {
+
+						var message;
+
+						if (jqXHR.status == 0) {
+
+							message = ajaxTimeoutMessage;
+
+						} else {
+
+							message = jqXHR.responseText;
+
+						}
+
+						$('#main .alert-danger').html(message).show().delay(2000).fadeOut();
+
+						$('.privileges_block').html('');
+
+					},
+					success: function(data) {
+
+						$('.privileges_block').html(data);
+
+					}
+				});
+
+			}
+JS;
+
+		return $js;
 
 	}
 

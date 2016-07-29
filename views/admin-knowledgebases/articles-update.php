@@ -33,10 +33,10 @@ $form = ActiveForm::begin([
 echo Alert::widget([
 	'options' => [
 		'class' => 'alert-danger',
-		'style' => ($alert == '') ? 'display: none' : ''
+		'style' => 'display: none'
 	],
-	'body' => $alert,
-	'closeButton' => false,
+	'body' => '',
+	'closeButton' => false
 ]);
 
 ?>
@@ -49,7 +49,7 @@ echo Alert::widget([
 		'style' => 'display: none'
 	],
 	'body' => '',
-	'closeButton' => false,
+	'closeButton' => false
 ]);
 
 ?>

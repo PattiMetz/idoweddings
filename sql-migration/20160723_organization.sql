@@ -1,0 +1,1 @@
+ALTER TABLE `role` CHANGE `company_type_id` `organization_type_id` INT(10) UNSIGNED NOT NULL, CHANGE `company_id` `organization_id` INT(10) UNSIGNED NOT NULL;
