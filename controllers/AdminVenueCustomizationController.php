@@ -29,11 +29,10 @@ class AdminVenueCustomizationController extends \yii\web\Controller
         $venue = Venue::findOne($id);
 
         $pages = ArrayHelper::map($venue->activepages, 'id', 'name');
-        //echo '<pre>';print_r($venue->activepages);
-        $location_groups = array();
+        
+
        //getting current page (default - main page)
 
-        
         if(!$page_id)
             $page = $venue->mainpage;
         else {
@@ -50,8 +49,30 @@ class AdminVenueCustomizationController extends \yii\web\Controller
         $post = Yii::$app->request->post();
         if ($post) {
             if ($settings->load($post)){
-                $settings->save();
+                if ($settings->save()) {
+                    if($page->type == 'locations') {
+
+                        if( $page->load($post) && $page->save()) {
+                        }else {
+                             $alert = 'Error locations saving';
+                        }
+                    }
+                    $message = 'Succesfully saved';
+                }
+                else {
+                    $alert = 'Error';
+                    $errors = $settings->getErrors();
+                }
+                Yii::$app->response->format = Response::FORMAT_JSON;
+
+                return compact(
+                    'message',
+                    'alert',
+                    'errors'
+                );
             }
+           
+
         }     
         return $this->render('/admin-venue/website/customization',[
             'pages'           => $pages,
@@ -124,11 +145,13 @@ class AdminVenueCustomizationController extends \yii\web\Controller
     public function actionPreviewTemplate($page_id, $top_type = '') {
         
         $model = VenuePage::findOne($page_id);
+        $venue = Venue::findOne($model->venue_id);
         /*if($top_type!='')
             $model->venuepagesetting->top_type = $top_type;*/
         $venue = Venue::findOne($model->venue_id);
-        return $this->renderAjax('/admin-venue/website/template', [
+        return $this->renderAjax('/admin-venue/website/template-'.$model->type, [
             'model' => $model,
+            'venue' => $venue
         ]);
     }
 

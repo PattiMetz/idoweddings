@@ -14,6 +14,7 @@ use yii\filters\VerbFilter;
 use yii\web\Response;
 use yii\data\ActiveDataProvider;
 use app\actions\DeleteAction;
+use app\actions\UpdateAction;
 use yii\web\UploadedFile;
 use yii\imagine\Image;
 /**
@@ -57,6 +58,17 @@ class AdminVenueLocationController extends Controller
                 'class'       => DeleteAction::className(),
                 'modelClass'  => 'app\models\venue\VenueLocationGroup',
                 'exampleName' => 'group'
+            ],
+            'timeslot-delete' => [
+                'class'       => DeleteAction::className(),
+                'modelClass'  => 'app\models\venue\VenueLocationTime',
+                'exampleName' => 'group'
+            ],
+            'timeslot-update' => [
+                'class'       => UpdateAction::className(),
+                'modelClass'  => 'app\models\venue\VenueLocationTime',
+                'exampleName' => 'venuelocationtime',
+                'view' => '@app/views/admin-venue/location/timeslot'
             ],
         ];
     }
@@ -147,7 +159,8 @@ class AdminVenueLocationController extends Controller
                 $time->location_id = $model->id;
                 $time->time_from = $new_time['time_from'];
                 $time->time_to = $new_time['time_to'];
-                $time->days = serialize($new_time['days']);
+                $time->days = $new_time['days'];
+                //$time->days = serialize($new_time['days']);
                 if(!$time->save())
                     $alert = 'Error time slot';
             }

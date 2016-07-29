@@ -20,7 +20,7 @@ use yii\bootstrap\Alert;
 		$this->params['breadcrumbs'][] = $this->title;
 
     	$form = ActiveForm::begin([
-            'options' => ['enctype' => 'multipart/form-data','class' => 'ajax-form'],
+            'options' => ['enctype' => 'multipart/form-data','class' => 'ajax-form','data-pjax'=>false],
             'layout' => 'horizontal',
 	
 			'fieldConfig' => [
@@ -121,13 +121,14 @@ use yii\bootstrap\Alert;
 								'item' =>
 					                function ($index, $label, $name, $checked, $value) {
 					                    return Html::checkbox($name, $checked, [
+					                    				'id' => $label,
 								                        'value' => $value,
 								                        'disabled'=>'disabled',
 								                        'label' => '<label for="' . $label . '">' . $label . '</label>',
 								                        'labelOptions' => [
 								                            'class' => 'checkbox-inline',
 								                        ],
-								                        //'id' => $label,
+								                        
 								                    ]);
 					                }]) ?>
 							</ul>
@@ -135,8 +136,8 @@ use yii\bootstrap\Alert;
 						</div>
 						<div class="col-md-4 col-sm-12">
 							<div class="pull-right">
-								<?php echo Html::Button('Edit', ['class' =>'btn btn-primary add_time_slot']) ?>
-								<?php echo Html::Button('Remove', ['class' =>'btn btn-primary add_time_slot']) ?>
+								<?php echo Html::Button('<i class="glyphicon glyphicon-edit"></i>Edit', ['class' =>'btn btn-primary modal-ajax', 'value' => Url::to([Yii::$app->controller->id."/timeslot-update", 'id'=>$stime->id])]) ?>
+								<?php echo Html::Button('<i class="glyphicon glyphicon-close"></i>Delete', ['class' =>'btn btn-primary modal-ajax', 'value' => Url::to([Yii::$app->controller->id."/timeslot-delete", 'id'=>$stime->id])]) ?>
 							</div>
 						</div>
 					</div>
@@ -157,26 +158,26 @@ use yii\bootstrap\Alert;
 		<p>Available Time slots</p>
 		<div class="add_timeslot_wrapper add_time clearfix">
 			<div class="col-sm-3 col-xs-6">
-				<?php echo $form->field($time, 'time_from')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time from'])->label('From',['class'=>'control-label col-sm-4']) ?>
+				<?php echo $form->field($time, 'time_from')->dropDownList($times, ['class' => 'form-control chosen-style time_from'], ['prompt'=>'time from'])->label('From',['class'=>'control-label col-sm-4']) ?>
 			</div>
 			<div class="col-sm-3 col-xs-6">
-				<?php echo $form->field($time, 'time_to')->dropDownList($times, ['class' => 'form-control chosen-style'], ['prompt'=>'time to'])->label('To',['class'=>'control-label col-sm-4']) ?>
+				<?php echo $form->field($time, 'time_to')->dropDownList($times, ['class' => 'form-control chosen-style time_to'], ['prompt'=>'time to'])->label('To',['class'=>'control-label col-sm-4']) ?>
 			</div>
 			<div class="col-sm-4">
 				
 				<ul class="timeslot_list list-inline">
-					<?php echo $form->field($time, 'days',['template'=>'{input}'])->checkboxList($days,[
+					<?php echo $form->field($time, 'days',['template'=>'{input}{error}'])->checkboxList($days,[
 					'tag'=>'li',
 					'separator'=>'</li><li>',
 					'item' =>
 						function ($index, $label, $name, $checked, $value) {
 							return Html::checkbox($name, $checked, [
 											'value' => $value,
-											'label' => '<label for="' . $label . '">' . $label . '</label>',
+											'label' => '<label for="new_' . $label . '">' . $label . '</label>',
 											'labelOptions' => [
 												'class' => 'checkbox-inline',
 											],
-											//'id' => $label,
+											'id' => 'new_'.$label,
 										]);
 						}]) ?>
 				</ul>
@@ -223,7 +224,19 @@ $upload_url = Url::to(['admin-venue-location/files-upload', 'location_id' => $mo
 $delete_url = Url::to([Yii::$app->controller->id."/delete-image"]);
 $js = <<<EOT
 	var xhr;
-
+	$('.add_time_slot').click(function(){
+		if($('.time_from').val() == $('.time_to').val()) {
+			$('.add_timeslot_wrapper').find('.help-block-error').html('Please select time slot');
+			return false;
+			
+		}
+		if($('.add_timeslot_wrapper').find('input[type="checkbox"]:checked').length == 0) {
+		
+			$('.timeslot_list').find('.help-block-error').html('Please select time slot');
+			return false;	
+		}
+		
+	})
 	$('#files-select').on('change', function() {
 
 		// Disable browse files button

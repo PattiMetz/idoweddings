@@ -341,9 +341,12 @@ $(function() {
 	$('.select_all').change(function(){
 		if($(this).is(':checked') === true) {
 			$(this).parent().next().find('input[type=checkbox]').prop('checked', true);
+			$(this).parent().next().find('input[type=checkbox]').closest('label').addClass('active');
 		}
-		else
+		else {
 			$(this).parent().next().find('input[type=checkbox]').prop('checked', false);
+			$(this).parent().next().find('input[type=checkbox]').closest('label').removeClass('active');
+		}
 	})
 	
 	$('#venue-types_array label, #venue-vibes_array label, #venue-services_array label').each(function(){
