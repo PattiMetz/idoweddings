@@ -39,6 +39,7 @@ class VenuePageSetting extends \yii\db\ActiveRecord
             [['page_id'], 'integer'],
             [['text1', 'text2'], 'string'],
             [['top_type'], 'string', 'max' => 15],
+            [['default_slideshow'], 'string', 'max' => 10],
             [['venue_name', 'button', 'slogan', 'h1', 'h2', 'video'], 'string', 'max' => 255],
             [['page_id'], 'exist', 'skipOnError' => true, 'targetClass' => VenuePage::className(), 'targetAttribute' => ['page_id' => 'id']],
         ];

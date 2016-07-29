@@ -173,6 +173,14 @@ class Venue extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getWebsite()
+    {
+        return $this->hasOne(VenueWebsite::className(), ['venue_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getActivepages() {
        return VenuePage::find()
             ->where(['venue_id' => $this->id, 'active' => '1'])

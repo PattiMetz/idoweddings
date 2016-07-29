@@ -53,13 +53,13 @@ class VenueWebsite extends \yii\db\ActiveRecord
             $settings = unserialize($this->font_settings);
         if($this->font_settings=='' || !is_array($settings)) {
             $settings = [
-                'title'=>['font'=>'', 'size'=>'', 'color'=>''],
-                'subtitle'=>['font'=>'', 'size'=>'', 'color'=>''],
-                'content'=>['font'=>'', 'size'=>'', 'color'=>''],
-                'menu'=>['font'=>'', 'size'=>'', 'color'=>''],
-                'submenu'=>['font'=>'', 'size'=>'', 'color'=>''],
-                'button'=>['font'=>'', 'size'=>'', 'color'=>'','background'=>''],
-                'name'=>['font'=>'', 'size'=>'', 'color'=>'']
+                'title'    => ['font'=>'Conv_proximanova-regular', 'size'=>'36', 'color'=>'#f69997'],
+                'subtitle' => ['font'=>'Conv_proximanova-regular', 'size'=>'30', 'color'=>'#917671'],
+                'content'  => ['font'=>'Conv_proximanova-regular', 'size'=>'16', 'color'=>'#474747'],
+                'menu'     => ['font'=>'Conv_proximanova-regular', 'size'=>'16', 'color'=>'#000'],
+                'submenu'  => ['font'=>'Conv_proximanova-regular', 'size'=>'14', 'color'=>'#000'],
+                'button'   => ['font'=>'Conv_EuphoriaScript-Regular', 'size'=>'40', 'color'=>'#fff','background'=>'#f69997'],
+                'name'     => ['font'=>'Conv_EuphoriaScript-Regular', 'size'=>'72', 'color'=>'#f69997']
             ];
         }
        return $settings;

@@ -22,7 +22,6 @@ class VenueLocationTime extends \yii\db\ActiveRecord
     {
         return 'venue_location_time';
     }
-
     /**
      * @inheritdoc
      */
@@ -31,7 +30,7 @@ class VenueLocationTime extends \yii\db\ActiveRecord
         return [
             [['location_id'], 'required'],
             [['location_id'], 'integer'],
-            [['days'], 'string'],
+            [['days'], 'safe'],
             [['time_from', 'time_to'], 'string', 'max' => 10],
             [['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => VenueLocation::className(), 'targetAttribute' => ['location_id' => 'id']],
         ];
@@ -46,6 +45,7 @@ class VenueLocationTime extends \yii\db\ActiveRecord
             'location_id' => 'Location ID',
             'times' => 'Times',
             'days' => 'Days',
+            'days_array' => 'Days',
         ];
     }
 
@@ -61,5 +61,12 @@ class VenueLocationTime extends \yii\db\ActiveRecord
     {
         
         return unserialize($this->days);
+    }
+
+    public function beforeSave($insert){
+        if(is_array($this->days)) {
+            $this->days = serialize($this->days);
+        }
+        return parent::beforeSave($insert);
     }
 }
