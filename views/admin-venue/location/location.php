@@ -103,7 +103,7 @@ use yii\bootstrap\Alert;
 
 		<?php if($model->times){?>
 			<p>Available Time slots</p>
-			<div class="times" style="border:solid 1px #ccc;float:left;width:100%">
+			<div class="times">
 
 				<?php foreach($model->times as $k=>$stime):?>
 					<div class="custom_timeslot_wrapper time clearfix">
@@ -136,7 +136,7 @@ use yii\bootstrap\Alert;
 						</div>
 						<div class="col-md-4 col-sm-12">
 							<div class="pull-right">
-								<?php echo Html::Button('<i class="glyphicon glyphicon-edit"></i>Edit', ['class' =>'btn btn-primary modal-ajax', 'value' => Url::to([Yii::$app->controller->id."/timeslot-update", 'id'=>$stime->id])]) ?>
+								<?php echo Html::Button('<i class="glyphicon glyphicon-pencil"></i> Edit', ['class' =>'btn btn-primary modal-ajax', 'value' => Url::to([Yii::$app->controller->id."/timeslot-update", 'id'=>$stime->id])]) ?>
 								<?php echo Html::Button('<i class="glyphicon glyphicon-close"></i>Delete', ['class' =>'btn btn-primary modal-ajax', 'value' => Url::to([Yii::$app->controller->id."/timeslot-delete", 'id'=>$stime->id])]) ?>
 							</div>
 						</div>
@@ -148,7 +148,8 @@ use yii\bootstrap\Alert;
 
 		<?php } else {?>
 			<div class="no_timeslots">
-				AVAILABLE TIMESLOTS NOT BE ENTERED
+				AVAILABLE TIME SLOTS NEED TO BE ENTERED
+				<i class="glyphicon glyphicon-light-heart"></i>
 			</div>
 		<?php }?>
 		
@@ -212,7 +213,7 @@ use yii\bootstrap\Alert;
 		<?php }?>
 	</div>
 	<div class="form-group">
-        <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-primary' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

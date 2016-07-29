@@ -30,10 +30,10 @@ if(!is_array($model->days))
 ?>
 <div class="add_timeslot_wrapper add_time clearfix">
 	<div class="col-sm-3 col-xs-6">
-		<?php echo $form->field($model, 'time_from')->dropDownList($times, ['class' => 'form-control time_from'], ['prompt'=>'time from'])->label('From',['class'=>'control-label col-sm-4']) ?>
+		<?php echo $form->field($model, 'time_from')->dropDownList($times, ['class' => 'form-control chosen-style time_from'], ['prompt'=>'time from'])->label('From',['class'=>'control-label col-sm-4']) ?>
 	</div>
 	<div class="col-sm-3 col-xs-6">
-		<?php echo $form->field($model, 'time_to')->dropDownList($times, ['class' => 'form-control time_to'], ['prompt'=>'time to'])->label('To',['class'=>'control-label col-sm-4']) ?>
+		<?php echo $form->field($model, 'time_to')->dropDownList($times, ['class' => 'form-control chosen-style time_to'], ['prompt'=>'time to'])->label('To',['class'=>'control-label col-sm-4']) ?>
 	</div>
 	
 	<div class="col-sm-4">

@@ -402,6 +402,13 @@ table, th {
     color: #9e9a49;
 	vertical-align: middle;
 }
+.glyphicon-light-heart {
+	display: block;
+	width: 18px;
+	height: 16px;
+	margin: 6px auto 20px;
+	background: url(../images/light_heart.png);
+}
 .nicescroll-rails[id$="hr"]{
 	display: none;
 }
@@ -1827,6 +1834,10 @@ p.role_text {
 .webaddress_input {
 	display: inline-block;
 	width: 200px;
+}
+	/*==Modal venue edit available time slots==*/
+.modal-body .add_timeslot_wrapper .col-sm-2 {
+	margin: 0 15px 15px 0;
 }
 
 /******** 12 - Add sorting icons to gridview sort links ********/
