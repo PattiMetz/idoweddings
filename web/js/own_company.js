@@ -4,8 +4,11 @@ $(function(){
 
     var main = {};
 
-    main.changeFields = function(){
-        $(document.body).on('change', '.main-company-form .contact-group input', function(){
+    /**
+     * Update contact fields
+     */
+    main.updateContactFields = function(){
+        $(document.body).on('change', '.main-company-form .cont-fields input', function(){
             var id = $(this).closest('.contact-group').data('cid');
             var action = $('.cont_wrap').data('action');
             var field = $(this).data('name');
@@ -30,9 +33,13 @@ $(function(){
         });
     };
 
+    /**
+     * Delete all contact group of fields
+     */
     main.deleteContact = function(){
-        $('.del_contact').on('click',function(e){
+        $(document.body).on('click','.del_contact', function(e){
             e.preventDefault();
+            var self = this;
             var id = $(this).closest('.contact-group').data('cid');
             var action = $('.cont_wrap').data('action');
             var comp_id = $('.cont_wrap').data('comp_id');
@@ -48,8 +55,8 @@ $(function(){
                     if(data.status == 'error'){
                         alert('Error, contact was not deleted. ' + data.msg);
                     } else {
-                        $('#c_'+id).fadeOut(function(){
-                            $(this).remove();
+                        $(self).closest('.contact-group').fadeOut(function(){
+                            $(self).remove();
                         });
                     }
                 }
@@ -57,6 +64,9 @@ $(function(){
         });
     };
 
+    /**
+     * Add contact group of fields without phones
+     */
     main.addContact = function(){
         $(document.body).on('click', '.add_contact', function(){
             var action = $('.cont_wrap').data('action');
@@ -80,6 +90,7 @@ $(function(){
 
                         cloneGroup.attr('data-cid', id);
                         cloneGroup.attr('id', '#c_'+id);
+                        cloneGroup.find('.phones-wrap').empty();
 
                         var inputFields = cloneGroup.find('input');
 
@@ -94,7 +105,109 @@ $(function(){
         });
     };
 
-    main.changeFields();
+    /**
+     * Add phone field
+     */
+    main.addPhoneField = function(){
+        $(document.body).on('click', '.add_phone', function(){
+            var self = this;
+            var action = $(this).data('action');
+            var cid = $(this).closest('.contact-group').data('cid');
+
+            $.ajax({
+                url: action + '?cid=' + cid,
+                method: 'put',
+                dataType: 'json',
+                data:{
+                    cid: cid
+                },
+                success: function(data){
+                    if(data.status == 'error'){
+                        alert('Error, phone was not added.')
+                    } else {
+                        var phoneWrap = $(self).closest('.contact-group').find('.phones-wrap');
+                        var phoneGroup = $('.phone_row:first');
+                        var cloneGroup = phoneGroup.clone();
+
+                        cloneGroup.find('input').attr('data-id', data.pid);
+                        cloneGroup.attr('data-pid', data.pid);
+
+                        var inputFields = cloneGroup.find('input');
+
+                        inputFields.each(function(num,value){
+                            $(value).val('');//clear new values
+                        });
+
+                        phoneWrap.append(cloneGroup).html();
+                    }
+                }
+            });
+        });
+    };
+
+    /**
+     * Delete phone field
+     */
+    main.deletePhoneField = function(){
+        $(document.body).on('click','.delete_phone', function(e){
+            e.preventDefault();
+            //if($('.contact-group:first').find('.phone_row').length <= 1){
+            //    return;
+            //}
+            var self = this;
+            var pid = $(this).closest('.phone_row').data('pid');
+            var action = $(this).closest('.phone_row').data('action');
+
+            $.ajax({
+                url: action + '?pid=' + pid,
+                method: 'delete',
+                dataType: 'json',
+                success: function(data){
+                    if(data.status == 'error'){
+                        alert('Error, phone was not deleted.');
+                    } else {
+                        var phone_row = $(self).closest('.phone_row');
+                        phone_row.fadeOut(function(){
+                            phone_row.remove();
+                        });
+                    }
+                }
+            });
+        });
+    };
+
+    /**
+     * Update any input fields
+     * Universal function
+     */
+    main.updateField = function(){
+        $(document.body).on('change', '.update_on_field', function(){
+            var id = $(this).data('id');
+            var action = $(this).data('action');
+            var field = $(this).data('field');
+            var value = $(this).val();
+
+            $.ajax({
+                url: action + '?id=' + id,
+                method: 'post',
+                dataType: 'json',
+                data: {
+                    field: field,
+                    value: value
+                },
+                success: function(data){
+                    if(data.status == 'error'){
+                        alert('Error, data was not updated. ' + data.msg)
+                    }
+                }
+            });
+        });
+    };
+
+    main.updateContactFields();
     main.deleteContact();
     main.addContact();
+    main.updateField();
+    main.addPhoneField();
+    main.deletePhoneField();
 });
