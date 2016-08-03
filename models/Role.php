@@ -23,6 +23,8 @@ class Role extends ActiveRecord {
 	public function rules() {
 		return [
 			['display_name', 'required'],
+			/*TODO: What's the workaround using Yii coding style? */
+			['privilege_ids', 'filter', 'filter' => [$this, 'handleEmptySelection']],
 			['privilege_ids', 'each', 'rule' => ['integer']],
 			['privilege_ids', 'filter', 'filter' => 'array_unique'],
 			/*TODO: Maybe to show an error instead of removing invalid privileges? */
@@ -34,6 +36,13 @@ class Role extends ActiveRecord {
 		return [
 			'display_name' => 'Name'
 		];
+	}
+
+	public function handleEmptySelection($value) {
+		if ($value === '') {
+			$value = [];
+		}
+		return $value;
 	}
 
 	public function checkPrivileges($value) {
