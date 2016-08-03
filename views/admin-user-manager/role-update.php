@@ -42,52 +42,28 @@ echo Alert::widget([
 
 <?php echo $form->field($model, 'display_name')->textInput(); ?>
 
+<?php
+
+/*TODO: Find another solution */
+$privileges_field = [
+	'id' => Html::getInputId($model, 'privilege_ids'),
+	'name' => Html::getInputName($model, 'privilege_ids')
+];
+
+?>
+
 <?php echo $form->field($model, 'privilege_ids')->begin(); ?>
 
 <p class="role_text">Privileges</p>
 
 <div class="role_scrolling_table_wrap table-responsive">
 
-<?php
-	echo GridView::widget([
-		'dataProvider' => $privilegesDataProvider,
-		'layout' => "{items}",
-		'tableOptions' => [
-			'class' => 'table table-bordered table-condensed scrolling_table'
-		],
-		'rowOptions' => function($model) {
-			if ($model->parent_id) {
-				return ['class' => 'child_line'];
-			}
-		},
-		'columns' => [
-			[
-				'label' => 'Name',
-				'attribute' => 'display_name'
-			],
-			[
-				'label' => 'Enabled',
-				'format' => 'raw',
-				'value' => function ($data) use ($model) {
-					$options = [
-						'value' => $data->id,
-						'id' => 'privilege_ids-' . $data->id,
-						'class' => 'custom_checkbox'
-					];
-					if ($data['parent_id']) {
-						if (!in_array($data['parent_id'], $model->privilege_ids)) {
-							$options['disabled'] = 'disabled';
-						}
-					} elseif (!empty($model->privilegesTreeInfo['child_ids'][$data->id])) {
-						$options['class'].= ' custom-parent-privilege';
-						$options['data-child-ids'] = json_encode($model->privilegesTreeInfo['child_ids'][$data->id]);
-					}
-					return Html::checkbox('privilege_ids[]', in_array($data->id, $model->privilege_ids), $options);
-				}
-			],
-		],
-	]);
-?>
+<?php echo $this->render('_privilege-checkbox-list', [
+	'model' => $model,
+	'privilegesDataProvider' => $privilegesDataProvider,
+	'is_view' => false,
+	'field_name' => $privileges_field['name']
+]); ?>
 
 </div>
 
@@ -104,16 +80,10 @@ echo Alert::widget([
 
 <?php
 
+$this->registerJS($_privilege_checkbox_change_handler_js);
+
 $js = <<<EOT
-	$('.custom-parent-privilege').on('change', function() {
-		var checked = this.checked;
-		var childIds = $(this).data('child-ids');
-		$.each(childIds, function(index, value) {
-			$('#privilege_ids-' + value).prop('checked', checked);
-			$('#privilege_ids-' + value).prop('disabled', !checked);
-			$('#privilege_ids-' + value).trigger('refresh');
-		});
-	});
+	$('.custom-parent-privilege').change({fieldId: '{$privileges_field['id']}'}, handleCheckboxChange);
 EOT;
 
 $this->registerJS($js);

@@ -48,11 +48,44 @@ use yii\bootstrap\ActiveForm;
         <div class="cont_wrap"  data-comp_id="<?= $model->id ?>" data-action="<?= \yii\helpers\Url::to(['admin-maincompany/contacts']) ?>">
             <?php foreach ($contacts as $contact){ ?>
                 <div id="c_<?= $contact->id?>" class="contact-group" data-cid="<?= $contact->id?>">
-                    <?= $form->field($contact, 'name')->textInput(['data-name' => 'name']) ?>
-                    <?= $form->field($contact, 'email')->textInput(['data-name' => 'email']) ?>
-                    <?= $form->field($contact, 'skype')->textInput(['data-name' => 'skype']) ?>
-                    <?//= $form->field($phone, 'phone')->textInput(['data-name' => 'phone']) ?>
-                    <div class="form-group"><?= Html::button('Add phone', ['class' => 'add_phone btn btn-success pull-right']) ?></div>
+                    <div class="cont-fields">
+                        <?= $form->field($contact, 'name')->textInput(['data-name' => 'name']) ?>
+                        <?= $form->field($contact, 'email')->textInput(['data-name' => 'email']) ?>
+                        <?= $form->field($contact, 'skype')->textInput(['data-name' => 'skype']) ?>
+                    </div>
+                    <div class="phones-wrap">
+                        <?php foreach ($contact->mainCompanyPhones as $phone){ ?>
+                            <div class="phone_row"
+                                 data-pid="<?= $phone->id ?>"
+                                 data-action="<?= \yii\helpers\Url::to(['admin-maincompany/delete_phone']) ?>">
+                                <div class="col-md-5">
+                                    <?= $form->field($phone, 'type')->dropDownList($phone->phone_types, [
+                                        'class' => 'form-control update_on_field',
+                                        'data-field' => 'type',
+                                        'data-id' => $phone->id,
+                                        'data-action' => \yii\helpers\Url::to(['admin-maincompany/update_phone'])
+                                    ]) ?>
+                                </div>
+                                <div class="col-md-6">
+                                    <?= $form->field($phone, 'phone')->textInput([
+                                        'class' => 'form-control update_on_field',
+                                        'data-field' => 'phone',
+                                        'data-id' => $phone->id,
+                                        'data-action' => \yii\helpers\Url::to(['admin-maincompany/update_phone'])
+                                        ]) ?>
+                                </div>
+                                <div class="col-md-1" style="color: red; padding-top: 10px; cursor: pointer">
+                                    <span class="delete_phone glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                </div>
+                            </div>
+                        <?php } ?>
+                    </div>
+                    <div class="form-group">
+                        <?= Html::button('Add phone', [
+                            'class' => 'add_phone btn btn-success pull-right',
+                            'data-action' => \yii\helpers\Url::to(['admin-maincompany/add_phone_field']),
+                        ]) ?>
+                    </div>
                     <div class="form-group">
                         <?= Html::button('Delete contact', ['class' => 'del_contact btn btn-warning pull-right']) ?>
                     </div>

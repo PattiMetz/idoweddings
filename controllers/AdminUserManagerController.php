@@ -68,7 +68,7 @@ class AdminUserManagerController extends Controller {
 
 	}
 
-	public function actionUserUpdate($id) {
+	public function actionUserUpdate($id = 0) {
 
 		$this->view->title = ($id) ? 'Edit User' : 'Add User';
 
@@ -82,32 +82,44 @@ class AdminUserManagerController extends Controller {
 
 			}
 
+			$roles = $model->organization->getAvailableRoles()->all();
+
 			$model->privilege_ids = $model->getPrivileges()->select('id')->column();
 
 		} else {
 
 			$model = new User;
 
-			$model->organization_id = Yii::$app->user->identity->organization_id;
+			$organization = Yii::$app->user->identity->organization;
 
-			$model->privilege_ids = [];
+			$model->organization_id = $organization->id;
+
+			$roles = $organization->getAvailableRoles()->all();
+
+			if (count($roles)) {
+
+				$role = $roles[0];
+
+				$model->role_id = $role->id;
+
+				$model->privilege_ids = $role->getPrivileges()->select('id')->column();
+
+			} else {
+
+				$model->role_id = 0;
+
+				$model->privilege_ids = [];
+
+			}
 
 		}
 
 		$model->privilegesTreeInfo = (new Privilege)->getTreeInfo();
 
-		if (Yii::$app->request->isPost) {
+		$model->roleItems = ArrayHelper::map($roles, 'id', 'display_name');
+
+		if ($model->load(Yii::$app->request->post())) {
 		
-			$post = Yii::$app->request->post();
-			
-			if (empty($post['privilege_ids'])) {
-
-				$post['privilege_ids'] = [];
-
-			}
-
-			$model->load($post);
-
 			do {
 
 				$errors = ActiveForm::validate($model);
@@ -195,9 +207,12 @@ class AdminUserManagerController extends Controller {
 			'allModels' => $model->privilegesTreeInfo['flat_tree']
 		]);
 
+		$_privilege_checkbox_change_handler_js = $this->_privilege_checkbox_change_handler_js();
+
 		return $this->renderAjax('user-update', compact(
 			'model',
-			'privilegesDataProvider'
+			'privilegesDataProvider',
+			'_privilege_checkbox_change_handler_js'
 		));
 
 	}
@@ -293,18 +308,8 @@ class AdminUserManagerController extends Controller {
 
 		$model->privilegesTreeInfo = (new Privilege)->getTreeInfo();
 
-		if (Yii::$app->request->isPost) {
+		if ($model->load(Yii::$app->request->post())) {
 		
-			$post = Yii::$app->request->post();
-			
-			if (empty($post['privilege_ids'])) {
-
-				$post['privilege_ids'] = [];
-
-			}
-
-			$model->load($post);
-
 			do {
 
 				$errors = ActiveForm::validate($model);
@@ -392,9 +397,12 @@ class AdminUserManagerController extends Controller {
 			'allModels' => $model->privilegesTreeInfo['flat_tree']
 		]);
 
+		$_privilege_checkbox_change_handler_js = $this->_privilege_checkbox_change_handler_js();
+
 		return $this->renderAjax('role-update', compact(
 			'model',
-			'privilegesDataProvider'
+			'privilegesDataProvider',
+			'_privilege_checkbox_change_handler_js'
 		));
 
 	}
@@ -435,13 +443,13 @@ class AdminUserManagerController extends Controller {
 
 		$model->privilegesTreeInfo = (new Privilege)->getTreeInfo();
 
-		$dataProvider = new ArrayDataProvider([
+		$privilegesDataProvider = new ArrayDataProvider([
 			'allModels' => $model->privilegesTreeInfo['flat_tree']
 		]);
 
 		return $this->renderAjax('role-view', compact(
 			'model',
-			'dataProvider',
+			'privilegesDataProvider',
 			'organizationTypes'
 		));
 
@@ -536,6 +544,53 @@ class AdminUserManagerController extends Controller {
 
 	}
 
+	public function actionRolePrivilegeCheckboxList($role_id, $field_name) {
+
+		/*TODO: validate field name */
+
+		/*TODO: it is similar to roleView */
+
+		$model = Role::findOne($role_id);
+
+		if (!$model) {
+
+			throw new \yii\web\NotFoundHttpException('Role not found');
+
+		}
+
+		if ($model->organization_id) {
+
+			if ($model->organization_id != Yii::$app->user->identity->organization_id) {
+
+				throw new \yii\web\ForbiddenHttpException('You are not allowed to view this role');
+
+			}
+
+		} elseif ($model->organization_type_id != Yii::$app->user->identity->organization->type_id) {
+
+			throw new \yii\web\ForbiddenHttpException('You are not allowed to view this role');
+
+		}
+
+		$model->privilege_ids = $model->getPrivileges()->select('id')->column();
+
+		$model->privilegesTreeInfo = (new Privilege)->getTreeInfo();
+
+		$privilegesDataProvider = new ArrayDataProvider([
+			'allModels' => $model->privilegesTreeInfo['flat_tree']
+		]);
+
+		$is_view = false;
+
+		return $this->renderAjax('_privilege-checkbox-list', compact(
+			'model',
+			'privilegesDataProvider',
+			'is_view',
+			'field_name'
+		));
+
+	}
+
 	private function _roles_js() {
 
 		$role_view_url = Url::to(['admin-user-manager/role-view']);
@@ -606,6 +661,26 @@ class AdminUserManagerController extends Controller {
 
 			}
 JS;
+
+		return $js;
+
+	}
+
+	private function _privilege_checkbox_change_handler_js() {
+
+		$js = <<<EOT
+			var handleCheckboxChange = function(e) {
+				var fieldId = e.data.fieldId;
+				var checked = this.checked;
+				var childIds = $(this).data('child-ids');
+				$.each(childIds, function(index, value) {
+					var selector = '.field-' + fieldId + ' input[value="' + value + '"]';
+					$(selector).prop('checked', checked);
+					$(selector).prop('disabled', !checked);
+					$(selector).trigger('refresh');
+				});
+			}
+EOT;
 
 		return $js;
 

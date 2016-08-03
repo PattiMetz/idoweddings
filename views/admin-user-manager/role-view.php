@@ -7,39 +7,11 @@ use yii\grid\GridView;
 
 <div class="table-responsive">
 
-<?php
-	echo GridView::widget([
-		'dataProvider' => $dataProvider,
-		'layout' => "{items}",
-		'tableOptions' => [
-			'class' => 'table table-bordered table-condensed'
-		],
-		'rowOptions' => function($model) {
-			if ($model->parent_id) {
-				return ['class' => 'child_line'];
-			}
-		},
-		'columns' => [
-			[
-				'label' => 'Name',
-				'attribute' => 'display_name'
-			],
-			[
-				'label' => 'Enabled',
-				'format' => 'raw',
-				'value' => function ($data) use ($model) {
-					if (in_array($data->id, $model->privilege_ids)) {
-						$checked =  'checked';
-						$class_on = 'on';
-					} else {
-						$checked =  '';
-						$class_on = '';
-					}
-					return "<input type=\"checkbox\" class=\"custom_checkbox {$class_on}\" {$checked} disabled>";
-				}
-			],
-		],
-	]);
-?>
+<?php echo $this->render('_privilege-checkbox-list', [
+		'model' => $model,
+		'privilegesDataProvider' => $privilegesDataProvider,
+		'is_view' => true,
+		'field_name' => ''
+]); ?>
 
 </div>

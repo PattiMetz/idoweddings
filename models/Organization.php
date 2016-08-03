@@ -26,4 +26,14 @@ class Organization extends ActiveRecord {
 		];
 	}
 
+	public function getAvailableRoles() {
+		return Role::find()
+			->where([
+				'organization_id' => 0,
+				'organization_type_id' => $this->type_id
+			])
+			->orWhere(['organization_id' => $this->id])
+			->orderBy([new \yii\db\Expression('! organization_id DESC, id')]);
+	}
+
 }

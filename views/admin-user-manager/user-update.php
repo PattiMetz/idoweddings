@@ -1,8 +1,8 @@
 <?php
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\bootstrap\ActiveForm;
 use yii\bootstrap\Alert;
-use yii\grid\GridView;
 ?>
 <?php
 
@@ -42,52 +42,30 @@ echo Alert::widget([
 
 <?php echo $form->field($model, 'display_name')->textInput(); ?>
 
+<?php echo $form->field($model, 'role_id')->dropDownList($model->roleItems, ['class'  => 'chosen-style']); ?>
+
+<?php
+
+/*TODO: Find another solution */
+$privileges_field = [
+	'id' => Html::getInputId($model, 'privilege_ids'),
+	'name' => Html::getInputName($model, 'privilege_ids')
+];
+
+?>
+
 <?php echo $form->field($model, 'privilege_ids')->begin(); ?>
 
 <p class="role_text">Privileges</p>
 
 <div class="role_scrolling_table_wrap table-responsive">
 
-<?php
-	echo GridView::widget([
-		'dataProvider' => $privilegesDataProvider,
-		'layout' => "{items}",
-		'tableOptions' => [
-			'class' => 'table table-bordered table-condensed scrolling_table'
-		],
-		'rowOptions' => function($model) {
-			if ($model->parent_id) {
-				return ['class' => 'child_line'];
-			}
-		},
-		'columns' => [
-			[
-				'label' => 'Name',
-				'attribute' => 'display_name'
-			],
-			[
-				'label' => 'Enabled',
-				'format' => 'raw',
-				'value' => function ($data) use ($model) {
-					$options = [
-						'value' => $data->id,
-						'id' => 'privilege_ids-' . $data->id,
-						'class' => 'custom_checkbox'
-					];
-					if ($data['parent_id']) {
-						if (!in_array($data['parent_id'], $model->privilege_ids)) {
-							$options['disabled'] = 'disabled';
-						}
-					} elseif (!empty($model->privilegesTreeInfo['child_ids'][$data->id])) {
-						$options['class'].= ' custom-parent-privilege';
-						$options['data-child-ids'] = json_encode($model->privilegesTreeInfo['child_ids'][$data->id]);
-					}
-					return Html::checkbox('privilege_ids[]', in_array($data->id, $model->privilege_ids), $options);
-				}
-			],
-		],
-	]);
-?>
+<?php echo $this->render('_privilege-checkbox-list', [
+	'model' => $model,
+	'privilegesDataProvider' => $privilegesDataProvider,
+	'is_view' => false,
+	'field_name' => $privileges_field['name']
+]); ?>
 
 </div>
 
@@ -104,15 +82,66 @@ echo Alert::widget([
 
 <?php
 
+$this->registerJS($_privilege_checkbox_change_handler_js);
+
+$checkbox_list_url = Url::to(['admin-user-manager/role-privilege-checkbox-list']);
+
+$role_field_id = Html::getInputId($model, 'role_id');
+
 $js = <<<EOT
-	$('.custom-parent-privilege').on('change', function() {
-		var checked = this.checked;
-		var childIds = $(this).data('child-ids');
-		$.each(childIds, function(index, value) {
-			$('#privilege_ids-' + value).prop('checked', checked);
-			$('#privilege_ids-' + value).prop('disabled', !checked);
-			$('#privilege_ids-' + value).trigger('refresh');
+	$('.custom-parent-privilege').change({fieldId: '{$privileges_field['id']}'}, handleCheckboxChange);
+
+	$('#{$role_field_id}').on('change', function() {
+
+		$('#modal .alert-danger').hide();
+
+		$('#preloader').show();
+
+		$.ajax({
+			url: '{$checkbox_list_url}',
+			type: 'GET',
+			data: {
+				role_id: this.value,
+				field_name: '{$privileges_field['name']}'
+			},
+			timeout: ajaxTimeout,
+			complete: function() {
+
+				$('#preloader').hide();
+
+			},
+			error: function(jqXHR) {
+
+				var message;
+
+				if (jqXHR.status == 0) {
+
+					message = ajaxTimeoutMessage;
+
+				} else {
+
+					message = jqXHR.responseText;
+
+				}
+
+				$('#modal .alert-danger').html(message).show().delay(2000).fadeOut();
+
+				$('.role_scrolling_table_wrap').html('Data not loaded.');
+
+				$('#modal .btn-primary').attr('disabled', true);
+
+			},
+			success: function(data) {
+
+				$('.role_scrolling_table_wrap').html(data);
+
+				$('#modal .btn-primary').attr('disabled', false);
+
+				$('.custom-parent-privilege').change({fieldId: '{$privileges_field['id']}'}, handleCheckboxChange);
+
+			}
 		});
+
 	});
 EOT;
 

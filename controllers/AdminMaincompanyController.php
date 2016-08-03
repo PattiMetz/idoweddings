@@ -5,7 +5,7 @@ namespace app\controllers;
 use app\models\Country;
 use app\models\MainCompanyAddress;
 use app\models\MainCompanyContact;
-//use app\models\MainCompanyPhone;
+use app\models\MainCompanyPhone;
 use Yii;
 use app\models\MainCompany;
 use yii\web\Controller;
@@ -47,12 +47,11 @@ class AdminMaincompanyController extends Controller
         if($model === null){
             $model = new MainCompany();
             $address = new MainCompanyAddress();
-            $contacts = null;
+            $contacts = $phone = null;
             //$phone = new MainCompanyPhone();
         } else {
             $address = $model->mainCompanyAddresses;
-            $contacts = MainCompanyContact::find()->where(['company_id' => $model->id])->all();//todo +all
-            //$phone = MainCompanyPhone::find()->where(['contact_id' => $contact->id])->one();//todo +all
+            $contacts = $model->mainCompanyContacts;
         }
 
         if ($model->load(Yii::$app->request->post()) &&
@@ -81,7 +80,7 @@ class AdminMaincompanyController extends Controller
             'model' => $model,
             'address' => $address,
             'contacts' => $contacts,
-            'phone' => null,//$phone,//todo
+            'phone' => null,//$phone,
             'country' => new Country()
         ]);
     }
@@ -139,6 +138,73 @@ class AdminMaincompanyController extends Controller
             'status' => $status ? 'success' : 'error',
             'msg' => $msg,
             'cid' => $cid
+        ));
+    }
+
+    /**
+     * @param $cid
+     * Add phone field ajax
+     */
+    public function actionAdd_phone_field($cid){
+
+        if(Yii::$app->request->isPut){
+            $phoneModel = new MainCompanyPhone();
+            $phoneModel->contact_id = $cid;
+            $phoneModel->type = 'mobile';
+            $status = $phoneModel->save();
+
+            echo json_encode(array(
+                'status' => $status ? 'success' : 'error',
+                'pid' => $status ? $phoneModel->getPrimaryKey() : 0
+            ));
+        }
+    }
+
+    /**
+     * @param $pid
+     * @throws \Exception
+     * Delete phone field ajax
+     */
+    public function actionDelete_phone($pid){
+
+        if(Yii::$app->request->isDelete){
+            $status = MainCompanyPhone::findOne($pid)->delete();
+
+            echo json_encode(array(
+                'status' => $status ? 'success' : 'error',
+            ));
+        }
+    }
+
+    /**
+     * @param $id
+     * Ajax update phones fields
+     */
+    public function actionUpdate_phone($id){
+        $status = false;
+        $msg = '';
+        $post = Yii::$app->request->post();
+
+        if(Yii::$app->request->isPost){
+
+            if(!empty($post['field'])){
+                $field = $post['field'];
+                $value = $post['value'];
+                $model = MainCompanyPhone::find()->where(['id' => $id])->one();
+
+                if($model){
+                    $model->$field = $value;
+                    $status = $model->save();
+                    if (!$status){
+                        $msg = json_encode($model->getFirstErrors());
+                    }
+                }
+            }
+        }
+
+        echo json_encode(array(
+            'status' => $status ? 'success' : 'error',
+            'msg' => $msg
         ));
     }
 

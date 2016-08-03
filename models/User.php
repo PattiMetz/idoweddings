@@ -32,6 +32,8 @@ class User extends ActiveRecord implements IdentityInterface {
 
     public $privilege_ids;
 
+    public $roleItems;
+
     /**
      * @inheritdoc
      */
@@ -57,6 +59,10 @@ class User extends ActiveRecord implements IdentityInterface {
     {
         return [
 		['display_name', 'required'],
+		['role_id', 'required'],
+		['role_id', 'inRoleItems'],
+		/*TODO: What's the workaround using Yii coding style? */
+		['privilege_ids', 'filter', 'filter' => [$this, 'handleEmptySelection']],
 		['privilege_ids', 'each', 'rule' => ['integer']],
 		['privilege_ids', 'filter', 'filter' => 'array_unique'],
 		/*TODO: Maybe to show an error instead of removing invalid privileges? */
@@ -70,8 +76,22 @@ class User extends ActiveRecord implements IdentityInterface {
 
     public function attributeLabels() {
 	return [
-		'display_name' => 'Name'
+		'display_name' => 'Name',
+		'role_id' => 'Role',
 	];
+    }
+
+    public function inRoleItems() {
+	if (!isset($this->roleItems[$this->role_id])) {
+		$this->addError('role_id', 'Wrong role');
+	}
+    }
+
+    public function handleEmptySelection($value) {
+	if ($value === '') {
+		$value = [];
+	}
+	return $value;
     }
 
     public function checkPrivileges($value) {
