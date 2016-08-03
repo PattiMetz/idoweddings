@@ -1182,7 +1182,15 @@ table, th {
 .add_timeslot_wrapper .timeslot_list label {
 	padding-top: 0;
 }
-
+.form-horizontal .form-group.field-venuepage-locations_array div {
+	margin-left:15px;
+}
+.customization .list_wrap {
+	text-align: left;
+}
+.customization .list_wrap p {
+	text-align: center;
+}
 /******** 6 - KNOWLEDGE BASE********/
 
 .knbase_box {

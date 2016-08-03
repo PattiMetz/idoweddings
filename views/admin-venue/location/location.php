@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\bootstrap\ActiveForm;
 use dosamigos\ckeditor\CKEditor;
-use yii\widgets\breadcrumbs;
+use yii\widgets\Breadcrumbs;
 use yii\bootstrap\Alert;
 /* @var $this yii\web\View */
 /* @var $model app\models\venue\VenueLocation */

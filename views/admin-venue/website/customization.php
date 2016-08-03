@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\bootstrap\ActiveForm;
-use yii\widgets\breadcrumbs;
+use yii\widgets\Breadcrumbs;
 use yii\bootstrap\Alert;
 use yii\helpers\ArrayHelper;
 $this->registerJsFile("/js/customization.js",['depends'=>'yii\web\JqueryAsset']);
