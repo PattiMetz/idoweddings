@@ -26,6 +26,8 @@ use yii\web\IdentityInterface;
  */
 class User extends ActiveRecord implements IdentityInterface {
 
+    public $password;
+
     public $privilegesNames;
 
     public $privilegesTreeInfo;
@@ -48,7 +50,7 @@ class User extends ActiveRecord implements IdentityInterface {
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+	    TimestampBehavior::className(),
         ];
     }
 
@@ -59,6 +61,13 @@ class User extends ActiveRecord implements IdentityInterface {
     {
         return [
 		['display_name', 'required'],
+		['email', 'required'],
+		['email', 'unique'],
+		['username', 'required'],
+		['username', 'string', 'min' => 6, 'max' => 128],
+		['username', 'unique'],
+		['password', 'required'],
+		['password', 'string', 'min' => 6, 'max' => 128],
 		['role_id', 'required'],
 		['role_id', 'inRoleItems'],
 		/*TODO: What's the workaround using Yii coding style? */
@@ -70,6 +79,14 @@ class User extends ActiveRecord implements IdentityInterface {
         ];
     }
 
+    public function scenarios()
+    {
+	return [
+		'create' => ['display_name', 'email', 'username', 'password', 'role_id', 'privilege_ids'],
+		'update' => ['display_name', 'email', 'role_id', 'privilege_ids']
+	];
+    }
+
     public function formName() {
 	return '';
     }
@@ -77,6 +94,7 @@ class User extends ActiveRecord implements IdentityInterface {
     public function attributeLabels() {
 	return [
 		'display_name' => 'Name',
+		'email' => 'E-mail',
 		'role_id' => 'Role',
 	];
     }
@@ -101,6 +119,14 @@ class User extends ActiveRecord implements IdentityInterface {
 		}
 	}
 	return $value;
+    }
+
+    public function beforeSave($insert) {
+	if ($this->scenario == 'create') {
+		$this->setPassword($this->password);
+		$this->updated_at = date('Y-m-d h:i:s');
+	}
+	return parent::beforeSave($insert);
     }
 
     /**

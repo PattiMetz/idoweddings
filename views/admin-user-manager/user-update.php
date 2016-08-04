@@ -40,7 +40,45 @@ echo Alert::widget([
 
 ?>
 
+<?php echo $form->field($model, 'organization_id')->begin(); ?>
+
+	<?php echo Html::label($model->getAttributeLabel('organization_id')); ?>
+
+	<?php echo Html::encode($model->organization_id); ?>
+
+<?php echo $form->field($model, 'organization_id')->end(); ?>
+
 <?php echo $form->field($model, 'display_name')->textInput(); ?>
+
+<?php echo $form->field($model, 'display_name')->textInput(); ?>
+
+<?php echo $form->field($model, 'email')->textInput(); ?>
+
+<?php if ($model->scenario == 'create'): ?>
+
+	<?php echo $form->field($model, 'username')->textInput(); ?>
+
+	<?php echo $form->field($model, 'password')->textInput(); ?>
+
+<?php else: ?>
+
+	<?php echo $form->field($model, 'username')->begin(); ?>
+
+		<?php echo Html::label($model->getAttributeLabel('username')); ?>
+
+		<?php echo Html::encode($model->username); ?>
+
+	<?php echo $form->field($model, 'username')->end(); ?>
+
+<?php endif; ?>
+
+<?php echo $form->field($model, 'privilege_ids')->checkboxList(['All', 'Antarctic']); ?>
+
+<?php echo $form->field($model, 'privilege_ids')->checkboxList(['All', 'Florida (FL)']); ?>
+
+<?php echo $form->field($model, 'privilege_ids')->checkboxList(['All', 'Wilmington']); ?>
+
+<?php echo $form->field($model, 'role_id')->checkbox(); ?>
 
 <?php echo $form->field($model, 'role_id')->dropDownList($model->roleItems, ['class'  => 'chosen-style']); ?>
 

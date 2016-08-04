@@ -1,0 +1,1 @@
+ALTER TABLE `user` CHANGE `created_at` `created_at` INT NOT NULL, CHANGE `updated_at` `updated_at` INT NOT NULL;
