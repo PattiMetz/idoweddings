@@ -47,7 +47,7 @@ class AdminMaincompanyController extends Controller
         if($model === null){
             $model = new MainCompany();
             $address = new MainCompanyAddress();
-            $contacts = $phone = null;
+            $contacts = $phone = [];
             //$phone = new MainCompanyPhone();
         } else {
             $address = $model->mainCompanyAddresses;
