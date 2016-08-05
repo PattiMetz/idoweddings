@@ -40,16 +40,6 @@ echo Alert::widget([
 
 ?>
 
-<?php echo $form->field($model, 'organization_id')->begin(); ?>
-
-	<?php echo Html::label($model->getAttributeLabel('organization_id')); ?>
-
-	<?php echo Html::encode($model->organization_id); ?>
-
-<?php echo $form->field($model, 'organization_id')->end(); ?>
-
-<?php echo $form->field($model, 'display_name')->textInput(); ?>
-
 <?php echo $form->field($model, 'display_name')->textInput(); ?>
 
 <?php echo $form->field($model, 'email')->textInput(); ?>
@@ -71,14 +61,6 @@ echo Alert::widget([
 	<?php echo $form->field($model, 'username')->end(); ?>
 
 <?php endif; ?>
-
-<?php echo $form->field($model, 'privilege_ids')->checkboxList(['All', 'Antarctic']); ?>
-
-<?php echo $form->field($model, 'privilege_ids')->checkboxList(['All', 'Florida (FL)']); ?>
-
-<?php echo $form->field($model, 'privilege_ids')->checkboxList(['All', 'Wilmington']); ?>
-
-<?php echo $form->field($model, 'role_id')->checkbox(); ?>
 
 <?php echo $form->field($model, 'role_id')->dropDownList($model->roleItems, ['class'  => 'chosen-style']); ?>
 
