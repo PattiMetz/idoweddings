@@ -68,7 +68,8 @@ $(function(){
      * Add contact group of fields without phones
      */
     main.addContact = function(){
-        $(document.body).on('click', '.add_contact', function(){
+        $(document.body).on('click', '.add_contact', function(e){
+            e.preventDefault();
             var action = $('.cont_wrap').data('action');
             var comp_id = $('.cont_wrap').data('comp_id');
 
@@ -86,7 +87,7 @@ $(function(){
                         var id = data.cid;
                         var contactWrap = $('.cont_wrap');
                         var contactGroup = $('.contact-group:first');
-                        if(contactGroup)
+                        if($('.contact-group').length <= 1)
                             location.reload();
                         var cloneGroup = contactGroup.clone();
 

@@ -151,6 +151,7 @@ class AdminMaincompanyController extends Controller
             $phoneModel = new MainCompanyPhone();
             $phoneModel->contact_id = $cid;
             $phoneModel->type = 'mobile';
+            $phoneModel->phone = '';
             $status = $phoneModel->save();
 
             echo json_encode(array(
