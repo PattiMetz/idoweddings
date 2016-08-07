@@ -257,6 +257,8 @@ class AdminKnowledgebasesController extends Controller {
 
 	function actionEntries($knowledgebase_id, $category_id = 0) {
 
+		$knowledgebase_id = intval($knowledgebase_id);
+
 		$knowledgebaseList = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
 
 		if (!isset($knowledgebaseList[$knowledgebase_id])) {
@@ -270,6 +272,8 @@ class AdminKnowledgebasesController extends Controller {
 		$current_path = [];
 
 		$categories = [];
+
+		$category_id = intval($category_id);
 
 		if ($category_id) {
 
