@@ -42,6 +42,26 @@ echo Alert::widget([
 
 <?php echo $form->field($model, 'display_name')->textInput(); ?>
 
+<?php echo $form->field($model, 'email')->textInput(); ?>
+
+<?php if ($model->scenario == 'create'): ?>
+
+	<?php echo $form->field($model, 'username')->textInput(); ?>
+
+	<?php echo $form->field($model, 'password')->textInput(); ?>
+
+<?php else: ?>
+
+	<?php echo $form->field($model, 'username')->begin(); ?>
+
+		<?php echo Html::label($model->getAttributeLabel('username')); ?>
+
+		<?php echo Html::encode($model->username); ?>
+
+	<?php echo $form->field($model, 'username')->end(); ?>
+
+<?php endif; ?>
+
 <?php echo $form->field($model, 'role_id')->dropDownList($model->roleItems, ['class'  => 'chosen-style']); ?>
 
 <?php

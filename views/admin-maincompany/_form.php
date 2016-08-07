@@ -12,9 +12,10 @@ use yii\bootstrap\ActiveForm;
 ?>
 
 <div class="main-company-form">
+    <?php $ajax_form = !$model->isNewRecord ? 'ajax-form' :'' ?>
     <?php $form = ActiveForm::begin([
         'layout' => 'horizontal',
-        'options' => ['class' => 'clearfix ajax-form'],
+        'options' => ['class' => 'clearfix ' . $ajax_form ],
         'fieldConfig' => [
             'horizontalCssClasses' => [
                 'label' => 'col-md-4',
@@ -46,7 +47,7 @@ use yii\bootstrap\ActiveForm;
             <h4>Contact details</h4>
         </div>
         <div class="cont_wrap"  data-comp_id="<?= $model->id ?>" data-action="<?= \yii\helpers\Url::to(['admin-maincompany/contacts']) ?>">
-            <?php foreach ($contacts as $contact){ ?>
+            <?php $c=0; foreach ($contacts as $contact){ $c++; ?>
                 <div id="c_<?= $contact->id?>" class="contact-group" data-cid="<?= $contact->id?>">
                     <div class="cont-fields">
                         <?= $form->field($contact, 'name')->textInput(['data-name' => 'name']) ?>
@@ -54,8 +55,8 @@ use yii\bootstrap\ActiveForm;
                         <?= $form->field($contact, 'skype')->textInput(['data-name' => 'skype']) ?>
                     </div>
                     <div class="phones-wrap">
-                        <?php foreach ($contact->mainCompanyPhones as $phone){ ?>
-                            <div class="phone_row"
+                        <?php $p=0; foreach ($contact->mainCompanyPhones as $phone){ $p++; ?>
+                            <div class="phone_row rec_<?= $c.$p ?>"
                                  data-pid="<?= $phone->id ?>"
                                  data-action="<?= \yii\helpers\Url::to(['admin-maincompany/delete_phone']) ?>">
                                 <div class="col-md-5">

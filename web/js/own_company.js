@@ -68,7 +68,8 @@ $(function(){
      * Add contact group of fields without phones
      */
     main.addContact = function(){
-        $(document.body).on('click', '.add_contact', function(){
+        $(document.body).on('click', '.add_contact', function(e){
+            e.preventDefault();
             var action = $('.cont_wrap').data('action');
             var comp_id = $('.cont_wrap').data('comp_id');
 
@@ -81,11 +82,13 @@ $(function(){
                 },
                 success: function(data){
                     if(data.status == 'error'){
-                        alert('Error, contact was not updated. ' + data.msg)
+                        alert('Contact was not updated. Save company info before. ' + data.msg)
                     } else {
                         var id = data.cid;
                         var contactWrap = $('.cont_wrap');
                         var contactGroup = $('.contact-group:first');
+                        if($('.contact-group').length <= 1)
+                            location.reload();
                         var cloneGroup = contactGroup.clone();
 
                         cloneGroup.attr('data-cid', id);
@@ -124,7 +127,11 @@ $(function(){
                 success: function(data){
                     if(data.status == 'error'){
                         alert('Error, phone was not added.')
-                    } else {
+                    }
+                    else if(!$('.phone_row').hasClass('rec_11')){
+                        location.reload();
+                    }
+                    else {
                         var phoneWrap = $(self).closest('.contact-group').find('.phones-wrap');
                         var phoneGroup = $('.phone_row:first');
                         var cloneGroup = phoneGroup.clone();
@@ -151,9 +158,6 @@ $(function(){
     main.deletePhoneField = function(){
         $(document.body).on('click','.delete_phone', function(e){
             e.preventDefault();
-            //if($('.contact-group:first').find('.phone_row').length <= 1){
-            //    return;
-            //}
             var self = this;
             var pid = $(this).closest('.phone_row').data('pid');
             var action = $(this).closest('.phone_row').data('action');

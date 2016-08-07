@@ -82,6 +82,8 @@ class AdminUserManagerController extends Controller {
 
 			}
 
+			$model->scenario = 'update';
+
 			$roles = $model->organization->getAvailableRoles()->all();
 
 			$model->privilege_ids = $model->getPrivileges()->select('id')->column();
@@ -89,6 +91,8 @@ class AdminUserManagerController extends Controller {
 		} else {
 
 			$model = new User;
+
+			$model->scenario = 'create';
 
 			$organization = Yii::$app->user->identity->organization;
 

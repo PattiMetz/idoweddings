@@ -47,7 +47,7 @@ class AdminMaincompanyController extends Controller
         if($model === null){
             $model = new MainCompany();
             $address = new MainCompanyAddress();
-            $contacts = $phone = null;
+            $contacts = $phone = [];
             //$phone = new MainCompanyPhone();
         } else {
             $address = $model->mainCompanyAddresses;
@@ -151,6 +151,7 @@ class AdminMaincompanyController extends Controller
             $phoneModel = new MainCompanyPhone();
             $phoneModel->contact_id = $cid;
             $phoneModel->type = 'mobile';
+            $phoneModel->phone = '';
             $status = $phoneModel->save();
 
             echo json_encode(array(
