@@ -272,9 +272,49 @@ class AdminVenueController extends Controller
             );
 
         }
-
     }
 
+    function actionLogoUpload($venue_id) {
+
+        $alert = '';
+        $errors = [];
+        $list = [];
+        $files = UploadedFile::getInstancesByName('files');
+        $model = VenueWebsite::find()->where(['venue_id' => $venue_id])->one();
+        if (Yii::$app->request->isPost) {
+            if (!count($files)) {
+                if ($_SERVER['CONTENT_LENGTH']) {
+                    $alert = 'Content-Length exceeds the limit';
+                }
+
+            } else {
+                foreach ($files as $file) {
+                    $model->logo_file = $file;
+
+                    $transaction = Yii::$app->db->beginTransaction();
+                    if ($model->save() && $model->file_saved) {
+                            $list[$model->id] = $model->logo;
+                        $transaction->commit();
+                    } else {
+                        $errors = $model->getErrors();
+                        
+                        $transaction->rollBack();
+                    }
+        
+                }
+
+            }
+
+            Yii::$app->response->format = Response::FORMAT_JSON;
+
+            return compact(
+                'alert',
+                'errors',
+                'list'
+            );
+
+        }
+    }
 
     /**
      * Updates an existing or create new Venue model.

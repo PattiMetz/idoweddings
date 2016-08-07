@@ -11,6 +11,7 @@ use yii\bootstrap\Alert;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 <?php
+$upload_dir = "/uploads/venue/".$model->venue_id."/website/";
 $this->title = 'Website Customization';
 $this->params['breadcrumbs'][] = ['label' => 'Venues', 'url' => ['admin-venue/index'], 'data-pjax'=>0];
 $this->params['breadcrumbs'][] = $this->title;
@@ -293,10 +294,20 @@ $this->registerJs("
 					<div class="radiolist">
 						<?php echo $form->field($model, 'logo_type',['template'=>"{input}{hint}\n\t{error}"])->radioList(['Venue name','Featured venue name','Logo']) ?>
 					</div>
-					<div>
-						 <?php echo $form->field($model, 'logo_file')->fileInput();?>
-						 <span>Recommended image size: <span>MAX height: 110px;</span> <span>MAX width: 540px;</span></span>
-						 <button class="btn btn-primary">Choose image from Media Gallery</button>
+					<div <?php if($model->logo_type != 2){?>style="display:none"<?php }?> class="upload_block">
+						<div>
+							<span>Recommended image size: <span>MAX height: 110px;</span> <span>MAX width: 540px;</span></span>
+							<div class="logo_block">
+								 <?php if($model->logo!=false) {?>
+								 	<img src="<?php echo $upload_dir?><?php echo $model->logo?>"/>
+								 <?php }?>
+							</div>
+							<button class="btn btn-primary">Choose image from Media Gallery</button>
+						</div>
+						<div class="attach_block">
+							 <a class="btn btn-danger" href="#">Attach file</a>
+							 <input type="file" id="files-select" name="files[]" size="20" multiple />
+						</div>
 					</div>
 				</div>
             </div>
@@ -306,3 +317,106 @@ $this->registerJs("
 
     </div>
 </div>
+<?php
+
+$upload_url = Url::to(['admin-venue/logo-upload', 'venue_id' => $model->venue_id]);
+$delete_url = Url::to([Yii::$app->controller->id."/delete-image"]);
+$js = <<<EOT
+	var xhr;
+	$('#venuewebsite-logo_type input[type="radio"]').change(function(){
+		if($(this).val()==2) {
+			$('.upload_block').show();
+		}else {
+			$('.upload_block').hide();
+		}
+	})
+	$('#files-select').on('change', function() {
+
+		// Disable browse files button
+		$('#files-select').attr('disabled', true);
+
+		// Hide alert
+		$('.alert-danger').hide();
+
+		// Display uploading status
+		$('.alert-info').html('Uploading... <a id="files-abort" href="#">Abort</a>').show();
+		$('body,html').animate({scrollTop: 0}, 400);
+		// Handle upload abort
+		$('#files-abort').on('click', function(e) {
+			// Prevent default action
+			e.preventDefault();
+
+			// Abort the request
+			xhr.abort();
+		});
+
+		// Create a new FormData object
+		var data = new FormData();
+
+		// Loop through each of the selected files
+		jQuery.each(jQuery('#files-select')[0].files, function(i, file) {
+			// Add the file to the request
+			data.append('files[]', file);
+		});
+
+		xhr = jQuery.ajax({
+			url: '{$upload_url}',
+			data: data,
+			cache: false,
+			contentType: false,
+			processData: false,
+			type: 'POST',
+			complete: function() {
+				// Hide uploading status
+				$('.alert-info').hide();
+
+				// Clear file input
+				$('#files-select').val('');
+
+				// Enable file browse button
+				$('#files-select').attr('disabled', false);
+			},
+			error: function(jqXHR) {
+				var message;
+				if (jqXHR.status == 0) {
+					message = 'The request is aborted';
+				} else {
+					message = jqXHR.responseText;
+				}
+				$('.alert-danger').html(message).show();
+			},
+			success: function(data) {
+				if (data.list !== undefined && !$.isEmptyObject(data.list)) {
+					$.each(data.list, function(key, val) {
+						// Append uploaded file
+						var img = '<img src=\"{$upload_dir}' + val + '?r=' + Math.random() + '\">';
+						
+						$('.logo_block').empty().append(img);
+
+						
+					});
+				}
+
+				if (data.alert !== undefined && data.alert != '') {
+					// Show alert
+					$('.alert-danger').html(data.alert).show();
+					$('body,html').animate({scrollTop: 0}, 400);
+				}
+
+				if (data.errors !== undefined && !$.isEmptyObject(data.errors)) {
+					// Collect errors
+					var html = '';
+					$.each(data.errors, function(key, val) {
+						html+= key + ': ' + val + '<br>';
+					});
+					$('body,html').animate({scrollTop: 0}, 400);
+					// Show alert
+					$('.alert-danger').html(html).show();
+				}
+
+			}
+		});
+	});
+EOT;
+
+$this->registerJS($js);

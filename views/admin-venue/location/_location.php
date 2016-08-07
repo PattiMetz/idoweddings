@@ -44,8 +44,11 @@ $days = array('Sun','Mon','Tue','Wed','Thu','Fri','Sat');
 				
 				<?php if(is_array($model->images)) {?>
 					<ul class="image_list list-inline">
-						<?php foreach($model->images as $image) {?>
-							<li><?=Html::img("/uploads/venue/".$model->group->venue_id."/location/thumb/".$image->image)?>
+						<?php foreach($model->images as $image) {
+							$tmp = explode('.', $image->image);
+							$ext = end($tmp);?>
+
+							<li><?=Html::img("/uploads/venue/".$model->group->venue_id."/location/thumb/".$image->id.".".$ext)?>
 							</li>
 						<?php }?>
 					</ul>

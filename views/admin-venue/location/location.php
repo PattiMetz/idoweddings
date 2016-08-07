@@ -100,9 +100,9 @@ use yii\bootstrap\Alert;
 	</div>
 	
 	<div class="sett_block_wrap clearfix">
-
+		<p>Available Time slots</p>
 		<?php if($model->times){?>
-			<p>Available Time slots</p>
+			
 			<div class="times">
 
 				<?php foreach($model->times as $k=>$stime):?>
@@ -153,10 +153,7 @@ use yii\bootstrap\Alert;
 			</div>
 		<?php }?>
 		
-	</div>
-
-	<div class="sett_block_wrap clearfix">
-		<p>Available Time slots</p>
+	
 		<div class="add_timeslot_wrapper add_time clearfix">
 			<div class="col-sm-3 col-xs-6">
 				<?php echo $form->field($time, 'time_from')->dropDownList($times, ['class' => 'form-control chosen-style time_from'], ['prompt'=>'time from'])->label('From',['class'=>'control-label col-sm-4']) ?>
@@ -188,30 +185,32 @@ use yii\bootstrap\Alert;
 			</div>
 		</div>
 	</div>
- 
-	<div class="sett_block_wrap clearfix">
-		<p>Images</p>
-		<?php if($model->id) {?>
-			<div class="attach_block">
-				<span>Attachments:</span>
-				<ul id="files" class="attach_list clearfix">
-					 <?php if(isset($images) && count($images)>0) {?> 
-						<ul class="docs">
-							<?php foreach ($images as $image) {?>
-							<li>
-								<?php echo Html::img($upload_dir . "/thumb/".$image->id . '.' . end(explode('.', $image->image)))?>
-								<?php echo Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-image", 'id'=>$image->id])],['class'=>'modal-ajax'])?>
-							</li>
-							<?php }?>
-						</ul>
-					<?php }?>
-				</ul>
-				<a class="btn btn-danger" href="#">Attach file</a>
-				<input type="file" id="files-select" name="files[]" size="20" multiple />
+ 	<?php if($model->id) {?>
+		<div class="sett_block_wrap clearfix">
+			<p>Images</p>
+				<div class="attach_block">
+					<span>Attachments:</span>
+					<ul id="files" class="attach_list clearfix">
+						 <?php if(isset($images) && count($images)>0) {?> 
+							<ul class="docs">
 
-			</div>
-		<?php }?>
-	</div>
+								<?php foreach ($images as $image) {?>
+								<li>
+									<?php $tmp = explode('.', $image->image);
+									$ext = end($tmp);
+									echo Html::img($upload_dir . "/thumb/".$image->id . '.' . $ext);
+									echo Html::a('delete',[Url::to([Yii::$app->controller->id."/delete-image", 'id'=>$image->id])],['class'=>'modal-ajax'])?>
+								</li>
+								<?php }?>
+							</ul>
+						<?php }?>
+					</ul>
+					<a class="btn btn-danger" href="#">Attach file</a>
+					<input type="file" id="files-select" name="files[]" size="20" multiple />
+
+				</div>
+		</div>
+	<?php }?>
 	<div class="form-group">
         <?php echo Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-primary' : 'btn btn-primary']) ?>
     </div>

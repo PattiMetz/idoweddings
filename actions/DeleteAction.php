@@ -53,7 +53,8 @@ class DeleteAction extends base\Action
         }
         return $this->controller->renderAjax($this->view, [
             'model' => $model,
-            'alert' => $alert
+            'alert' => $alert,
+            'exampleName' => $this->exampleName
         ]);
 
 
