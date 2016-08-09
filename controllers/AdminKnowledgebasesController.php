@@ -257,37 +257,23 @@ class AdminKnowledgebasesController extends Controller {
 
 	function actionEntries($knowledgebase_id, $category_id = 0) {
 
-		// Default page title
-		$this->view->title = 'Entries';
-
-		// Current path
-		$current_path = [];
-
-		// Categories data
-		$categories = array();
-
-		// Get all knowledgebases for SELECT options
-		$knowledgebases = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
-
-		// Sanitize knowledgebase ID
 		$knowledgebase_id = intval($knowledgebase_id);
 
+		$knowledgebaseList = ArrayHelper::map(Knowledgebase::find()->all(), 'id', 'name');
 
-		// Knowledgebase not found
-
-		if (!isset($knowledgebases[$knowledgebase_id])) {
+		if (!isset($knowledgebaseList[$knowledgebase_id])) {
 
 			throw new \yii\web\NotFoundHttpException('Knowledge base not found');
 
 		}
 
+		$this->view->title = $knowledgebaseList[$knowledgebase_id];
 
-		// Set page title
-		$this->view->title = $knowledgebases[$knowledgebase_id];
+		$current_path = [];
 
-		// Sanitize category ID
+		$categories = [];
+
 		$category_id = intval($category_id);
-
 
 		if ($category_id) {
 
@@ -300,17 +286,12 @@ class AdminKnowledgebasesController extends Controller {
 				'is_category' => 1
 			])->asArray()->one();
 
-
-			// Category not found
-
 			if (!$current_category) {
 
 				throw new \yii\web\NotFoundHttpException('Category not found');
 
 			}
 
-
-			// Cache category data
 			$categories[$category_id] = $current_category;
 
 
@@ -324,9 +305,6 @@ class AdminKnowledgebasesController extends Controller {
 				'id' => $current_path,
 				'is_category' => 1
 			])->asArray()->all();
-
-
-			// Cache categories data
 
 			foreach ($parent_categories as $parent_category) {
 
@@ -346,7 +324,7 @@ class AdminKnowledgebasesController extends Controller {
 		];
 
 		$dataProvider = new ActiveDataProvider([
-			'query' => KnowledgebaseEntry::find()->where($filter)->indexBy('id'),
+			'query' => KnowledgebaseEntry::find()->where($filter),
 			'sort' => [
 				'defaultOrder' => ['order' => SORT_ASC],
 				'attributes' => [
@@ -383,9 +361,9 @@ class AdminKnowledgebasesController extends Controller {
 			'dataProvider' => $dataProvider,
 			'current_knowledgebase_id' => $knowledgebase_id,
 			'current_category_id' => $category_id,
-			'knowledgebases' => $knowledgebases, // SELECT options
+			'knowledgebaseList' => $knowledgebaseList,
 			'current_path' => $current_path,
-			'categories' => $categories // cached data
+			'categories' => $categories
 		]);
 
 	}
