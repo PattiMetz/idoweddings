@@ -13,9 +13,10 @@ ALTER TABLE venue_tax DROP index `venue_id`;
 ALTER TABLE venue_tax DROP FOREIGN KEY venue_tax_ibfk_1;
 ALTER TABLE venue_tax CHANGE venue_id organization_id INT;
 ALTER TABLE `venue_tax` ADD PRIMARY KEY(`organization_id`);
+ALTER TABLE `venue_tax` ADD FOREIGN KEY (`organization_id`) REFERENCES `ido`.`organization`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE `venue_tax` CHANGE `event_deposit` `event_deposit` INT(11) NULL;
-DROP IF EXISTS TABLE venue_contact;
-DROP IF EXISTS TABLE venue_address;');
+DROP TABLE  IF EXISTS venue_contact;
+DROP TABLE  IF EXISTS venue_address;');
     }
 
     public function down()
