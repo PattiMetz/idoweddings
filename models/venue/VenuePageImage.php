@@ -34,7 +34,7 @@ class VenuePageImage extends \yii\db\ActiveRecord
             [['page_id', 'image'], 'required'],
             [['page_id'], 'integer'],
             [['image'], 'string', 'max' => 255],
-            [['file'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg'],
+            [['file'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg', 'checkExtensionByMimeType' => false],
             [['page_id'], 'exist', 'skipOnError' => true, 'targetClass' => VenuePage::className(), 'targetAttribute' => ['page_id' => 'id']],
         ];
     }

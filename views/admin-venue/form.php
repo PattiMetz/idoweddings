@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use app\models\Region;
+use app\models\Contact;
 use app\models\Destination;
 use app\models\Location;
 use app\models\Country;
@@ -257,22 +258,23 @@ function add_phone(contact_id, key){
 			<div id="collapse1" class="panel-collapse collapse">
 				<div class="panel-body">
 					<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 collapse_form inner_col_box">
-						<?php echo $form->field($model->address, 'address')->textArea(['rows' => 3]) ?>
+						<?php echo $form->field($model->tax, 'tax')->textInput()->label('Tax Rate',['class'=>'control-label']) ?>
+						<?php echo $form->field($model->organization, 'address')->textArea(['rows' => 3]) ?>
 						
-						<?php echo $form->field($model->address, 'city')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($model->organization, 'city')->textInput(['maxlength' => true]) ?>
 						
-						<?php echo $form->field($model->address, 'state')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($model->organization, 'state')->textInput(['maxlength' => true]) ?>
 						
-						<?php echo $form->field($model->address, 'zip')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($model->organization, 'zip')->textInput(['maxlength' => true]) ?>
 						
 						<?php $country = new Country();?>
-						<?php echo $form->field($model->address, 'country_id')->dropDownList($country->getList(),['class'  => 'form-control chosen-style']) ?>
+						<?php echo $form->field($model->organization, 'country_id')->dropDownList($country->getList(),['class'  => 'form-control chosen-style']) ?>
 
-						<?php echo $form->field($model->address, 'timezone')->dropDownList(Yii::$app->params['timezones'],['class'  => 'form-control chosen-style']) ?>
+						<?php echo $form->field($model->organization, 'timezone')->dropDownList(Yii::$app->params['timezones'],['class'  => 'form-control chosen-style']) ?>
 
-						<?php echo $form->field($model->address, 'email')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($model->organization, 'email')->textInput(['maxlength' => true]) ?>
 
-						<?php echo $form->field($model->address, 'site')->textInput(['maxlength' => true]) ?>
+						<?php echo $form->field($model->organization, 'site')->textInput(['maxlength' => true]) ?>
 					</div>
 				</div>
 			</div>
@@ -293,9 +295,11 @@ function add_phone(contact_id, key){
 
 								<div class=" clearfix contact_<?php echo $key?>">
 									<div class="col-md-6">
-										<?php echo $form->field($contact, "[$key]contact_type")->dropDownList(['Contact - for Events', 'Contact - Manager/Sales', 'Contact - Groups/Accommodation'], ['class'  => 'form-control chosen-style']) ?> 
+										<?php echo $form->field($contact, "[$key]type")->dropDownList(['Contact - for Events', 'Contact - Manager/Sales', 'Contact - Groups/Accommodation'], ['class'  => 'form-control chosen-style']) ?> 
 
-										<?php echo $form->field($contact, "[$key]name")->textInput(['maxlength' => true]) ?>
+										<?php echo $form->field($contact, "[$key]first_name")->textInput(['maxlength' => true]) ?>
+
+										<?php echo $form->field($contact, "[$key]last_name")->textInput(['maxlength' => true]) ?>
 
 										<?php echo $form->field($contact, "[$key]email")->textInput(['maxlength' => true]) ?>
 
@@ -307,15 +311,15 @@ function add_phone(contact_id, key){
 										
 										<div class="col-sm-9 phones">
 
-											<?php if(is_array($contact->phones)) {
+											<?php  if(is_array($contact->contactPhones)) {
 												
-												foreach($contact->phones as $k=>$phone) {?>
+												foreach($contact->contactPhones as $k=>$phone) {?>
 
 														<div class="col-sm-6">
-															<?php echo Html::dropDownList('VenueContact['.$key.'][phones]['.$k.'][type]', $phone['type'], ['General', 'Mobile', 'Fax', 'What\'s App'], ['class'  => 'form-control chosen-style']);?>
+															<?php echo Html::dropDownList('Contact['.$key.'][phones]['.$k.'][type]', $phone['type'], ['General', 'Mobile', 'Fax', 'What\'s App'], ['class'  => 'form-control chosen-style']);?>
 														</div>
 														<div class="col-sm-6">
-															<?php echo Html::textInput('VenueContact['.$key.'][phones]['.$k.'][phone]', $phone['phone'], ['class'  => 'form-control ']);?>
+															<?php echo Html::textInput('ontact['.$key.'][phones]['.$k.'][phone]', $phone['phone'], ['class'  => 'form-control ']);?>
 														</div>
 
 												<?php }
@@ -339,15 +343,17 @@ function add_phone(contact_id, key){
 							<div class="add_contact_form contact_<?php echo $key?> clearfix" style="display:none">
 								<div class="col-md-6">
 							
-									<?php $new_contact = new VenueContact();
-										  $new_contact->venue_id = $model->id; 
+									<?php $new_contact = new Contact();
+										  $new_contact->organization_id = $model->organization_id; 
 										  ?>
 
-									<?php echo $form->field($new_contact, "[$key]venue_id")->hiddenInput()->label(false) ?>
+									<?php echo $form->field($new_contact, "[$key]organization_id")->hiddenInput()->label(false) ?>
 
-									<?php echo $form->field($new_contact, "[$key]contact_type")->dropDownList(['Contact - for Events', 'Contact - Manager/Sales', 'Contact - Groups/Accommodation'], ['class'  => 'form-control chosen-style']) ?> 
+									<?php echo $form->field($new_contact, "[$key]type")->dropDownList(['Contact - for Events', 'Contact - Manager/Sales', 'Contact - Groups/Accommodation'], ['class'  => 'form-control chosen-style']) ?> 
 
-									<?php echo $form->field($new_contact, "[$key]name")->textInput(['maxlength' => true]) ?>
+									<?php echo $form->field($new_contact, "[$key]first_name")->textInput(['maxlength' => true]) ?>
+
+									<?php echo $form->field($new_contact, "[$key]last_name")->textInput(['maxlength' => true]) ?>
 
 									<?php echo $form->field($new_contact, "[$key]email")->textInput(['maxlength' => true]) ?>
 

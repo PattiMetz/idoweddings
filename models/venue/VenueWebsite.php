@@ -17,6 +17,7 @@ use Yii;
 class VenueWebsite extends \yii\db\ActiveRecord
 {
     public $logo_file;
+    public $file_saved;
     /**
      * @inheritdoc
      */
@@ -51,7 +52,7 @@ class VenueWebsite extends \yii\db\ActiveRecord
     {   
         if($this->font_settings!='')
             $settings = unserialize($this->font_settings);
-        if($this->font_settings=='' || !is_array($settings)) {
+        if($this->font_settings == '' || !is_array($settings)) {
             $settings = [
                 'title'    => ['font'=>'Conv_proximanova-regular', 'size'=>'36', 'color'=>'#f69997'],
                 'subtitle' => ['font'=>'Conv_proximanova-regular', 'size'=>'30', 'color'=>'#917671'],
@@ -76,6 +77,8 @@ class VenueWebsite extends \yii\db\ActiveRecord
         return mb_strtolower(trim(str_replace(array(' ',"'"), '_', $name)));
     }
 
+
+
     /**
      * @inheritdoc
      */
@@ -89,5 +92,25 @@ class VenueWebsite extends \yii\db\ActiveRecord
             'logo' => 'Logo',
             'navigation_pos' => 'Navigation Pos',
         ];
+    }
+
+    public function afterSave($insert, $changedAttributes) {
+        
+        if($this->logo_file) {    
+            $dir = 'uploads/venue/'.$this->venue_id.'/website';
+            
+            @mkdir($dir);
+            
+            if (is_dir($dir)) {
+                $name = 'logo.'.$this->logo_file->extension;
+                if ($this->file_saved = $this->logo_file->saveAs($dir . '/' . $name)){
+                    $this->logo = $name;
+                    $this->logo_type = 2;
+                    $this->updateAttributes(['logo', 'logo_type']);
+                }
+            }
+        }
+          
+        parent::afterSave($insert, $changedAttributes);
     }
 }

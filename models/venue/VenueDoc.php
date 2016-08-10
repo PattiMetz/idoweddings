@@ -33,7 +33,7 @@ class VenueDoc extends \yii\db\ActiveRecord
         return [
             [['venue_id'], 'required'],
             [['venue_id'], 'integer'],
-            [['file'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, xls, xlsx, doc, docx, csv'],
+            [['file'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, xls, xlsx, doc, docx, csv', 'checkExtensionByMimeType' => false],
             [['doc'], 'string', 'max' => 255],
             [['venue_id'], 'exist', 'skipOnError' => true, 'targetClass' => Venue::className(), 'targetAttribute' => ['venue_id' => 'id']],
         ];

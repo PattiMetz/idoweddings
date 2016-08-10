@@ -1,10 +1,12 @@
 <?php
 
 namespace app\models\venue;
-use yii;
+
+use Yii;
 use yii\imagine\Image;
-use Imagine\Gd;
 use Imagine\Image\Box;
+use Imagine\Gd;
+use Imagine\Gd\Imagine;
 use Imagine\Image\BoxInterface;
 /**
  * This is the model class for table "venue_location_image".
@@ -42,17 +44,30 @@ class VenueLocationImage extends \yii\db\ActiveRecord
 
     public function afterSave($insert, $changedAttributes) {
         if ($insert) {
+            echo "step4";
             $location = VenueLocation::findOne($this->location_id);
             $dir = 'uploads/venue/'.$location->group->venue_id.'/location/';
             @mkdir('uploads/venue/'.$location->group->venue_id);
             @mkdir($dir);
             @mkdir($dir.'thumb/');
+            echo "step6";
             if (is_dir($dir)) {
                 $name = $this->id . '.'.$this->file->extension;
+                echo "step7";
                 $this->fileSaved = $this->file->saveAs($dir . '/' . $name);
-                Image::getImagine()->open(Yii::getAlias($dir . $name))->thumbnail(new Box(120, 120))->save(Yii::getAlias($dir . 'thumb/' . $name) , ['quality' => 90]);
-               
+                echo "step8";
+                
+
+                /*Image::frame($dir . $name)
+                    ->thumbnail(new Box(120, 120))
+                    ->save(Yii::getAlias($dir . 'thumb/' . $name), ['quality' => 80]);*/
+                    $imagine = new Imagine();
+                $image = $imagine->open($dir . $name); 
+                $image = Image::frame($dir . $name)->thumbnail(new Box(120, 120))->save(Yii::getAlias($dir . 'thumb/' . $name), ['quality' => 80]);
+
+                    echo "step9";
             }
+            echo "step5";
         }
           
         parent::afterSave($insert, $changedAttributes);

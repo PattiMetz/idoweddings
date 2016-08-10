@@ -153,7 +153,7 @@ class AdminVenueLocationController extends Controller
         }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $post = Yii::$app->request->post();
-            if($post['VenueLocationTime']['time_from']!='') {
+            if($post['VenueLocationTime']['time_from']!='' && ($post['VenueLocationTime']['time_from'] != $post['VenueLocationTime']['time_to'])) {
                 $new_time = $post['VenueLocationTime'];
                 $time = new VenueLocationTime();
                 $time->location_id = $model->id;
@@ -205,19 +205,16 @@ class AdminVenueLocationController extends Controller
                 }
 
             } else {
-
                 foreach ($files as $file) {
                     $model = new VenueLocationImage;
                     $model->location_id = $location_id;
                     $model->image = $file->name;
                     $model->file = $file;
-
                     $transaction = Yii::$app->db->beginTransaction();
                     if ($model->save() && $model->fileSaved) {
                             $list[$model->id] = $model->id.'.'.$file->extension;
                         $transaction->commit();
                     } else {
-                       
                         $errors = $model->getErrors();
                         
                         $transaction->rollBack();
@@ -228,7 +225,6 @@ class AdminVenueLocationController extends Controller
             }
 
             Yii::$app->response->format = Response::FORMAT_JSON;
-
             return compact(
                 'alert',
                 'errors',

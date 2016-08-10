@@ -91,7 +91,7 @@ $this->registerJs("
 			'closeButton' => false,
 		]);
 
-		?>	
+	?>	
 <div class="col-lg-12 no_padding">
     <div class="venue-index">
     	<div class="venue-website-form clearfix">
@@ -281,11 +281,11 @@ $this->registerJs("
 					<div class="dis_flex">
 						<span>Allignment</span>
 						<ul class="navigation_pos">
-							<li class="active"><?php echo Html::a(Html::img(Url::to('/images/venue/menu_top.png')).'<br/>Top', '#', ['data-value'=>0]);?></li>
-							<li><?php echo Html::a(Html::img(Url::to('/images/venue/menu_bottom.png')).'<br/>Bottom', '#', ['data-value'=>1]);?></li>
-							<li><?php echo Html::a(Html::img(Url::to('/images/venue/menu_left.png')).'<br/>Left', '#', ['data-value'=>2]);?></li>
-							<li><?php echo Html::a(Html::img(Url::to('/images/venue/menu_right.png')).'<br/>Right', '#', ['data-value'=>3]);?></li>
-							<li><?php echo Html::a(Html::img(Url::to('/images/venue/menu_drop.png')).'<br/>Dropdown', '#');?></li>
+							<li <?php if($model->navigation_pos == 0){?>class="active"<?php }?>><?php echo Html::a(Html::img(Url::to('/images/venue/menu_top.png')).'<br/>Top', '#', ['data-value'=>0]);?></li>
+							<li <?php if($model->navigation_pos == 1){?>class="active"<?php }?>><?php echo Html::a(Html::img(Url::to('/images/venue/menu_bottom.png')).'<br/>Bottom', '#', ['data-value'=>1]);?></li>
+							<li <?php if($model->navigation_pos == 2){?>class="active"<?php }?>><?php echo Html::a(Html::img(Url::to('/images/venue/menu_left.png')).'<br/>Left', '#', ['data-value'=>2]);?></li>
+							<li <?php if($model->navigation_pos == 3){?>class="active"<?php }?>><?php echo Html::a(Html::img(Url::to('/images/venue/menu_right.png')).'<br/>Right', '#', ['data-value'=>3]);?></li>
+							<li <?php if($model->navigation_pos == 4){?>class="active"<?php }?>><?php echo Html::a(Html::img(Url::to('/images/venue/menu_drop.png')).'<br/>Dropdown', '#');?></li>
 						</ul>
 					</div>
                 </div>

@@ -41,11 +41,11 @@ class VenueTax extends \yii\db\ActiveRecord
     {
         return [
             [['commission_type', 'accommodation_commission_type'] ,'required'],
-            [['venue_id', 'commission_type', 'accommodation_commission_type', 'deposit_currency', 'event_deposit'], 'integer'],
+            [['organization_id', 'commission_type', 'accommodation_commission_type', 'deposit_currency', 'event_deposit'], 'integer'],
             [['tax', 'service_rate', 'our_service_rate', 'agency_service_rate', 'commission', 'commission_package', 'commission_food', 'commission_items', 'accommodation_commission'], 'number'],
             [['comment', 'accomodation_wholesale','commission_note','accommodation_note','note'], 'string'],
-            [['venue_id'], 'unique'],
-            [['venue_id'], 'exist', 'skipOnError' => true, 'targetClass' => Venue::className(), 'targetAttribute' => ['venue_id' => 'id']],
+            [['organization_id'], 'unique'],
+            [['organization_id'], 'exist', 'skipOnError' => true, 'targetClass' => Venue::className(), 'targetAttribute' => ['organization_id' => 'organization_id']],
         ];
     }
 
@@ -55,7 +55,7 @@ class VenueTax extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'venue_id' => 'Venue ID',
+            'organization_id' => 'Organization ID',
             'tax' => 'Tax',
             'service_rate' => 'Service Rate',
             'our_service_rate' => 'Our Service Rate',
@@ -79,6 +79,6 @@ class VenueTax extends \yii\db\ActiveRecord
      */
     public function getVenue()
     {
-        return $this->hasOne(Venue::className(), ['id' => 'venue_id']);
+        return $this->hasOne(Venue::className(), ['organization_id' => 'organization_id']);
     }
 }

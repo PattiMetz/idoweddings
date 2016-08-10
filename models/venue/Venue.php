@@ -7,9 +7,11 @@ use app\models\VenueType;
 use app\models\VenueService;
 use app\models\Vibe;
 use app\models\Location;
+use app\models\Organization;
 use app\models\Destination;
 use app\models\Region;
 use app\models\User;
+use app\models\Contact;
 /**
  * This is the model class for table "venue".
  *
@@ -30,7 +32,6 @@ use app\models\User;
  * @property VenueType $type
  * @property Vibe $vibe
  * @property VenueService $service
- * @property VenueAddress $venueAddress
  * @property VenueContact[] $venueContact
  * @property VenueDoc[] $venueDoc
  * @property VenueTax $venueTax
@@ -93,19 +94,6 @@ class Venue extends \yii\db\ActiveRecord
         return $this->hasMany(VenueService::className(), ['id' => 'service_id'])->viaTable('venue_has_service', ['venue_id' => 'id']);
     }
 
-    public function setAddress($value)
-    {
-        $this->address = $value;
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getAddress()
-    {
-        return $this->hasOne(VenueAddress::className(), ['venue_id' => 'id']);
-    }
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -113,6 +101,7 @@ class Venue extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Location::className(), ['id' => 'location_id']);
     }
+
 
     /**
      * @return \yii\db\ActiveQuery
@@ -128,7 +117,7 @@ class Venue extends \yii\db\ActiveRecord
      */
     public function getContacts()
     {
-        return $this->hasMany(VenueContact::className(), ['venue_id' => 'id']);
+        return $this->hasMany(Contact::className(), ['organization_id' => 'organization_id']);
     }
 
     /**
@@ -166,8 +155,17 @@ class Venue extends \yii\db\ActiveRecord
      * @return \yii\db\ActiveQuery
      */
     public function getTax()
+    {   
+        return $this->hasOne(VenueTax::className(), ['organization_id' => 'organization_id']);
+    }
+
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrganization()
     {
-        return $this->hasOne(VenueTax::className(), ['venue_id' => 'id']);
+        return $this->hasOne(Organization::className(), ['id' => 'organization_id']);
     }
 
     /**
@@ -374,27 +372,6 @@ class Venue extends \yii\db\ActiveRecord
     }
 
 
-    private function updateTax()
-    {
-        
-
-        $current_ids = $this->getServices()->select('id')->column();
-        $new_ids = $this->getServices_array();
-
-        foreach (array_filter(array_diff($new_ids, $current_ids)) as $service_id) {
-            /** @var VenueService $service */
-            if ($service = VenueService::findOne($service_id)) {
-                $this->link('services', $service);
-            }
-        }
-
-        foreach (array_filter(array_diff($current_ids, $new_ids)) as $service_id) {
-            /** @var VenueService $service */
-            if ($service = VenueService::findOne($ervice_id)) {
-                $this->unlink('services', $service, true);
-            }
-        }
-    }
 
     public function afterSave($insert, $changedAttributes)
     {

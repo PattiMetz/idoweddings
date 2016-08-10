@@ -3,10 +3,10 @@
 namespace app\controllers;
 
 use Yii;
+use app\models\Organization;
 use app\models\venue\Venue;
-use app\models\venue\VenueAddress;
 use app\models\venue\VenueTax;
-use app\models\venue\VenueContact;
+use app\models\Contact;
 use app\models\venue\VenueDoc;
 use app\models\venue\VenuePage;
 use app\models\search\VenueSearch;
@@ -84,6 +84,7 @@ class AdminVenueController extends Controller
     public function actionEditurl($id){
         $model = VenueWebsite::findOne($id);
         $alert = '';
+        $message = '';
         $errors = [];
         $post = Yii::$app->request->post();
         
@@ -94,7 +95,7 @@ class AdminVenueController extends Controller
             if(!$model->checkurl($post['VenueWebsite']['url'])) {
                 $alert = 'Url already exists';
             }else
-                $alert = 'Url is available';
+                $message = 'Url is available';
         }elseif(isset($post['validate']) && $post['validate']==0) {
             if(!$model->checkurl($post['VenueWebsite']['url'])) {
                 $alert = 'Url already exists';
@@ -104,19 +105,20 @@ class AdminVenueController extends Controller
             }
             
         }
-        if($alert!='') {
+        if($alert != '' || $message != '') {
             Yii::$app->response->format = Response::FORMAT_JSON;
-            $pjax_reload = '#main';
             return compact(
                 'alert',
-                'pjax_reload'
+                'message'
+                
             );
         }
         return $this->renderAjax('website/url', [
-                'model' => $model,
-                'alert' =>$alert
+                'model'   => $model,
+                'message' => $message,
+                'alert'   => $alert
                 ]
-                );
+        );
     }
 
     public function actionSettings($id)
@@ -324,11 +326,15 @@ class AdminVenueController extends Controller
      */
     public function actionUpdate($id ='')
     {
-        if($id!='')
+        if($id!='') {
             $model = $this->findModel($id);
+            if(!$model->tax) {
+                $model->tax = new VenueTax(['organization_id' => $model->organization_id]);
+            }
+
+        }
         else {
             $model = new Venue;
-            $model->address = new VenueAddress();
             $model->tax = new VenueTax();
         }
 
@@ -339,35 +345,30 @@ class AdminVenueController extends Controller
         $post = Yii::$app->request->post();
         if($post) {
 
-            if($model->load($post)) {
-                $model->address->load($post);
-               
-                $model->tax->load($post);
-                
-
+            if($model->load($post) && $model->tax->load($post) && $model->organization->load($post)) {
+                //echo '<pre>';print_r($model->contacts);die();
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     if (!$model->save()) {
-                        //echo '<pre>';print_r($model);
                         $transaction->rollback();
                         $alert = 'Info not saved. Venue error';
                         $errors = $model->getErrors();
                             
                     }else {
-                        $contacts = $model->getContacts()->all();
-                        $model->address->link('venue', $model);
-                        $model->tax->link('venue', $model);
 
-                        foreach (array_diff_key($post['VenueContact'], $contacts) as $new) {
-                            if($new['email']!='' || $new['phones'][0]['phone']!='' || $new['name']!='' || $new['skype']!='')
-                                $contacts[] = new VenueContact(['venue_id' => $model->id]);
-                        }
-                        Model::loadMultiple($contacts, $post);
-                        if($model->address->save() && $model->tax->save()) {
-                            if(count($contacts)>0) {
-                                if (!$this->saveContacts($contacts, $model)) {
-                                    $alert = 'Info not saved. Contacts error '.count($contacts);
-                                    $transaction->rollback();
+                        //$contacts = $model->getContacts()->all();
+                       // $model->address->link('venue', $model);
+                        //$model->tax->link('venue', $model);
+
+                        
+                        Model::loadMultiple($model->contacts, $post);
+                        if($model->organization->save() && $model->tax->save()) {
+                            if(count($model->contacts)>0) {
+                                foreach($model->contacts as $contact) {
+                                    if(!$contact->save()) {
+                                        $alert = 'Info not saved. Contacts error ';
+                                        $transaction->rollback();
+                                    }
                                 }
                             }
                             $transaction->commit();
@@ -395,18 +396,17 @@ class AdminVenueController extends Controller
             }
             
         }
-
         return $this->render('form', [
             'model'   => $model,
             'alert'   => $alert,
             'message'   => $message,
-            'address' => $model->address,
             'tax'     => $model->tax,
             'contacts'=> $model->contacts,
             'docs'    => $model->docs,
             'doc'     => new VenueDoc
         ]);
     }
+
 
     /**
      * Deletes an existing Venue model.
@@ -419,22 +419,6 @@ class AdminVenueController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
-    }
-
-
-    public function saveContacts($contacts, Venue $model) {
-         foreach ($contacts as $contact) {
-            $contact->venue_id = $model->id;
-            if ($contact->validate()) {
-                if (!empty($contact->name) || !empty($contact->phone)) {
-                    if (!$contact->save())
-                        return false;
-                    return true;
-                } else {
-                    $contact->delete();
-                }
-            }
-        }
     }
 
     /**
@@ -452,4 +436,17 @@ class AdminVenueController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+    public function actionImport(){
+        $addresses = VenueAddress::find()->all();
+        foreach($addresses as $address) {
+            $venue = Venue::findOne($address->venue_id);
+            $organization = Organization::findOne($venue->organization_id);
+            //$organization->attributes = $address->attributes;
+            $organization->setAttributes($address->attributes, false);
+            $organization->save();
+        }
+    }
+
+
 }
