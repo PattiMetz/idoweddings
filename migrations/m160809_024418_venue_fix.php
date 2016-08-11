@@ -2,7 +2,7 @@
 
 use yii\db\Migration;
 
-class m160809_144932_venue_fix extends Migration
+class m160809_024418_venue_fix extends Migration
 {
     public function up()
     {
