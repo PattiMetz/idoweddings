@@ -55,4 +55,12 @@ class Region extends ActiveRecord {
         return ArrayHelper::map($models, 'id', 'name');
     }
 
+	/**
+	 * @return array
+	 */
+	public static function getStatList() {
+		$models = self::find()->orderby('name')->asArray()->all();
+		return ArrayHelper::map($models, 'id', 'name');
+	}
+
 }

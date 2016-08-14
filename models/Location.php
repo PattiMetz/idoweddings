@@ -63,6 +63,15 @@ class Location extends \yii\db\ActiveRecord
         $models = $this->find()->orderby('name')->where(['destination_id' => $destination_id])->asArray()->all();
         return ArrayHelper::map($models, 'id', 'name');
     }
+
+    /**
+     * @return array
+     */
+    public static function getStatList($destination_id) {
+        $models = self::find()->orderby('name')->where(['destination_id' => $destination_id])->asArray()->all();
+        return ArrayHelper::map($models, 'id', 'name');
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */

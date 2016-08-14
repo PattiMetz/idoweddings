@@ -36,7 +36,8 @@ class Contact extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['organization_id', 'first_name'], 'required'],
+            [['organization_id'], 'required'],
+            [['email'], 'email'],
             [['organization_id', 'type', 'status'], 'integer'],
             [['first_name', 'last_name', 'email', 'skype', 'notes'], 'string', 'max' => 255],
             [['organization_id'], 'exist', 'skipOnError' => true, 'targetClass' => Organization::className(), 'targetAttribute' => ['organization_id' => 'id']],

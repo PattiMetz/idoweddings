@@ -16,6 +16,12 @@ use Yii;
  */
 class ContactPhone extends \yii\db\ActiveRecord
 {
+
+    public $phone_types = [
+        'mobile' => 'Mobile',
+        'fax' => 'Fax'
+    ];
+
     /**
      * @inheritdoc
      */
@@ -30,7 +36,7 @@ class ContactPhone extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['contact_id', 'type', 'phone'], 'required'],
+            [['contact_id', 'type'], 'required'],
             [['contact_id'], 'integer'],
             [['type'], 'string', 'max' => 30],
             [['phone'], 'string', 'max' => 255],

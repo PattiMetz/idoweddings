@@ -3,27 +3,75 @@
 namespace app\models;
 
 use Yii;
-use yii\db\ActiveRecord;
-use yii\base\Model;
 
-class Organization extends ActiveRecord {
-
-	public static function tableName() {
-		return '{{organization}}';
+/**
+ * This is the model class for table "organization".
+ *
+ * @property integer $id
+ * @property integer $type_id
+ * @property integer $country_id
+ * @property string $state
+ * @property string $zip
+ * @property string $city
+ * @property string $address
+ * @property integer $timezone
+ * @property string $email
+ * @property string $site
+ * @property integer $status
+ *
+ * @property Contact[] $contacts
+ */
+class Organization extends \yii\db\ActiveRecord
+{
+	/**
+	 * @inheritdoc
+	 */
+	public static function tableName()
+	{
+		return 'organization';
 	}
 
-	public function formName() {
-		return '';
-	}
-
-	public function rules() {
+	/**
+	 * @inheritdoc
+	 */
+	public function rules()
+	{
 		return [
+			[['type_id'], 'required'],
+			[['type_id', 'country_id', 'timezone', 'status'], 'integer'],
+			[['state'], 'string', 'max' => 100],
+			[['zip'], 'string', 'max' => 20],
+			[['city'], 'string', 'max' => 200],
+			[['address', 'email', 'site'], 'string', 'max' => 255],
 		];
 	}
 
-	public function attributeLabels() {
+	/**
+	 * @inheritdoc
+	 */
+	public function attributeLabels()
+	{
 		return [
+			'id' => 'ID',
+			'type_id' => 'Type ID',
+			'country_id' => 'Country ID',
+			'state' => 'State',
+			'zip' => 'Zip',
+			'city' => 'City',
+			'address' => 'Address',
+			'timezone' => 'Timezone',
+			'email' => 'Email',
+			'site' => 'Site',
+			'status' => 'Status',
 		];
+	}
+
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getContacts()
+	{
+		return $this->hasMany(Contact::className(), ['organization_id' => 'id']);
 	}
 
 	public function getAvailableRoles() {
@@ -35,5 +83,4 @@ class Organization extends ActiveRecord {
 			->orWhere(['organization_id' => $this->id])
 			->orderBy([new \yii\db\Expression('! organization_id DESC, id')]);
 	}
-
 }

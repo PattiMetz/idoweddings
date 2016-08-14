@@ -1,0 +1,11 @@
+.vendor-form .border-block {
+    padding-top: 15px;
+}
+.vendor-form .types-group label{
+    display: block;
+    padding: 4px 0;
+}
+.vendor-form .types-group {
+    height: 144px;
+    overflow: auto;
+}
