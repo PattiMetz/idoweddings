@@ -96,10 +96,12 @@ class AdminVendorController extends Controller
         else {
             //Create new organization
             $organization = new Organization();
+            $organization->name = 'Vendor name';
             $organization->type_id = 4;
             $organization->save();
 
-            if(!empty($organization->getErrors())){
+            $errors = $organization->getErrors();
+            if(!empty($errors)){
                 throw new NotFoundHttpException(json_encode($organization->getErrors()));
             }
             //Create new Vendor
@@ -109,7 +111,8 @@ class AdminVendorController extends Controller
             $model->name = 'Name';
             $model->save();
 
-            if(!empty($model->getErrors())){
+            $errors = $model->getErrors();
+            if(!empty($errors)){
                 Organization::findOne($organization->getPrimaryKey())->delete();
                 throw new NotFoundHttpException(json_encode($model->getErrors()));
             }
@@ -118,7 +121,8 @@ class AdminVendorController extends Controller
             $contact->organization_id = $oid;
             $contact->save();
 
-            if(!empty($contact->getErrors())){
+            $errors = $contact->getErrors();
+            if(!empty($errors)){
                 throw new NotFoundHttpException(json_encode($contact->getErrors()));
             }
 
@@ -128,7 +132,8 @@ class AdminVendorController extends Controller
                 $destination->vendor_id = $oid;
                 $destination->save();
 
-                if(!empty($destination->getErrors())){
+                $errors = $destination->getErrors();
+                if(!empty($errors)){
                     //todo handle error log;
                 }
             }
