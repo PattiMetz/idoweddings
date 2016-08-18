@@ -7,6 +7,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use yii\db\Query;
 
 /**
  * User model
@@ -35,6 +36,18 @@ class User extends ActiveRecord implements IdentityInterface {
     public $privilege_ids;
 
     public $roleItems;
+
+    public $geoTreeInfo;
+
+    public $region_ids;
+
+    public $all_destinations;
+
+    public $destination_ids;
+
+    public $all_locations;
+
+    public $location_ids;
 
     /**
      * @inheritdoc
@@ -70,32 +83,40 @@ class User extends ActiveRecord implements IdentityInterface {
 		['password', 'string', 'min' => 6, 'max' => 128],
 		['role_id', 'required'],
 		['role_id', 'inRoleItems'],
+		['all_regions', 'required'],
+		['all_regions', 'integer'],
 		/*TODO: What's the workaround using Yii coding style? */
-		['privilege_ids', 'filter', 'filter' => [$this, 'handleEmptySelection']],
-		['privilege_ids', 'each', 'rule' => ['integer']],
-		['privilege_ids', 'filter', 'filter' => 'array_unique'],
+		[['privilege_ids', 'region_ids', 'all_destinations', 'destination_ids', 'all_locations', 'location_ids'], 'filter', 'filter' => [$this, 'handleEmptySelection']],
+		[['privilege_ids', 'region_ids', 'all_destinations', 'destination_ids', 'all_locations', 'location_ids'], 'each', 'rule' => ['integer']],
+		[['privilege_ids', 'region_ids', 'all_destinations', 'destination_ids', 'all_locations', 'location_ids'], 'filter', 'filter' => 'array_unique'],
 		/*TODO: Maybe to show an error instead of removing invalid privileges? */
-		['privilege_ids', 'filter', 'filter' => [$this, 'checkPrivileges']]
+		['privilege_ids', 'filter', 'filter' => [$this, 'checkPrivileges']],
+		['region_ids', 'filter', 'filter' => [$this, 'checkRegions']],
+		['all_destinations', 'filter', 'filter' => [$this, 'checkAllDestinations']],
+		['destination_ids', 'filter', 'filter' => [$this, 'checkDestinations']],
+		['all_locations', 'filter', 'filter' => [$this, 'checkAllLocations']],
+		['location_ids', 'filter', 'filter' => [$this, 'checkLocations']]
         ];
     }
 
     public function scenarios()
     {
 	return [
-		'create' => ['display_name', 'email', 'username', 'password', 'role_id', 'privilege_ids'],
-		'update' => ['display_name', 'email', 'role_id', 'privilege_ids']
+		'create' => ['display_name', 'email', 'username', 'password', 'role_id', 'privilege_ids', 'all_regions', 'region_ids', 'all_destinations', 'destination_ids', 'all_locations', 'location_ids'],
+		'update' => ['display_name', 'email', 'role_id', 'privilege_ids', 'all_regions', 'region_ids', 'all_destinations', 'destination_ids', 'all_locations', 'location_ids']
 	];
     }
 
-    public function formName() {
-	return '';
-    }
+//    public function formName() {
+//	return '';
+  //  }
 
     public function attributeLabels() {
 	return [
 		'display_name' => 'Name',
 		'email' => 'E-mail',
 		'role_id' => 'Role',
+		'all_regions' => 'All regions'
 	];
     }
 
@@ -116,6 +137,81 @@ class User extends ActiveRecord implements IdentityInterface {
 	foreach (array_keys($value) as $key) {
 		if (!isset($this->privilegesTreeInfo['flat_tree'][$value[$key]])) {
 			unset($value[$key]);
+		}
+	}
+	return $value;
+    }
+
+    public function checkRegions($value) {
+	if ($this->all_regions) {
+		$value = [];
+	} else {
+		foreach (array_keys($value) as $key) {
+			if (!isset($this->geoTreeInfo['regions'][$value[$key]])) {
+				unset($value[$key]);
+			}
+		}
+	}
+	return $value;
+    }
+
+    public function checkAllDestinations($value) {
+	if (empty($this->region_ids)) {
+		$value = [];
+	} else {
+		foreach (array_keys($value) as $key) {
+			if (!in_array($value[$key], $this->region_ids)) {
+				unset($value[$key]);
+			}
+		}
+	}
+	return $value;
+    }
+
+    public function checkDestinations($value) {
+	if (empty($this->region_ids)) {
+		$value = [];
+	} else {
+		foreach (array_keys($value) as $key) {
+			if (!isset($this->geoTreeInfo['destinations'][$value[$key]])) {
+				unset($value[$key]);
+			} else {
+				$region_id = $this->geoTreeInfo['destinations'][$value[$key]]['region_id'];
+				if (!in_array($region_id, $this->region_ids) || in_array($region_id, $this->all_destinations)) {
+					unset($value[$key]);
+				}
+			}
+		}
+	}
+	return $value;
+    }
+
+    public function checkAllLocations($value) {
+	if (empty($this->destination_ids)) {
+		$value = [];
+	} else {
+		foreach (array_keys($value) as $key) {
+			if (!in_array($value[$key], $this->destination_ids)) {
+				unset($value[$key]);
+			}
+		}
+	}
+	return $value;
+    }
+
+    public function checkLocations($value) {
+	if (empty($this->destination_ids)) {
+		$value = [];
+	} else {
+		foreach (array_keys($value) as $key) {
+			if (!isset($this->geoTreeInfo['locations'][$value[$key]])) {
+				unset($value[$key]);
+			} else {
+				$destination_id = $this->geoTreeInfo['locations'][$value[$key]]['destination_id'];
+				if (!in_array($destination_id, $this->destination_ids) || in_array($destination_id, $this->all_locations)) {
+					unset($value[$key]);
+				}
+			}
 		}
 	}
 	return $value;
@@ -286,6 +382,144 @@ class User extends ActiveRecord implements IdentityInterface {
     public function getOrganization()
     {
 	return $this->hasOne(Organization::className(), ['id' => 'organization_id']);
+    }
+
+    public function prepareGeoSettings()
+    {
+	$this->prepareRegionSettings();
+	$this->prepareDestinationSettings();
+	$this->prepareLocationSettings();
+    }
+
+    public function prepareRegionSettings()
+    {
+	if (isset($this->region_ids) && isset($this->all_destinations)) {
+		return;
+	}
+
+	$this->region_ids = [];
+	$this->all_destinations = [];
+
+	if (!$this->id) {
+		return;
+	}
+
+	$rows = (new Query)
+		->from('user_region')
+		->where(['user_id' => $this->id])
+		->all();
+
+	foreach ($rows as $row) {
+		$this->region_ids[] = $row['region_id'];
+		if ($row['all_destinations']) {
+			$this->all_destinations[] = $row['region_id'];
+		}
+	}
+    }
+
+    public function prepareDestinationSettings()
+    {
+	if (isset($this->destination_ids) && isset($this->all_locations)) {
+		return;
+	}
+
+	$this->destination_ids = [];
+	$this->all_locations = [];
+
+	if (!$this->id) {
+		return;
+	}
+
+	$rows = (new Query)
+		->from('user_destination')
+		->where(['user_id' => $this->id])
+		->all();
+
+	foreach ($rows as $row) {
+		$this->destination_ids[] = $row['destination_id'];
+		if ($row['all_locations']) {
+			$this->all_locations[] = $row['destination_id'];
+		}
+	}
+    }
+
+    public function prepareLocationSettings()
+    {
+	if (isset($this->location_ids)) {
+		return;
+	}
+
+	$this->location_ids = [];
+
+	if (!$this->id) {
+		return;
+	}
+
+	$rows = (new Query)
+		->from('user_location')
+		->where(['user_id' => $this->id])
+		->all();
+
+	foreach ($rows as $row) {
+		$this->location_ids[] = $row['location_id'];
+	}
+    }
+
+    public function saveGeoSettings()
+    {
+	$this->saveRegionSettings();
+	$this->saveDestinationSettings();
+	$this->saveLocationSettings();
+    }
+
+    public function saveRegionSettings()
+    {
+	if (!isset($this->region_ids) || !isset($this->all_destinations)) {
+		return;
+	}
+
+	Yii::$app->db->createCommand()->delete('user_region', ['user_id' => $this->id])->execute();
+
+	foreach ($this->region_ids as $region_id) {
+		Yii::$app->db->createCommand()->insert('user_region', [
+			'user_id' => $this->id,
+			'region_id' => $region_id,
+			'all_destinations' => in_array($region_id, $this->all_destinations) ? 1 : 0
+		])->execute();
+	}
+    }
+
+    public function saveDestinationSettings()
+    {
+	if (!isset($this->destination_ids) || !isset($this->all_locations)) {
+		return;
+	}
+
+	Yii::$app->db->createCommand()->delete('user_destination', ['user_id' => $this->id])->execute();
+
+	foreach ($this->destination_ids as $destination_id) {
+		Yii::$app->db->createCommand()->insert('user_destination', [
+			'user_id' => $this->id,
+			'destination_id' => $destination_id,
+			'all_locations' => in_array($destination_id, $this->all_locations) ? 1 : 0
+		])->execute();
+	}
+    }
+
+    public function saveLocationSettings()
+    {
+	if (!isset($this->location_ids)) {
+		return;
+	}
+
+	Yii::$app->db->createCommand()->delete('user_location', ['user_id' => $this->id])->execute();
+
+	foreach ($this->location_ids as $location_id) {
+		Yii::$app->db->createCommand()->insert('user_location', [
+			'user_id' => $this->id,
+			'location_id' => $location_id
+		])->execute();
+	}
     }
 
 }

@@ -16,6 +16,9 @@ use app\models\search\UserSearch;
 use app\models\User;
 use app\models\Role;
 use app\models\Privilege;
+use app\models\Region;
+use app\models\Destination;
+use app\models\Location;
 
 class AdminUserManagerController extends Controller {
 
@@ -118,12 +121,16 @@ class AdminUserManagerController extends Controller {
 
 		}
 
+		$model->prepareGeoSettings();
+
+		$model->geoTreeInfo = $this->_getGeoTreeInfo();
+
 		$model->privilegesTreeInfo = (new Privilege)->getTreeInfo();
 
 		$model->roleItems = ArrayHelper::map($roles, 'id', 'display_name');
 
 		if ($model->load(Yii::$app->request->post())) {
-		
+
 			do {
 
 				$errors = ActiveForm::validate($model);
@@ -138,11 +145,28 @@ class AdminUserManagerController extends Controller {
 
 				$alert = '';
 
-				if (!$model->save()) {
+				if (!$model->save(false)) {
 
 					$alert = 'User not saved';
 
-					$transaction = rollback();
+					$transaction->rollback();
+
+					break;
+
+				}
+
+
+				// Save Geo Settings
+
+				try {
+
+					$model->saveGeoSettings();
+
+				} catch (yii\db\Exception $ex) {
+
+					$alert = 'Failed to save user settings';
+
+					$transaction->rollback();
 
 					break;
 
@@ -592,6 +616,43 @@ class AdminUserManagerController extends Controller {
 			'is_view',
 			'field_name'
 		));
+
+	}
+
+	private function _getGeoTreeInfo() {
+
+		$regions = Region::find()->orderBy('name')->indexBy('id')->all();
+
+		$destinations = Destination::find()->where(['active' => 1])->orderBy('name')->indexBy('id')->all();
+
+		$locations = Location::find()->where(['active' => '1'])->orderBy('name')->indexBy('id')->all();
+
+		$child_ids = [
+			'by_region' => [],
+			'by_destination' => []
+		];
+
+		foreach ($regions as $region) {
+
+			$child_ids['by_region'][$region->id] = [];
+
+		}
+
+		foreach ($destinations as $destination) {
+
+			$child_ids['by_region'][$destination->region_id][] = $destination->id;
+
+			$child_ids['by_destination'][$destination->id] = [];
+
+		}
+
+		foreach ($locations as $location) {
+
+			$child_ids['by_destination'][$location->destination_id][] = $location->id;
+
+		}
+
+		return compact('regions', 'destinations', 'locations', 'child_ids');
 
 	}
 
