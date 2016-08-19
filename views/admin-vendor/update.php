@@ -3,9 +3,11 @@
 use yii\helpers\Html;
 use app\assets\VendorAsset;
 //use app\assets\BootstrapMaterialAsset;
+use app\assets\KendoAsset;
 
 VendorAsset::register($this);
 //BootstrapMaterialAsset::register($this);
+KendoAsset::register($this);
 
 /* @var $this yii\web\View */
 /* @var $model app\models\vendor\Vendor */

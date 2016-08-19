@@ -218,6 +218,88 @@ $(function(){
         })
     };
 
+    /**
+     * Create destinations tree checkboxes from json
+     */
+    main.createDestinationTree = function(){
+
+        var action = $('.tree-org-id').data('action');
+
+        createInitTree();
+
+        function createInitTree(){
+            $.ajax({
+                url: action,
+                method: 'get',
+                dataType: 'json',
+                success: function(data){
+                    if(data.status == 'error'){
+                        alert('Error, data was not found. ' + data.msg)
+                    } else {
+                        $("#treeview").kendoTreeView({
+                            checkboxes: {
+                                checkChildren: true,
+                            },
+                            check: onCheck,
+                            dataSource: data
+                        });
+                    }
+                }
+            });
+        }
+
+        // function that gathers IDs of checked nodes
+        function checkedNodeIds(nodes, checkedNodes) {
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].checked) {
+                    checkedNodes.push(nodes[i]);
+                    //console.log(nodes[i]);
+                }
+
+                if (nodes[i].hasChildren) {
+                    checkedNodeIds(nodes[i].children.view(), checkedNodes);
+                }
+            }
+        }
+
+        // show checked node IDs on datasource change
+        function onCheck() {
+            var checkedNodes = [],
+                treeView = $("#treeview").data("kendoTreeView"),
+                message;
+
+            checkedNodeIds(treeView.dataSource.view(), checkedNodes);
+
+            if (checkedNodes.length > 0) {
+                message = "IDs of checked nodes: " + checkedNodes.join(",");
+            } else {
+                message = "No nodes checked.";
+            }
+
+            //console.log(checkedNodes);
+            updateDestination(checkedNodes);
+
+            //$("#result").html(message);
+        }
+
+        function updateDestination(checkedNodes){
+            $.ajax({
+                url: action,
+                method: 'post',
+                dataType: 'json',
+                data: {
+                    items: JSON.stringify(checkedNodes),
+                },
+                success: function(data){
+                    if(data.status == 'error'){
+                        alert('Error, data was not found. ' + data.msg)
+                    }
+                }
+            });
+
+        }
+    };
+
     main.updateContactFields();
     main.deleteContact();
     main.addContact();
@@ -225,5 +307,6 @@ $(function(){
     main.addPhoneField();
     main.deletePhoneField();
     main.selectAllTypes();
+    main.createDestinationTree();
 
 });

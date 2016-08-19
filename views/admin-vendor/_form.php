@@ -154,34 +154,13 @@ use yii\helpers\Url;
             </div>
             <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
                 <div class="panel-body">
-                    <?
-                    $destinationHtml = '';
-                    foreach($model->vendorDestinations as $dest){
-                        $destinationHtml .= '<div class="col-md-4">';
-                        $destinationHtml .= $form->field($dest, 'region')
-                            ->dropDownList(\app\models\Region::getStatList(),[
-                                'class'  => 'form-control chosen-style update_on_field',
-                                'data-id' => $dest->id,
-                                'data-action' => Url::to(['admin-vendor/update_destination']),
-                                'data-field' => 'region'
-                        ]);
-                        $destinationHtml .= $form->field($dest, 'destination')
-                            ->dropDownList(\app\models\Destination::getStatList(6),[//todo change dynamic depend on region
-                            'class'  => 'form-control chosen-style update_on_field',
-                            'data-id' => $dest->id,
-                            'data-action' => Url::to(['admin-vendor/update_destination']),
-                            'data-field' => 'destination'
-                        ]);
-                        $destinationHtml .= $form->field($dest, 'location')
-                            ->dropDownList(\app\models\Location::getStatList(80),[//todo change dynamic depend on region
-                            'class'  => 'form-control chosen-style update_on_field',
-                            'data-id' => $dest->id,
-                            'data-action' => Url::to(['admin-vendor/update_destination']),
-                            'data-field' => 'location'
-                        ]);
-                        $destinationHtml .= '</div>';
-                    };
-                    echo $destinationHtml ?>
+                    <div class="k-tree k-content">
+                        <div>
+                            <h4>Destinations</h4>
+                            <div id="treeview"></div>
+                        </div>
+                        <div class="tree-org-id" data-action="<?= Url::to(['admin-vendor/destinations', 'id' => $model->organization_id]) ?>"></div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -6,6 +6,7 @@ use app\models\Contact;
 use app\models\ContactPhone;
 use app\models\Destination;
 use app\models\Organization;
+use app\models\Region;
 use app\models\vendor\VendorDestination;
 use app\models\vendor\VendorHasType;
 use Yii;
@@ -340,5 +341,82 @@ class AdminVendorController extends Controller
             'status' => $status ? 'success' : 'error',
             'msg' => $msg
         ));
+    }
+
+    // Ajax destinations
+    public function actionDestinations($id){
+
+        if(Yii::$app->request->isGet){
+            //Get all vendor destinations
+            $model = Region::find()->with('destinations.locations')->asArray()->all();
+
+            $checkedAll = VendorDestination::find()->where(['vendor_id' => $id])->asArray()->all();
+
+            $regionsChecked = ArrayHelper::getColumn($checkedAll, function($item){
+                    return $item['region'];
+            });
+
+            $destinationsChecked = ArrayHelper::getColumn($checkedAll, function($item){
+                return $item['destination'];
+            });
+
+            $locationsChecked = ArrayHelper::getColumn($checkedAll, function($item){
+                return $item['location'];
+            });
+
+            // Add checked and disabled items to destinations array
+            //###regions###
+            foreach ($model as &$item) {
+                if(in_array($item['id'], $regionsChecked)) {
+                    $item['checked'] = true;
+                }
+                if(in_array($item['id'],['3','11'])){//Africa test disable checkbox by admin
+                $item['enabled'] = false;
+                }
+                //###destinations###
+                foreach ($item['destinations'] as &$itemDest) {
+                    if(in_array($itemDest['id'], $destinationsChecked)) {
+                        $itemDest['checked'] = true;
+                    }
+                    //###locations###
+                    foreach ($itemDest['locations'] as &$itemLocat) {
+                        if(in_array($itemLocat['id'], $locationsChecked)) {
+                            $itemLocat['checked'] = true;
+                        }
+                    }
+                }
+            }
+
+            $json = json_encode($model);
+            //replace for js tree to correct array data
+            $json = str_replace('name', 'text', $json);
+            $json = str_replace(['destinations', 'locations'], 'items', $json);
+
+            echo $json;
+
+        } else if (Yii::$app->request->isPost){//update destinations fields
+            $post = json_decode(Yii::$app->request->post('items'));
+
+            VendorDestination::deleteAll(['vendor_id' => $id]);
+
+            foreach($post as $item){
+                $model = new VendorDestination();
+                $model->vendor_id = $id;
+
+                if(!empty($item->destination_id)){
+                    $model->location = $item->id;
+                } else if(!empty($item->region_id)){
+                    $model->destination = $item->id;
+                } else {
+                    $model->region = $item->id;
+                }
+                $status = $model->save();
+
+                echo json_encode(['status' => $status]);
+            }
+        }
+
+
+
     }
 }

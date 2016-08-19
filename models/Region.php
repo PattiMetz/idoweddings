@@ -63,4 +63,9 @@ class Region extends ActiveRecord {
 		return ArrayHelper::map($models, 'id', 'name');
 	}
 
+	public function getDestinations()
+	{
+		return $this->hasMany(Destination::className(), ['region_id' => 'id']);
+	}
+
 }

@@ -9,3 +9,6 @@
     height: 144px;
     overflow: auto;
 }
+.k-tree label{
+    display: inherit;
+}
