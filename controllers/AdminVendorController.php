@@ -50,6 +50,7 @@ class AdminVendorController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'model' => Vendor::find()->one()//todo where(['organization_id' => 38])
         ]);
     }
 

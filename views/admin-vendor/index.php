@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+use yii\helpers\Url;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\vendor\VendorSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -37,6 +38,13 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php Pjax::end(); ?>
     </div>
     <div class="col-md-3 vend-sidebar">
-
+        <div class="list_wrap">
+            <p>Vendor Customization </p>
+            <ul>
+                <li><?php echo Html::a('Vendor profile', [Url::to([Yii::$app->controller->id.'/update','id' => $model->organization_id])], ['data-pjax' => 0])?></li>
+                <li><a>Wedding items</a></li>
+                <li><a>Agreement</a></li>
+            </ul>
+        </div>
     </div>
 </div>
