@@ -92,9 +92,7 @@ class VenueSearch extends VenueModel
             $this->destination_id = '';
             $this->region_id = '';
         }
-
         $query->joinWith(['destination']);
-
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
