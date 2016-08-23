@@ -1,4 +1,4 @@
-<?php
+!<?php
 use yii\helpers\Html;
 ?>
 <div class="location-tree" data-type="region">
