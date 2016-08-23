@@ -62,6 +62,11 @@ echo Alert::widget([
 
 <?php endif; ?>
 
+<?php echo $this->render('_geo-tree', [
+	'model' => $model,
+	'form' => $form
+]); ?>
+
 <?php echo $form->field($model, 'role_id')->dropDownList($model->roleItems, ['class'  => 'chosen-style']); ?>
 
 <?php
@@ -94,8 +99,8 @@ $privileges_field = [
 <?php echo $form->field($model, 'privilege_ids')->end(); ?>
 
 <div class="pseudo_foo">
-	<?php echo Html::submitButton('Save', ['class' => 'btn btn-primary']) ?>
-	<?php echo Html::Button('Cancel', ['class' => 'btn btn-default btn-cancel']) ?>
+	<?php echo Html::submitButton('Save', ['class' => 'btn btn-primary']); ?>
+	<?php echo Html::Button('Cancel', ['class' => 'btn btn-default btn-cancel']); ?>
 </div>
 
 <?php ActiveForm::end(); ?>

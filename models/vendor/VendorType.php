@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace app\models\vendor;
 
 use Yii;
 
@@ -40,9 +40,5 @@ class VendorType extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
         ];
-    }
-
-    public static function typeLists(){
-        return \yii\helpers\ArrayHelper::map(\app\models\VendorType::find()->asArray()->all(), 'id','name');
     }
 }

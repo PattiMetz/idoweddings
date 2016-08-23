@@ -49,4 +49,12 @@ class Country extends \yii\db\ActiveRecord
         $models = $this->find()->orderby('name')->asArray()->all();
         return ArrayHelper::map($models, 'id', 'name');
     }
+
+    /**
+     * @return array
+     */
+    public static function getCountryList() {
+        $models = self::find()->orderby('name')->asArray()->all();
+        return ArrayHelper::map($models, 'id', 'name');
+    }
 }

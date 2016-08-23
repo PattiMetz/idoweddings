@@ -90,6 +90,15 @@ class Destination extends \yii\db\ActiveRecord
     }
 
     /**
+     * @return array
+     */
+    public static function getStatList($region_id) {
+        $models = self::find()->orderby('name')->where(['region_id' => $region_id])->asArray()->all();
+        return ArrayHelper::map($models, 'id', 'name');
+    }
+
+
+    /**
      * @inheritdoc
      */
     public function attributeLabels()

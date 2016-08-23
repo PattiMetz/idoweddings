@@ -106,11 +106,15 @@ Modal::end();
 			<li class="item_8"><a href="#">Quotes</a></li>
 			<li class="item_9"><a href="#">Invoices</a></li>
 			<li class="item_10<?php echo (Yii::$app->controller->id == 'admin-venue') ? ' active' : ''; ?>"><a href="<?php echo Url::to(['admin-venue/index']); ?>">Venues</a></li>
-			<li class="item_11"><a href="#">Vendors</a></li>
+			<li class="item_11 <?php echo (Yii::$app->controller->id == 'admin-vendor') ? 'active' : ''; ?>">
+				<a href="<?= Url::to(['admin-vendor/index']) ?>">Vendors</a>
+			</li>
 			<li class="item_12"><a href="#">Agencies</a></li>
 			<li class="item_13 <?php echo (Yii::$app->controller->id == 'admin-knowledgebases') ? 'active' : ''; ?>"><a href="<?php echo Url::to(['admin-knowledgebases/index']); ?>">Knowledge Base</a></li>
 			<li class="item_14"><a href="#">Reports</a></li>
-			<li class="item_15"><a href="<?= Url::to(['admin-maincompany/update']) ?>">Our Profile</a></li>
+			<li class="item_15 <?php echo (Yii::$app->controller->id == 'admin-maincompany') ? 'active' : ''; ?>">
+				<a href="<?= Url::to(['admin-maincompany/update']) ?>">Our Profile</a>
+			</li>
 			<li class="item_16"><a href="#">Our Packages</a></li>
 			<li class="item_17"><a href="#">Our Items</a></li>
 			<?php if (!Yii::$app->user->isGuest && Yii::$app->user->identity->hasPrivilegeByName('usermanager')): ?>
