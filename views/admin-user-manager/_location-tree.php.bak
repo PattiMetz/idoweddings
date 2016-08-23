@@ -1,0 +1,269 @@
+<?php
+use yii\helpers\Html;
+?>
+<div class="location-tree" data-type="region">
+
+<span><input type="checkbox" class="select-all" name="all_regions"></span> All regions
+
+<ul>
+
+<?php foreach ($model->locationsTreeInfo['regions'] as $region): ?>
+
+	<li>
+		<div>
+			<span class="toggle-item" data-type="region" data-id="<?php echo $region->id; ?>">[+]</span>
+			<span class="icon-region">[R]</span>
+			<span><input type="checkbox" class="select-item" data-type="region" data-id="<?php echo $region->id; ?>" name="regions[]" value="<?php echo $region->id; ?>"></span>
+			<span class="title"><?php echo Html::encode($region->name); ?></span>
+		</div>
+
+		<div class="children" data-type="destination" data-by="region" data-id="<?php echo $region->id; ?>" style="display: none;">
+
+			<span><input type="checkbox" class="select-all" data-by="region" data-id="<?php echo $region->id; ?>" name="all_destinations[]" value="<?php echo $region->id; ?>"></span> All destinations and locations in <?php echo Html::encode($region->name); ?>
+
+			<?php if (!empty($model->locationsTreeInfo['child_ids']['by_region'][$region->id])): ?>
+
+				<ul>
+
+					<?php foreach ($model->locationsTreeInfo['child_ids']['by_region'][$region->id] as $destination_id): ?>
+
+						<li>
+							<div>
+								<span class="toggle-item" data-type="destination" data-id="<?php echo $destination_id; ?>">[+]</span>
+								<span class="icon-destination">[D]</span>
+								<span><input type="checkbox" class="select-item" data-type="destination" data-id="<?php echo $destination_id; ?>" name="destinations[]" value="<?php echo $destination_id; ?>"></span>
+								<span class="title"><?php echo Html::encode($model->locationsTreeInfo['destinations'][$destination_id]->name); ?></span>
+							</div>
+
+							<div class="children" data-type="location" data-by="destination" data-id="<?php echo $destination_id; ?>" style="display: none;">
+
+							<span><input type="checkbox" class="select-all" data-by="destination" data-id="<?php echo $destination_id; ?>" name="all_locations[]" value="<?php echo $destination_id; ?>"></span> All locations in <?php echo Html::encode($model->locationsTreeInfo['destinations'][$destination_id]->name); ?>
+
+							<?php if (!empty($model->locationsTreeInfo['child_ids']['by_destination'][$destination_id])): ?>
+
+								<ul>
+
+									<?php foreach ($model->locationsTreeInfo['child_ids']['by_destination'][$destination_id] as $location_id): ?>
+
+										<li>
+											<div>
+												<span class="icon-location">[L]</span>
+												<span><input type="checkbox" class="select-item" data-type="location" data-id="<?php echo $location_id; ?>" name="locations[]" value="<?php echo $location_id; ?>"></span>
+												<span class="title"><?php echo Html::encode($model->locationsTreeInfo['locations'][$location_id]->name); ?></span>
+											</div>
+										</li>
+
+									<?php endforeach; ?>
+
+								</ul>
+
+							<?php endif; ?>
+
+							</div>
+
+						</li>
+
+					<?php endforeach; ?>
+
+				</ul>
+
+			<?php endif; ?>
+
+		</div>
+
+	</li>
+	
+<?php endforeach; ?>
+
+</ul>
+</div>
+
+<style>
+.location-tree {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+.location-tree .children {
+	padding-left: 16px;
+}
+</style>
+
+<?php
+
+$js = <<<EOT
+	$('.location-tree .toggle-item').on('click', function() {
+		toggleChildren($(this).attr('data-type'), $(this).attr('data-id'));
+	});
+
+	$('.location-tree .select-item').on('change', function() {
+		var type = $(this).attr('data-type');
+		var id = $(this).attr('data-id');
+		if (this.checked) {
+			onCheckItem(type, id);
+		} else {
+			onUncheckItem(type, id);
+		}
+	});
+
+	$('.location-tree .select-all').on('change', function() {
+		var by = $(this).attr('data-by');
+		if (by !== undefined) {
+			var id = $(this).attr('data-id');
+			if (this.checked) {
+				onCheckAll(by, id);
+			} else {
+				onUncheckAll(by, id);
+			}
+		} else {
+			if (this.checked) {
+				onCheckAll(false);
+			} else {
+				onUncheckAll(false);
+			}
+		}
+	});
+
+	function changeItem(type, id, checked, caller) {
+//		getItemElement(type, id).prop('checked', checked);
+		itemElement = getItemElement(type, id);
+		if (itemElement.prop('checked') == checked) return;
+
+		itemElement.prop('checked', checked);
+		if (checked) {
+			onCheckItem(type, id, caller);
+		} else {
+			onUncheckItem(type, id, caller);
+		}
+	}
+
+	function onCheckItem(type, id, caller = false) {
+		toggleChildren(type, id, 'expand');
+
+		if (caller === false) {
+			changeAll(type, id, true, 'onCheckItem');
+		} else if (caller !== 'onCheckAll') {
+			changeAll(type, id, false, 'onCheckItem');
+		}
+
+		var data = getParentData(type, id);
+		if (data !== false) {
+			changeItem(data['type'], data['id'], true, 'onCheckItem');
+		} else {
+			changeAll(false, false, false, 'onCheckItem');
+		}
+	}
+
+	function onUncheckItem(type, id, caller = false) {
+		uncheckChildren(type, id);
+		changeAll(type, id, false, 'onUncheckItem');
+		toggleChildren(type, id, 'collapse');
+
+		var data = getParentData(type, id);
+		if (data !== false) {
+			if (getItemElement(data['type'], data['id']).is(':checked') && !countCheckedChildren(data['type'], data['id'])) {
+				changeAll(data['type'], data['id'], true, 'onUncheckItem');
+			}
+		} else {
+			if (!countCheckedChildren(false)) {
+				changeAll(false, false, true, 'onUncheckItem');
+			}
+		}				
+	}
+
+	function changeAll(by, id, checked, caller = false) {
+		var selector;
+		if (by !== false) {
+			selector = '.location-tree .select-all[data-by="' + by + '"][data-id="' + id + '"]';
+		} else {
+			selector = '.location-tree .select-all:not([data-by])';
+		}
+		if ($(selector).length == 0) return;
+
+		$(selector).prop('checked', checked);
+		if (checked) {
+			onCheckAll(by, id, caller);
+		} else {
+			onUncheckAll(by, id, caller);
+		}
+	}
+
+	function onCheckAll(by, id = false, caller = false) {
+		if (caller === false) {
+			if (by !== false) {
+				uncheckChildren(by, id);
+				changeItem(by, id, true, 'onCheckAll');
+			} else {
+				uncheckChildren(false);
+			}
+		}
+	}
+
+	function onUncheckAll(by, id = false, caller = false) {
+		if (caller === false) {
+			if (by !== false) {
+				changeItem(by, id, false, 'onUncheckAll');
+			}
+		}
+	}
+
+	function getItemElement(type, id) {
+		return $('.location-tree .select-item[data-type="' + type + '"][data-id="' + id + '"]');
+	}
+
+	function getParentData(type, id) {
+		var wrapperElement = getItemElement(type, id).closest('.location-tree .children');
+		if (wrapperElement.length > 0) {
+			return {
+				type: wrapperElement.attr('data-by'),
+				id: wrapperElement.attr('data-id')
+			};
+		} else {
+			return false;
+		}
+	}
+
+	function countCheckedChildren(by, id = false) {
+		var selector;
+		if (by !== false) {
+			selector = '.location-tree .children[data-by="' + by + '"][data-id="' + id + '"]';
+		} else {
+			selector = '.location-tree';
+		}
+		if ($(selector).length == 0) return;
+
+		return $(selector + ' .select-item[data-type="' + $(selector).attr('data-type') + '"]:checked').length;
+	}
+
+	function uncheckChildren(by, id = false) {
+		var selector;
+		if (by !== false) {
+			selector = '.location-tree .children[data-by="' + by + '"][data-id="' + id + '"]';
+		} else {
+			selector = '.location-tree';
+		}
+		if ($(selector).length == 0) return;
+
+		$(selector + ' .select-item[data-type="' + $(selector).attr('data-type') + '"]').each(function() {
+			changeItem($(this).attr('data-type'), $(this).attr('data-id'), false, 'uncheckChildren');
+		});
+	}
+
+	function toggleChildren(by, id, force = false) {
+		var selector = '.location-tree .children[data-by="' + by + '"][data-id="' + id + '"]';
+		if (force !== false) {
+			if (force == 'expand') {
+				if ($(selector).is(':visible')) {
+					return;
+				}
+			} else if (!$(selector).is(':visible')) {
+				return;
+			}
+		}
+		$(selector).toggle();
+		var sign = ($(selector).is(':visible')) ? '[-]' : '[+]';
+		$('.location-tree .toggle-item[data-type="' + by + '"][data-id="' + id + '"]').html(sign);
+	}		
+EOT;
+
+$this->registerJS($js);
