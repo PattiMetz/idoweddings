@@ -1152,9 +1152,13 @@ table, th {
 .venue-location-form form > div:last-child {
 	text-align: center;
 }
+.no_timeslots {
+	padding:30px 0px 0px 0px;
+}
 .custom_timeslot_wrapper:first-of-type,
 .add_timeslot_wrapper {
 	padding-top: 15px;
+	border-top:solid 1px #ccc;
 }
 .custom_timeslot_wrapper {
 	padding: 8px 0;
