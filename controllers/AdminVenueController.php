@@ -86,30 +86,35 @@ class AdminVenueController extends Controller
         $alert = '';
         $message = '';
         $errors = [];
+        $pjax_reload = false;
         $post = Yii::$app->request->post();
         
-        if(isset($post['validate']) && $post['validate']==1) {
-            
-            $res = $model->checkurl($post['VenueWebsite']['url']);
+        if( isset($post['VenueWebsite']['url'])) {
+            if(isset($post['validate']) && $post['validate']==1) {
+                
+                $res = $model->checkurl($post['VenueWebsite']['url']);
 
-            if(!$model->checkurl($post['VenueWebsite']['url'])) {
-                $alert = 'Url already exists';
-            }else
-                $message = 'Url is available';
-        }elseif(isset($post['validate']) && $post['validate']==0) {
-            if(!$model->checkurl($post['VenueWebsite']['url'])) {
-                $alert = 'Url already exists';
-            }else {
-                $model->url = $post['VenueWebsite']['url'];
-                $model->save();
+                if(!$model->checkurl($post['VenueWebsite']['url'])) {
+                    $alert = 'Url already exists';
+                }else
+                    $message = 'Url is available';
+            }elseif(isset($post['validate']) && $post['validate']==0) {
+                if(!$model->checkurl($post['VenueWebsite']['url'])) {
+                    $alert = 'Url already exists';
+                }else {
+                    $model->url = $post['VenueWebsite']['url'];
+                    $model->save();
+                }
+                
             }
-            
-        }
-        if($alert != '' || $message != '') {
+            if($alert == '' && $message == '') {
+               $pjax_reload = '#main';
+            }
             Yii::$app->response->format = Response::FORMAT_JSON;
             return compact(
                 'alert',
-                'message'
+                'message',
+                'pjax_reload'
                 
             );
         }
@@ -157,6 +162,8 @@ class AdminVenueController extends Controller
             $model = new VenueWebsite();
             $model->url = $model->generateUrl($venue->name);
             $model->venue_id = $id;
+            $model->logo_type = '0';
+            $model->navigation_pos = '0';
             $model->save();
         }
 
